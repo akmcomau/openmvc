@@ -1,0 +1,2 @@
+pear channel-discover pear.apache.org/log4php
+pear install log4php/Apache_log4php

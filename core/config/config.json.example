@@ -1,0 +1,9 @@
+{
+	"database": {
+		"engine": "pgsql",
+		"hostname": "localhost",
+		"username": "openmvc",
+		"database": "openmvc",
+		"password": "secret"
+	}
+}

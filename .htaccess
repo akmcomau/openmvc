@@ -1,0 +1,22 @@
+# Don't show directory listings for URLs which map to a directory.
+Options -Indexes
+
+# Follow symbolic links in this directory.
+Options +FollowSymLinks
+
+# Set the default handler.
+DirectoryIndex index.php
+
+# Various rewrite rules.
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+
+	RewriteCond %{REQUEST_URI} !^/index.php
+	RewriteCond %{REQUEST_URI} !/css/
+	RewriteCond %{REQUEST_URI} !/js/
+	RewriteCond %{REQUEST_URI} !/images/
+	RewriteCond %{REQUEST_URI} !/static/
+    RewriteRule ^/?([^/]+)/?$ /index.php?controller=$1 [L]
+    RewriteRule ^/?([^/]+)/([^/]+)/?$ /index.php?controller=$1&method=$2 [L]
+    RewriteRule ^/?([^/]+)/([^/]+)/(.+)$ /index.php?controller=$1&method=$2&params=$3 [L]
+</IfModule>
