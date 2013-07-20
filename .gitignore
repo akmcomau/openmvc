@@ -1,7 +1,8 @@
-modules/
 core/config/log4php.json
 core/config/config.json
 composer/composer.lock
 composer/composer.phar
 composer/vendor/
 logs/*.log
+sites/*
+modules/*

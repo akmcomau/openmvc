@@ -2,8 +2,9 @@
 
 namespace core\classes;
 
-use core\classes\exceptions\RedirectException;
 use core\classes\exceptions\AutoLoaderException;
+use core\classes\exceptions\DispatcherException;
+use core\classes\exceptions\RedirectException;
 
 class Dispatcher {
 
@@ -18,31 +19,57 @@ class Dispatcher {
 	}
 
 	public function dispatch(Request $request) {
-		$controller_name = $this->getControllerName($request);
-		$method_name     = $this->getMethodName($request);
-		$method_params   = $this->getMethodParams($request);
+		$site_params = $this->getSiteFromRequest($request);
+		$request->setSiteParams($site_params);
+
+		$controller_class = $this->getControllerClass($request);
+		$request->setControllerClass($controller_class);
+
+		$method_name = $this->getMethodName($request);
+		$request->setMethodName($method_name);
+
+		$method_params = $this->getMethodParams($request);
+		$request->setMethodParams($method_params);
 
 		try {
-			$response = new Response();
-			$controller = new $controller_name($this->config, $this->database, $request, $response);
-			if (!method_exists($controller, $method_name)) {
-				throw new RedirectException($request->getURL('Error', 'error_404'));
-			}
-			call_user_func_array([$controller, $method_name], $method_params);
-
-			if ($controller->getLayout()) {
-				$controller->getLayout()->render();
-			}
+			return $this->dispatchRequest($request);
 		}
 		catch (AutoLoaderException $ex) {
-			throw new RedirectException($request->getURL('Error', 'error_404'));
+			$request->setControllerClass('\\core\\controllers\\Error');
+			$request->setMethodName('error_404');
+			return $this->dispatchRequest($request);
+		}
+	}
+
+	private function dispatchRequest($request) {
+		$response = new Response();
+		$controller_class = $request->getControllerClass();
+		$controller = new $controller_class($this->config, $this->database, $request, $response);
+		if (!method_exists($controller, $request->getMethodName())) {
+			$request->setControllerClass('\\core\\controllers\\Error');
+			$request->setMethodName('error_404');
+			$request->setMethodParams([]);
+			return $this->dispatchRequest($request);
+		}
+		call_user_func_array([$controller, $request->getMethodName()], $request->getMethodParams());
+
+		if ($controller->getLayout()) {
+			$controller->getLayout()->render();
 		}
 
 		return $response;
 	}
 
-	private function getControllerName($request) {
+	private function getControllerClass(Request $request) {
+		$site = $request->getSiteParams();
 		if ($request->getParam('controller')) {
+			$site_controller = '\\sites\\'.$site->namespace.'\\controllers\\'.$request->getParam('controller');
+			try {
+				if (class_exists($site_controller)) {
+					return $site_controller;
+				}
+			}
+			catch (AutoLoaderException $ex) {}
 			return '\\core\\controllers\\'.$request->getParam('controller');
 		}
 		else {
@@ -50,8 +77,8 @@ class Dispatcher {
 		}
 	}
 
-	private function getMethodName($request) {
-		if ($request->getParam('controller')) {
+	private function getMethodName(Request $request) {
+		if ($request->getParam('method')) {
 			return $request->getParam('method');
 		}
 		else {
@@ -59,12 +86,23 @@ class Dispatcher {
 		}
 	}
 
-	private function getMethodParams($request) {
+	private function getMethodParams(Request $request) {
 		if ($request->getParam('params')) {
 			return explode('/', $request->getParam('params'));
 		}
 		else {
 			return [];
 		}
+	}
+
+	private function getSiteFromRequest(Request $request) {
+		$host  = $request->serverParam('HTTP_HOST');
+		$sites = $this->config->sites;
+		foreach ($sites as $domain => $site) {
+			if ($domain == $host || 'www.'.$domain == $host) {
+				return $site;
+			}
+		}
+		throw new DispatcherException("HTTP_HOST does not reference a site");
 	}
 }

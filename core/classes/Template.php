@@ -13,9 +13,10 @@ class Template {
 	private $filename = NULL;
 	private $data = NULL;
 
-	public function __construct(Controller $controller, $filename) {
+	public function __construct(Controller $controller, $filename, $data = NULL) {
 		$this->controller = $controller;
 		$this->filename = $filename;
+		$this->data = $data;
 		$this->logger = Logger::getLogger(__CLASS__);
 	}
 
@@ -55,21 +56,38 @@ class Template {
 			throw new TemplateException('No template filename set');
 		}
 
+		$site = $this->controller->getRequest()->getSiteParams();
+		$theme = $site->theme;
+
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
-		$template_path = 'core'.DS.'themes'.DS.'default'.DS.'templates'.DS;
-		$template_file = $root_path.$template_path.$this->filename;
-		if (!file_exists($template_file)) {
+		$default_path = 'core'.DS.'themes'.DS.'default'.DS.'templates'.DS;
+		$default_file = $root_path.$default_path.$this->filename;
+		$theme_path = 'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS;
+		$theme_file = $root_path.$theme_path.$this->filename;
+		if (file_exists($theme_file)) {
+			return $theme_file;
+		}
+		if (file_exists($default_file)) {
+			return $default_file;
+		}
+		else {
 			throw new TemplateException("Could not find template file: {$this->filename}");
 		}
-
-		return $template_file;
 	}
 
-	public function getURL($controller_name = NULL, $method_name = NULL, $params = NULL) {
-		return $this->controller->getURL($controller, $method, $params);
+	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
+		return $this->controller->getURL($controller_name, $method_name, $params);
 	}
 
-	public function getSecureURL($controller_name = NULL, $method_name = NULL, $params = NULL) {
+	public function getSecureURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
 		return $this->controller->getSecureURL($controller_name, $method_name, $params);
+	}
+
+	public function currentURL(array $params = NULL) {
+		return $this->controller->currentURL($params);
+	}
+
+	public function getInformationURL($page) {
+		return $this->controller->getInformationURL($page);
 	}
 }

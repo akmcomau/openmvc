@@ -5,5 +5,18 @@
 		"username": "openmvc",
 		"database": "openmvc",
 		"password": "secret"
+	},
+	"sites": {
+		"example.com": {
+			"email_addresses": {
+				"contact_us": "info@example.com",
+				"errors": "errors@example.com"
+			},
+			"name": "OpenMVC Website",
+			"namespace": "default",
+			"layout_class": "\\core\\classes\\Layout",
+			"layout_template": "layouts/default.php",
+			"theme": "default"
+		}
 	}
 }

@@ -23,16 +23,27 @@ class Controller {
 		$this->database = $database;
 		$this->request  = $request;
 		$this->response = $response;
-		$this->layout   = new Layout($config, $database, $request, $response, 'layouts/default.php');
 		$this->logger   = Logger::getLogger(__CLASS__);
+
+		$layout_class    = $request->getSiteParams()->layout_class;
+		$layout_template = $request->getSiteParams()->layout_template;
+		$this->layout    = new $layout_class($config, $database, $request, $response, $layout_template);
 	}
 
-	public function getURL($controller_name = NULL, $method_name = NULL, $params = NULL) {
+	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
 		return $this->request->getURL($controller_name, $method_name, $params);
 	}
 
-	public function getSecureURL($controller_name = NULL, $method_name = NULL, $params = NULL) {
+	public function getSecureURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
 		return $this->request->getSecureURL($controller_name, $method_name, $params);
+	}
+
+	public function getCurrentURL(array $params = NULL) {
+		return $this->request->currentURL($params);
+	}
+
+	public function getInformationURL($page) {
+		return $this->request->getInformationURL($page);
 	}
 
 	public function getConfig() {
