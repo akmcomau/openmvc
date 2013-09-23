@@ -8,7 +8,7 @@ use core\classes\Dispatcher;
 use core\classes\Logger;
 use core\classes\Request;
 
-ini_set('display_errors', 1);
+$script_start = microtime(TRUE);
 define('DS', DIRECTORY_SEPARATOR);
 
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
@@ -21,6 +21,7 @@ try {
 	AutoLoader::init();
 	Logger::init();
 
+	$logger     = Logger::getLogger('');
 	$config     = new Config();
 	$database   = new Database(
 		$config->database->engine,
@@ -33,16 +34,19 @@ try {
 	$dispatcher = new Dispatcher($config, $database);
 	$response   = $dispatcher->dispatch($request);
 
+	$logger->info('Start Request: '.json_encode($request->request_params));
+
 	$response->sendHeaders();
 	$response->sendContent();
+
+	$script_time = number_format(microtime(TRUE) - $script_start, 6);
+	$logger->info("End Request: $script_time");
 }
 catch (RedirectException $ex) {
-	$logger = Logger::getLogger('');
 	$logger->info($ex->getMessage());
 	header("Location: {$ex->getURL()}");
 }
 catch (Exception $ex) {
-	$logger = Logger::getLogger('');
 	$logger->error("Error during dispatch: $ex");
 	?>
 	<div style="border: 3px solid red; padding: 10px; background-color: pink;">

@@ -3,21 +3,24 @@
 namespace core\classes;
 
 use core\classes\exceptions\TemplateException;
-use core\classes\Controller;
+use core\classes\Config;
 use core\classes\Database;
+use core\classes\URL;
 
 class Template {
 
 	private $logger;
-	private $controller;
+	private $config;
 	private $filename = NULL;
 	private $data = NULL;
+	protected $url;
 
-	public function __construct(Controller $controller, $filename, $data = NULL) {
-		$this->controller = $controller;
+	public function __construct(Config $config, $filename, $data = NULL) {
+		$this->config = $config;
 		$this->filename = $filename;
 		$this->data = $data;
 		$this->logger = Logger::getLogger(__CLASS__);
+		$this->url    = new URL($this->config);
 	}
 
 	public function getFilename() {
@@ -39,9 +42,9 @@ class Template {
 	public function render() {
 		$filename = $this->getAbsoluteFilename();
 
-		if ($this->data) {
-			extract($this->data);
-		}
+		// default data for the template
+		$this->data['static_prefix'] = '/'.$this->config->getSiteParams()->static_prefix;
+		extract($this->data);
 
 		ob_start();
 		require($filename);
@@ -56,7 +59,7 @@ class Template {
 			throw new TemplateException('No template filename set');
 		}
 
-		$site = $this->controller->getRequest()->getSiteParams();
+		$site = $this->config->getSiteParams();
 		$theme = $site->theme;
 
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;

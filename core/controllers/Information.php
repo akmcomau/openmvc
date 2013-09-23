@@ -3,13 +3,13 @@
 namespace core\controllers;
 
 use core\classes\exceptions\RedirectException;
-use core\classes\Controller;
+use core\classes\renderable\Controller;
 use core\classes\Template;
 
 class Information extends Controller {
 
 	public function index() {
-		$template = new Template($this, 'pages/information/homepage.php');
+		$template = new Template($this->config, 'pages/information/homepage.php');
 		$this->response->setContent($template->render());
 	}
 
@@ -25,8 +25,13 @@ class Information extends Controller {
 		$this->response->setContent($template->render());
 	}
 
+	public function AboutUs() {
+		$template = new Template($this->config, 'pages/information/about_us.php');
+		$this->response->setContent($template->render());
+	}
+
 	public function contactUs($status = NULL) {
-		$site_params = $this->request->getSiteParams();
+		$site_params = $this->config->getSiteParams();
 		if ($this->request->postParam('send_message') == 1) {
 			$headers  = "From: {$this->request->postParam('email')}\n";
 			$headers .= "Content-Type: text/html";
@@ -61,7 +66,7 @@ class Information extends Controller {
 			'contact_us_email' => $site_params->email_addresses->contact_us,
 		];
 
-		$template = new Template($this, 'pages/information/contact_us.php', $data);
+		$template = new Template($this->config, 'pages/information/contact_us.php', $data);
 		$this->response->setContent($template->render());
 	}
 }

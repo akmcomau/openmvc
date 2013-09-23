@@ -20,7 +20,7 @@ class Dispatcher {
 
 	public function dispatch(Request $request) {
 		$site_params = $this->getSiteFromRequest($request);
-		$request->setSiteParams($site_params);
+		$this->config->setDomain($site_params->domain);
 
 		$controller_class = $this->getControllerClass($request);
 		$request->setControllerClass($controller_class);
@@ -52,6 +52,7 @@ class Dispatcher {
 			return $this->dispatchRequest($request);
 		}
 		call_user_func_array([$controller, $request->getMethodName()], $request->getMethodParams());
+		$controller->render();
 
 		if ($controller->getLayout()) {
 			$controller->getLayout()->render();
@@ -61,7 +62,7 @@ class Dispatcher {
 	}
 
 	private function getControllerClass(Request $request) {
-		$site = $request->getSiteParams();
+		$site = $this->config->getSiteParams();
 		if ($request->getParam('controller')) {
 			$site_controller = '\\sites\\'.$site->namespace.'\\controllers\\'.$request->getParam('controller');
 			try {
@@ -100,6 +101,7 @@ class Dispatcher {
 		$sites = $this->config->sites;
 		foreach ($sites as $domain => $site) {
 			if ($domain == $host || 'www.'.$domain == $host) {
+				$site->domain = $domain;
 				return $site;
 			}
 		}

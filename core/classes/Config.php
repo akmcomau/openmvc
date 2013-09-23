@@ -6,6 +6,8 @@ use ErrorException;
 
 class Config {
 
+	private $site_domain;
+
 	public function __construct() {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.json';
 		$content = file_get_contents($filename);
@@ -17,5 +19,17 @@ class Config {
 		foreach ($json as $key => $value) {
 			$this->$key = $value;
 		}
+	}
+
+	public function setDomain($site_domain) {
+		$this->site_domain = $site_domain;
+	}
+
+	public function getDomain() {
+		return $this->site_domain;
+	}
+
+	public function getSiteParams() {
+		return $this->sites->{$this->site_domain};
 	}
 }

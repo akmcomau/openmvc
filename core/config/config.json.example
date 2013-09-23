@@ -14,7 +14,7 @@
 			},
 			"name": "OpenMVC Website",
 			"namespace": "default",
-			"layout_class": "\\core\\classes\\Layout",
+			"layout_class": "\\core\\classes\\renderable\\Layout",
 			"layout_template": "layouts/default.php",
 			"theme": "default"
 		}
