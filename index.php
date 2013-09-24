@@ -9,7 +9,6 @@ use core\classes\Logger;
 use core\classes\Request;
 
 $script_start = microtime(TRUE);
-define('DS', DIRECTORY_SEPARATOR);
 
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 	throw new ErrorException($errstr, $errno, 0, $errfile, $errline);

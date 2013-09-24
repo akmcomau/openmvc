@@ -8,14 +8,13 @@ class Request {
 	public $post_params;
 	public $request_params;
 	public $server_params;
-
-	private $site_params = NULL;
-	private $controller_class = NULL;
-	private $method_name = NULL;
-
 	public $session;
 
-	public $authentication;
+	protected $site_params = NULL;
+	protected $controller_class = NULL;
+	protected $method_name = NULL;
+
+	private $authentication;
 
 	public function __construct(Config $config, Database $database) {
 		$this->get_params = $_GET;
@@ -24,6 +23,10 @@ class Request {
 		$this->server_params = $_SERVER;
 		$this->session = new Session();
 		$this->authentication = new Authentication($config, $database, $this);
+	}
+
+	public function getAuthentication() {
+		return $this->authentication;
 	}
 
 	public function setControllerClass($controller_class) {

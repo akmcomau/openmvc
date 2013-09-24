@@ -3,8 +3,8 @@
 namespace core\classes;
 
 class Response {
-	private $headers = [];
-	private $content = '';
+	protected $headers = [];
+	protected $content = '';
 
 	public function getContent() {
 		return $this->content;

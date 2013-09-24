@@ -8,9 +8,9 @@ use core\classes\exceptions\RedirectException;
 
 class Dispatcher {
 
-	private $config;
-	private $database;
-	private $logger;
+	protected $config;
+	protected $database;
+	protected $logger;
 
 	public function __construct(Config $config, Database $database) {
 		$this->config   = $config;
@@ -41,7 +41,7 @@ class Dispatcher {
 		}
 	}
 
-	private function dispatchRequest($request) {
+	protected function dispatchRequest($request) {
 		$response = new Response();
 		$controller_class = $request->getControllerClass();
 		$controller = new $controller_class($this->config, $this->database, $request, $response);
@@ -61,7 +61,7 @@ class Dispatcher {
 		return $response;
 	}
 
-	private function getControllerClass(Request $request) {
+	protected function getControllerClass(Request $request) {
 		$site = $this->config->getSiteParams();
 		if ($request->getParam('controller')) {
 			$site_controller = '\\sites\\'.$site->namespace.'\\controllers\\'.$request->getParam('controller');
@@ -78,7 +78,7 @@ class Dispatcher {
 		}
 	}
 
-	private function getMethodName(Request $request) {
+	protected function getMethodName(Request $request) {
 		if ($request->getParam('method')) {
 			return $request->getParam('method');
 		}
@@ -87,7 +87,7 @@ class Dispatcher {
 		}
 	}
 
-	private function getMethodParams(Request $request) {
+	protected function getMethodParams(Request $request) {
 		if ($request->getParam('params')) {
 			return explode('/', $request->getParam('params'));
 		}
@@ -96,7 +96,7 @@ class Dispatcher {
 		}
 	}
 
-	private function getSiteFromRequest(Request $request) {
+	protected function getSiteFromRequest(Request $request) {
 		$host  = $request->serverParam('HTTP_HOST');
 		$sites = $this->config->sites;
 		foreach ($sites as $domain => $site) {
@@ -105,6 +105,7 @@ class Dispatcher {
 				return $site;
 			}
 		}
+
 		throw new DispatcherException("HTTP_HOST does not reference a site");
 	}
 }

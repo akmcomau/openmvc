@@ -1,0 +1,354 @@
+<?php
+
+namespace core\classes;
+
+use core\classes\exceptions\ModelException;
+
+class Model {
+
+	protected $config;
+	protected $database;
+	protected $logger;
+
+	protected $table        = NULL;
+	protected $primary_key  = NULL;
+	protected $columns      = NULL;
+	protected $indexes      = [];
+	protected $foreign_keys = [];
+	protected $uniques      = [];
+
+	protected $available_models = [
+		'Address',
+		'Administrator',
+		'City',
+		'Customer',
+		'Country',
+		'Latex',
+		'LatexCategory',
+		'LatexCombination',
+		'LatexCombinationItem',
+		'State',
+		'Subscription',
+		'SubscriptionType',
+		'Suburb',
+	];
+
+	public function __construct(Config $config, Database $database) {
+		$this->config   = $config;
+		$this->database = $database;
+		$this->logger   = Logger::getLogger(__CLASS__);
+	}
+
+	public function createDatabase() {
+		// Create the tables
+		foreach ($this->available_models as $table) {
+			$class = 'core\\classes\\model\\'.$table;
+			$model = new $class($this->config, $this->database);
+			$model->createTable();
+		}
+
+		// Create the indexes
+		foreach ($this->available_models as $table) {
+			$class = 'core\\classes\\model\\'.$table;
+			$model = new $class($this->config, $this->database);
+			$model->createIndexes();
+		}
+
+		// Create the foreign keys
+		foreach ($this->available_models as $table) {
+			$class = 'core\\classes\\model\\'.$table;
+			$model = new $class($this->config, $this->database);
+			$model->createForeignKeys();
+		}
+	}
+
+	public function createTable() {
+		if ($this->database->getEngine() == 'mysql') {
+			return $this->createTableMySQL();
+		}
+		elseif ($this->database->getEngine() == 'pgsql') {
+			return $this->createTablePgSQL();
+		}
+	}
+
+	public function createForeignKeys() {
+		if ($this->database->getEngine() == 'mysql') {
+			return $this->createForeignKeysMySQL();
+		}
+		elseif ($this->database->getEngine() == 'pgsql') {
+			return $this->createForeignKeysPgSQL();
+		}
+	}
+
+	public function createIndexes() {
+		if ($this->database->getEngine() == 'mysql') {
+			return TRUE;
+		}
+		elseif ($this->database->getEngine() == 'pgsql') {
+			return $this->createIndexesPgSQL();
+		}
+	}
+
+	protected function getDataType($data) {
+		if ($this->database->getEngine() == 'mysql') {
+			return $this->getDataTypeMySQL($data);
+		}
+		elseif ($this->database->getEngine() == 'pgsql') {
+			return $this->getDataTypePgSQL($data);
+		}
+	}
+
+	protected function createTableMySQL() {
+		// create the table
+		$sql = 'CREATE TABLE '.$this->table." (\n";
+
+		// add the columns
+		foreach ($this->columns as $column => $data) {
+			$sql .= "\t$column ".$this->getDataType($data).",\n";
+		}
+
+		// add the indexes
+		foreach ($this->indexes as $column) {
+			if (is_array($column)) {
+				$sql .= "\tINDEX (".join(',', $column)."),\n";
+			}
+			else {
+				$sql .= "\tINDEX ($column),\n";
+			}
+		}
+
+		// add the uniques
+		foreach ($this->uniques as $column) {
+			if (is_array($column)) {
+				$sql .= "\tUNIQUE INDEX (".join(',', $column)."),\n";
+			}
+			else {
+				$sql .= "\tUNIQUE INDEX ($column),\n";
+			}
+		}
+
+		// add the primary key
+		$sql .= "\tPRIMARY KEY (".$this->primary_key.")\n";
+
+		// make an InnoDB type database
+		$sql .= ") ENGINE=InnoDB DEFAULT CHARACTER SET = utf8;\n";
+
+		return $this->database->executeQuery($sql);
+	}
+
+	protected function createForeignKeysMySQL() {
+		// add the forign keys
+		$sql = '';
+		foreach ($this->foreign_keys as $column => $foreign) {
+			$foreign_table  = $foreign[0];
+			$foreign_column = $foreign[1];
+			$sql .= "ALTER TABLE ".$this->table." ADD CONSTRAINT FOREIGN KEY ($column) REFERENCES $foreign_table ($foreign_column);";
+		}
+
+		if ($sql != '') {
+			return $this->database->executeQuery($sql);
+		}
+
+		return TRUE;
+	}
+
+	protected function getDataTypeMySQL($data) {
+		$type = '';
+		switch ($data['data_type']) {
+			case 'smallint':
+				$type = 'SMALLINT';
+				break;
+
+			case 'int':
+				$type = 'INT';
+				break;
+
+			case 'bigint':
+				$type = 'BIGINT';
+				break;
+
+			case 'numeric':
+				$type = 'DECIMAL';
+				if (isset($data['data_length']) && $data['data_length']) {
+					$type.= '('.join(',', $data['data_length']).')';
+				}
+				break;
+
+			case 'date':
+				$type = 'DATE';
+				break;
+
+			case 'datetime':
+				$type = 'DATETIME';
+				break;
+
+			case 'bool':
+				$type = 'BOOL';
+				break;
+
+			case 'text':
+				if (!isset($data['data_length'])) {
+					$type = 'LONGTEXT';
+				}
+				elseif ((int)$data['data_length'] <= 128) {
+					$type = 'CHAR('.(int)$data['data_length'].')';
+				}
+				elseif ((int)$data['data_length'] <= 256) {
+					$type = 'VARCHAR('.(int)$data['data_length'].')';
+				}
+				elseif ((int)$data['data_length'] <= 65535) {
+					$type = 'TEXT';
+				}
+				elseif ((int)$data['data_length'] <= 16777215) {
+					$type = 'MEDIUMTEXT';
+				}
+				else {
+					$type = 'LONGTEXT';
+				}
+				break;
+
+			case 'blob':
+				if (!isset($data['data_length'])) {
+					$type = 'LONGBLOB';
+				}
+				elseif ((int)$data['data_length'] <= 256) {
+					$type = 'TINYBLOB';
+				}
+				elseif ((int)$data['data_length'] <= 65535) {
+					$type = 'BLOB';
+				}
+				elseif ((int)$data['data_length'] <= 16777215) {
+					$type = 'MEDIUMBLOB';
+				}
+				else {
+					$type = 'LONGBLOB';
+				}
+				break;
+
+			default:
+				throw new ModelException("Invalid data type: ".$data['data_type']);
+				break;
+		}
+
+		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
+			$type .= " NOT NULL";
+		}
+
+		if (isset($data['default_value'])) {
+			$type .= " DEFAULT ".$data['default_value'];
+		}
+
+		return $type;
+	}
+
+	protected function createTablePgSQL() {
+		// create the table
+		$sql = 'CREATE TABLE '.$this->table." (\n";
+
+		// add the columns
+		foreach ($this->columns as $column => $data) {
+			$sql .= "\t$column ".$this->getDataType($data).",\n";
+		}
+
+		// add the uniques
+		foreach ($this->uniques as $column) {
+			if (is_array($column)) {
+				$sql .= "\tUNIQUE (".join(',', $column)."),\n";
+			}
+			else {
+				$sql .= "\tUNIQUE ($column),\n";
+			}
+		}
+
+		// add the primary key
+		$sql .= "\tPRIMARY KEY (".$this->primary_key.")\n";
+
+		// make an InnoDB type database
+		$sql .= ");\n";
+
+		return $this->database->executeQuery($sql);
+	}
+
+	protected function createForeignKeysPgSQL() {
+		// add the forign keys
+		foreach ($this->foreign_keys as $column => $foreign) {
+			$foreign_table  = $foreign[0];
+			$foreign_column = $foreign[1];
+			$sql = "ALTER TABLE ONLY ".$this->table." ADD CONSTRAINT ".$this->table."_".$column."_fk FOREIGN KEY ($column) REFERENCES $foreign_table ($foreign_column);";
+
+			$this->database->executeQuery($sql);
+		}
+	}
+
+	protected function createIndexesPgSQL() {
+		// add the indexes
+		foreach ($this->indexes as $column) {
+			if (is_array($column)) {
+				$sql = "CREATE INDEX ON ".$this->table."(".join(',', $column).");\n";
+			}
+			else {
+				$sql = "CREATE INDEX ON ".$this->table."($column);\n";
+			}
+
+			$this->database->executeQuery($sql);
+		}
+	}
+
+	protected function getDataTypePgSQL($data) {
+		$type = '';
+		switch ($data['data_type']) {
+			case 'smallint':
+				$type = 'SMALLINT';
+				break;
+
+			case 'int':
+				$type = 'INT';
+				break;
+
+			case 'bigint':
+				$type = 'BIGINT';
+				break;
+
+			case 'numeric':
+				$type = 'NUMERIC';
+				if (isset($data['data_length']) && $data['data_length']) {
+					$type.= '('.join(',', $data['data_length']).')';
+				}
+				break;
+
+			case 'date':
+				$type = 'DATE';
+				break;
+
+			case 'datetime':
+				$type = 'TIMESTAMP WITHOUT time zone';
+				break;
+
+			case 'bool':
+				$type = 'BOOL';
+				break;
+
+			case 'text':
+				$type = 'TEXT';
+				break;
+
+			case 'blob':
+				$type = 'BYTEA';
+				break;
+
+			default:
+				throw new ModelException("Invalid data type: ".$data['data_type']);
+				break;
+		}
+
+		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
+			$type .= " NOT NULL";
+		}
+
+		if (isset($data['default_value'])) {
+			$type .= " DEFAULT ".$data['default_value'];
+		}
+
+		return $type;
+	}
+}

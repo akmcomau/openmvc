@@ -9,10 +9,10 @@ use core\classes\URL;
 
 class Template {
 
-	private $logger;
-	private $config;
-	private $filename = NULL;
-	private $data = NULL;
+	protected $logger;
+	protected $config;
+	protected $filename = NULL;
+	protected $data = NULL;
 	protected $url;
 
 	public function __construct(Config $config, $filename, $data = NULL) {

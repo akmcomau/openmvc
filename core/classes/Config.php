@@ -6,7 +6,7 @@ use ErrorException;
 
 class Config {
 
-	private $site_domain;
+	protected $site_domain;
 
 	public function __construct() {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.json';

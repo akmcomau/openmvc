@@ -7,25 +7,29 @@ use core\classes\exceptions\DatabaseException;
 
 class Database extends PDO {
 	//connection properties
-	private $engine;
-	private $hostname;
-	private $username;
-	private $database;
-	private $password;
-	private $persistant;
+	protected $engine;
+	protected $hostname;
+	protected $username;
+	protected $database;
+	protected $password;
+	protected $persistant;
 
-	private $logger;
+	protected $logger;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct($engine, $hostname, $username, $database, $password, $persistant = FALSE) {
-		$this->engine   = $engine;
-		$this->hostname = $hostname;
-		$this->username = $username;
-		$this->database = $database;
-		$this->password = $password;
+		$this->engine     = $engine;
+		$this->hostname   = $hostname;
+		$this->username   = $username;
+		$this->database   = $database;
+		$this->password   = $password;
 		$this->persistant = $persistant;
+
+		if ($this->engine != 'mysql' && $this->engine != 'pgsql') {
+			throw new DatabaseException('Invalid database engine: '.$this->engine);
+		}
 
 		$this->logger = Logger::getLogger(__CLASS__);
 
@@ -38,6 +42,10 @@ class Database extends PDO {
 		parent::__construct($dns, $this->username, $this->password, $options);
 	}
 
+	public function getEngine() {
+		return $this->engine;
+	}
+
 	public function quote($string, $paramtype = NULL) {
 		return $this->quote($string, $paramtype);
 	}
@@ -46,9 +54,11 @@ class Database extends PDO {
 	 *
 	 */
 	public function executeQuery($sql) {
+		$this->logger->debug("Executing SQL: $sql");
 		$statement = $this->query($sql);
 		if (!$statement) {
 			$message = "SQL ERROR: {$this->errorCode()} ".join("\n", $this->errorInfo())."\nSQL: $sql";
+			$this->logger->error($message);
 			throw new DatabaseException($message);
 		}
 		return $statement;

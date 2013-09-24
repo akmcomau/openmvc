@@ -5,7 +5,7 @@ namespace core\classes\exceptions;
 use Exception;
 
 class RedirectException extends Exception {
-	private $url;
+	protected $url;
 
 	public function __construct($url) {
 		$this->url = $url;
