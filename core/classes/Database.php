@@ -46,10 +46,6 @@ class Database extends PDO {
 		return $this->engine;
 	}
 
-	public function quote($string, $paramtype = NULL) {
-		return $this->quote($string, $paramtype);
-	}
-
 	/**
 	 *
 	 */

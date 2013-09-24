@@ -10,6 +10,8 @@ class Model {
 	protected $database;
 	protected $logger;
 
+	protected $record = [];
+
 	protected $table        = NULL;
 	protected $primary_key  = NULL;
 	protected $columns      = NULL;
@@ -39,25 +41,158 @@ class Model {
 		$this->logger   = Logger::getLogger(__CLASS__);
 	}
 
+	public function setRecord($record) {
+		$this->record = $record;
+	}
+
+	public function __set($name, $value) {
+		if (isset($this->columns[$this->table.'_'.$name])) {
+			$this->record[$this->table.'_'.$name] = $value;
+		}
+		elseif (isset($this->columns[$name])) {
+			$this->record[$name] = $value;
+		}
+		else {
+			throw new ModelException("Undefined model property: $name ".get_class($this));
+		}
+	}
+
+	public function __get($name) {
+		if (isset($this->columns[$this->table.'_'.$name])) {
+			if (isset($this->record[$this->table.'_'.$name])) {
+				return $this->record[$this->table.'_'.$name];
+			}
+			else {
+				return NULL;
+			}
+		}
+		elseif (isset($this->columns[$name])) {
+			if (isset($this->record[$name])) {
+				return $this->record[$name];
+			}
+			else {
+				return NULL;
+			}
+		}
+		else {
+			throw new ModelException("Undefined model property: $name");
+		}
+	}
+
+	public function insert() {
+		$table       = $this->table;
+		$primary_key = $this->primary_key;
+
+		$columns = [];
+		$values  = [];
+		foreach (array_keys($this->columns) as $column) {
+			if ($column != $primary_key && isset($this->record[$column])) {
+				$columns[] = $column;
+				$values[]  = $this->database->quote($this->record[$column]);
+			}
+		}
+
+		$sql = "INSERT INTO $table (".join(',', $columns).") VALUES (".join(',', $values).")";
+		$this->database->executeQuery($sql);
+
+		$this->record[$primary_key] = $this->database->lastInsertId("$table.$primary_key");
+	}
+
+	public function update() {
+		$table       = $this->table;
+		$primary_key = $this->primary_key;
+
+		if (!isset($this->record[$primary_key])) {
+			throw new ModelException("Object has no primary key: ".print_r($this, TRUE));
+		}
+
+		$values  = [];
+		foreach (array_keys($this->columns) as $column) {
+			if ($column != $primary_key && isset($this->record[$column])) {
+				$values[]  = $column.'='.$this->database->quote($this->record[$column]);
+			}
+		}
+
+		$sql = "UPDATE $table SET ".join(',', $values)." WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
+		$this->database->executeQuery($sql);
+	}
+
+	public function delete() {
+		$table       = $this->table;
+		$primary_key = $this->primary_key;
+
+		if (!isset($this->record[$primary_key])) {
+			throw new ModelException("Object has no primary key: ".print_r($this, TRUE));
+		}
+
+		$sql = "DELETE FROM $table WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
+		$this->database->executeQuery($sql);
+	}
+
+	public function get(array $params) {
+		$table  = $this->table;
+		$where  = $this->generateWhereClause($params);
+		$sql    = "SELECT * FROM $table WHERE $where";
+		$record = $this->database->querySingle($sql);
+		if ($record) {
+			return $this->getModel(get_class($this), $record);
+		}
+		else {
+			return NULL;
+		}
+	}
+
+	public function getMulti(array $params) {
+		$table   = $this->table;
+		$where   = $this->generateWhereClause($params);
+		$sql     = "SELECT * FROM $table WHERE $where";
+		$records = $this->database->queryMulti($sql);
+
+		$models = [];
+		foreach ($records as $record) {
+			$models[] = $this->getModel(get_class($this), $record);
+		}
+
+		return $models;
+	}
+
+	public function generateWhereClause(array $params) {
+		$where = [];
+		foreach ($params as $column => $value) {
+			if (isset($this->columns[$this->table.'_'.$column])) {
+				$where[] = $this->table.'_'.$column.'='.$this->database->quote($value);
+			}
+			elseif (isset($this->columns[$column])) {
+				$where[] = $column.'='.$this->database->quote($value);
+			}
+		}
+		return join (' AND ', $where);
+	}
+
+	public function getModel($class, array $data = NULL) {
+		$model = new $class($this->config, $this->database);
+		if ($data) {
+			$model->setRecord($data);
+		}
+		return $model;
+	}
+
 	public function createDatabase() {
 		// Create the tables
 		foreach ($this->available_models as $table) {
-			$class = 'core\\classes\\model\\'.$table;
-			$model = new $class($this->config, $this->database);
+			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createTable();
 		}
 
 		// Create the indexes
 		foreach ($this->available_models as $table) {
-			$class = 'core\\classes\\model\\'.$table;
-			$model = new $class($this->config, $this->database);
+			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createIndexes();
 		}
 
 		// Create the foreign keys
 		foreach ($this->available_models as $table) {
-			$class = 'core\\classes\\model\\'.$table;
-			$model = new $class($this->config, $this->database);
+			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createForeignKeys();
 		}
 	}
@@ -234,6 +369,10 @@ class Model {
 			$type .= " NOT NULL";
 		}
 
+		if (isset($data['auto_increment']) && $data['auto_increment']) {
+			$type .= " AUTO_INCREMENT";
+		}
+
 		if (isset($data['default_value'])) {
 			$type .= " DEFAULT ".$data['default_value'];
 		}
@@ -298,15 +437,30 @@ class Model {
 		$type = '';
 		switch ($data['data_type']) {
 			case 'smallint':
-				$type = 'SMALLINT';
+				if (isset($data['auto_increment']) && $data['auto_increment']) {
+					$type = 'SERIAL';
+				}
+				else {
+					$type = 'SMALLINT';
+				}
 				break;
 
 			case 'int':
-				$type = 'INT';
+				if (isset($data['auto_increment']) && $data['auto_increment']) {
+					$type = 'SERIAL';
+				}
+				else {
+					$type = 'INT';
+				}
 				break;
 
 			case 'bigint':
-				$type = 'BIGINT';
+				if (isset($data['auto_increment']) && $data['auto_increment']) {
+					$type = 'SERIAL8';
+				}
+				else {
+					$type = 'BIGINT';
+				}
 				break;
 
 			case 'numeric':

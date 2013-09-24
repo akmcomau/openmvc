@@ -15,12 +15,13 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 }
 set_error_handler("exception_error_handler");
 
-try {
-	include('core/classes/AutoLoader.php');
-	AutoLoader::init();
-	Logger::init();
+include('core/Constants.php');
+include('core/classes/AutoLoader.php');
+AutoLoader::init();
+Logger::init();
+$logger = Logger::getLogger('');
 
-	$logger     = Logger::getLogger('');
+try {
 	$config     = new Config();
 	$database   = new Database(
 		$config->database->engine,

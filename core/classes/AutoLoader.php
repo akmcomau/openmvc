@@ -3,8 +3,6 @@ namespace core\classes;
 
 use core\classes\exceptions\AutoLoaderException;
 
-define('DS', DIRECTORY_SEPARATOR);
-
 class AutoLoader {
 	public static function init() {
 		$root_path = __DIR__.DS.'..'.DS.'..';

@@ -1,6 +1,6 @@
 <?php
 
-namespace core\classes\model;
+namespace core\classes\models;
 
 use core\classes\Model;
 
@@ -26,7 +26,7 @@ class Customer extends Model {
 		'customer_type' => [
 			'data_type'      => 'int',
 			'null_allowed'   => FALSE,
-			'default_value'  => 1,
+			'default_value'  => CUSTOMER_TYPE_NORMAL,
 		],
 		'customer_login' => [
 			'data_type'      => 'text',

@@ -1,16 +1,16 @@
 <?php
 
-namespace core\classes\model;
+namespace core\classes\models;
 
 use core\classes\Model;
 
-class Suburb extends Model {
+class City extends Model {
 
-	protected $table       = 'suburb';
-	protected $primary_key = 'suburb_id';
+	protected $table       = 'city';
+	protected $primary_key = 'city_id';
 	protected $columns     = [
-		'suburb_id' => [
-			'data_type'      => 'bigint',
+		'city_id' => [
+			'data_type'      => 'int',
 			'auto_increment' => TRUE,
 			'null_allowed'   => FALSE,
 		],
@@ -22,30 +22,18 @@ class Suburb extends Model {
 			'data_type'      => 'int',
 			'null_allowed'   => FALSE,
 		],
-		'city_id' => [
-			'data_type'      => 'int',
-			'null_allowed'   => FALSE,
-		],
-		'suburb_name' => [
+		'city_name' => [
 			'data_type'      => 'text',
 			'data_length'    => '128',
 			'null_allowed'   => FALSE,
 		],
-		'suburb_postcode' => [
-			'data_type'      => 'text',
-			'data_length'    => '10',
-			'null_allowed'   => FALSE,
-		],
 	];
 	protected $indexes = [
-		'suburb_postcode',
-		'suburb_name',
-		'city_id',
+		'city_name',
 		'state_id',
 		'country_id',
 	];
 	protected $foreign_keys = [
-		'city_id'    => ['city',    'city_id'],
 		'state_id'   => ['state',   'state_id'],
 		'country_id' => ['country', 'country_id'],
 	];
