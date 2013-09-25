@@ -15,6 +15,7 @@ class Request {
 	protected $method_name = NULL;
 
 	private $authentication;
+	private $url;
 
 	public function __construct(Config $config, Database $database) {
 		$this->get_params = $_GET;
@@ -23,6 +24,7 @@ class Request {
 		$this->server_params = $_SERVER;
 		$this->session = new Session();
 		$this->authentication = new Authentication($config, $database, $this);
+		$this->url = new URL($config);
 	}
 
 	public function getAuthentication() {
@@ -91,12 +93,13 @@ class Request {
 
 	public function currentURL(array $params = NULL) {
 		if ($params === NULL) {
-			$params = $this->method_params;
+			$params = $this->request->get_params;
 		}
 
 		$class_parts = explode('\\', $this->controller_class);
 		$controller_class = $class_parts[count($class_parts)-1];
 
-		return $this->getURL($controller_class, $this->method_name, $params);
+		return $this->url->getURL($controller_class, $this->method_name, $params);
 	}
+
 }

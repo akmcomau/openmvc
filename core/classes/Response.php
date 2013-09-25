@@ -14,6 +14,12 @@ class Response {
 		$this->content = $content;
 	}
 
+	public function setJsonContent($controller, $content) {
+		$controller->setLayout(NULL);
+		$this->addHeader('Content-Type', 'application/json');
+		$this->content = $content;
+	}
+
 	public function appendContent($content) {
 		$this->content .= $content;
 	}

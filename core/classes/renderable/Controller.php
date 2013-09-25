@@ -9,6 +9,7 @@ use core\classes\Response;
 use core\classes\Request;
 use core\classes\URL;
 use core\classes\Renderable;
+use core\classes\renderable\Layout;
 
 class Controller extends Renderable {
 
@@ -34,6 +35,10 @@ class Controller extends Renderable {
 
 	public function getLayout() {
 		return $this->layout;
+	}
+
+	public function setLayout(Layout $layout = NULL) {
+		$this->layout = $layout;
 	}
 
 	public function render() {

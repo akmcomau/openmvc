@@ -21,5 +21,6 @@ DirectoryIndex index.php
 
 	# Rewrite controller methods to index.php
 	RewriteCond %{REQUEST_URI} !^/?index.php
+	RewriteCond %{REQUEST_URI} !^/?google.*html
 	RewriteRule ^/?([^/]+)(/([^/]+))?(/(.*))?$ /index.php?controller=$1&method=$3&params=$5 [QSA,L]
 </IfModule>

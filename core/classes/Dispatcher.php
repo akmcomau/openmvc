@@ -2,6 +2,7 @@
 
 namespace core\classes;
 
+use core\classes\exceptions\SoftRedirectException;
 use core\classes\exceptions\AutoLoaderException;
 use core\classes\exceptions\DispatcherException;
 use core\classes\exceptions\RedirectException;
@@ -31,27 +32,39 @@ class Dispatcher {
 		$method_params = $this->getMethodParams($request);
 		$request->setMethodParams($method_params);
 
-		try {
-			return $this->dispatchRequest($request);
-		}
-		catch (AutoLoaderException $ex) {
-			$request->setControllerClass('\\core\\controllers\\Error');
-			$request->setMethodName('error_404');
-			return $this->dispatchRequest($request);
-		}
+		return $this->dispatchRequest($request);
 	}
 
 	protected function dispatchRequest($request) {
 		$response = new Response();
 		$controller_class = $request->getControllerClass();
+
+		if (!$controller_class) {
+			$this->logger->debug("Controller Not found");
+			$request->setControllerClass('\\core\\controllers\\Error');
+			$request->setMethodName('error_404');
+			return $this->dispatchRequest($request);
+		}
+
 		$controller = new $controller_class($this->config, $this->database, $request, $response);
 		if (!method_exists($controller, $request->getMethodName())) {
+			$this->logger->debug("Controller Not found: $controller_class => ".$request->getMethodName());
 			$request->setControllerClass('\\core\\controllers\\Error');
 			$request->setMethodName('error_404');
 			$request->setMethodParams([]);
 			return $this->dispatchRequest($request);
 		}
-		call_user_func_array([$controller, $request->getMethodName()], $request->getMethodParams());
+		$this->logger->debug("Dispatching request to $controller_class => ".$request->getMethodName());
+		try {
+			call_user_func_array([$controller, $request->getMethodName()], $request->getMethodParams());
+		}
+		catch (SoftRedirectException $ex) {
+			$this->logger->debug('Soft Redirect to '.$ex->getController().' => '.$ex->getMethod());
+			$request->setControllerClass($ex->getController());
+			$request->setMethodName($ex->getMethod());
+ 			$request->setMethodParams($ex->getParams());
+			return $this->dispatchRequest($request);
+		}
 		$controller->render();
 
 		if ($controller->getLayout()) {
@@ -71,7 +84,15 @@ class Dispatcher {
 				}
 			}
 			catch (AutoLoaderException $ex) {}
-			return '\\core\\controllers\\'.$request->getParam('controller');
+			$core_controller = '\\core\\controllers\\'.$request->getParam('controller');
+			try {
+				if (class_exists($core_controller)) {
+					return $core_controller;
+				}
+			}
+			catch (AutoLoaderException $ex) {}
+
+			return NULL;
 		}
 		else {
 			return '\\core\\controllers\\Information';
@@ -80,7 +101,7 @@ class Dispatcher {
 
 	protected function getMethodName(Request $request) {
 		if ($request->getParam('method')) {
-			return $request->getParam('method');
+			return str_replace('-', '_', $request->getParam('method'));
 		}
 		else {
 			return 'index';

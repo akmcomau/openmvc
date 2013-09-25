@@ -20,9 +20,9 @@ include('core/classes/AutoLoader.php');
 AutoLoader::init();
 Logger::init();
 $logger = Logger::getLogger('');
+$config = new Config();
 
 try {
-	$config     = new Config();
 	$database   = new Database(
 		$config->database->engine,
 		$config->database->hostname,
@@ -32,9 +32,9 @@ try {
 	);
 	$request    = new Request($config, $database);
 	$dispatcher = new Dispatcher($config, $database);
-	$response   = $dispatcher->dispatch($request);
-
 	$logger->info('Start Request: '.json_encode($request->request_params));
+
+	$response = $dispatcher->dispatch($request);
 
 	$response->sendHeaders();
 	$response->sendContent();
@@ -48,10 +48,15 @@ catch (RedirectException $ex) {
 }
 catch (Exception $ex) {
 	$logger->error("Error during dispatch: $ex");
-	?>
-	<div style="border: 3px solid red; padding: 10px; background-color: pink;">
-		<div style="color: red; font-size: 22px; font-weight: bold;">FATAL ERROR:</div>
-		<pre style="white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;"><?php echo $ex; ?></pre>
-	</div>
-	<?php
+	if ($config->getSiteParams()->display_errors) {
+		?>
+		<div style="border: 3px solid red; padding: 10px; background-color: pink;">
+			<div style="color: red; font-size: 22px; font-weight: bold;">FATAL ERROR:</div>
+			<pre style="white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;"><?php echo $ex; ?></pre>
+		</div>
+		<?php
+	}
+	else {
+		header("Location: /Error/error-500");
+	}
 }

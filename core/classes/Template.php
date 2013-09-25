@@ -79,18 +79,14 @@ class Template {
 	}
 
 	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
-		return $this->controller->getURL($controller_name, $method_name, $params);
+		return $this->url->getURL($controller_name, $method_name, $params);
 	}
 
 	public function getSecureURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
-		return $this->controller->getSecureURL($controller_name, $method_name, $params);
-	}
-
-	public function currentURL(array $params = NULL) {
-		return $this->controller->currentURL($params);
+		return $this->url->getSecureURL($controller_name, $method_name, $params);
 	}
 
 	public function getInformationURL($page) {
-		return $this->controller->getInformationURL($page);
+		return $this->url->getInformationURL($page);
 	}
 }

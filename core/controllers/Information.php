@@ -21,7 +21,7 @@ class Information extends Controller {
 
 		$page_name = str_replace('-', '_', $page_name);
 
-		$template = new Template($this, "pages/information/$page_name.php");
+		$template = new Template($this->config, "pages/information/$page_name.php");
 		$this->response->setContent($template->render());
 	}
 
@@ -46,10 +46,10 @@ class Information extends Controller {
 			$body .= "AKM Computer Services<br/><br/>";
 
 			if (mail($site_params->email_addresses->contact_us, $subject, $body, $headers)) {
-				throw new RedirectException($this->getCurrentURL([]).'/success');
+				throw new RedirectException($this->request->currentURL([]).'/success');
 			}
 			else {
-				throw new RedirectException($this->getCurrentURL([]).'/error');
+				throw new RedirectException($this->request->currentURL([]).'/error');
 			}
 		}
 
