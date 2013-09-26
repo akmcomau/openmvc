@@ -11,7 +11,7 @@
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font-awesome-ie7.min.css" rel="stylesheet" media="screen" />
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/bootstrap.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validation.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
 
 	<link rel="shortcut icon" href="/core/themes/default/images/favicon.ico" />
 	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/core/themes/default/images/icon_logo_114.gif" />
