@@ -47,15 +47,23 @@ class Config {
 		}
 	}
 
-	public function setDomain($site_domain) {
-		$this->site_domain = $site_domain;
-	}
-
 	public function getDomain() {
 		return $this->site_domain;
 	}
 
 	public function getSiteParams() {
 		return $this->sites->{$this->site_domain};
+	}
+
+	public function setSiteDomain($host) {
+		$sites = $this->sites;
+		foreach ($sites as $domain => $site) {
+			if ($domain == $host || 'www.'.$domain == $host) {
+				$this->site_domain = $domain;
+				return;
+			}
+		}
+
+		throw new ErrorException("HTTP_HOST does not reference a site: $host");
 	}
 }

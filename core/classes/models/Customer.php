@@ -18,6 +18,10 @@ class Customer extends Model {
 			'data_type'      => 'datetime',
 			'null_allowed'   => FALSE,
 		],
+		'site_id' => [
+			'data_type'      => 'int',
+			'null_allowed'   => FALSE,
+		],
 		'customer_active' => [
 			'data_type'      => 'bool',
 			'null_allowed'   => FALSE,
@@ -74,7 +78,7 @@ class Customer extends Model {
 		'customer_token' => [
 			'data_type'      => 'text',
 			'data_length'    => '64',
-			'null_allowed'   => FALSE,
+			'null_allowed'   => TRUE,
 		],
 		'customer_token_created' => [
 			'data_type'      => 'datetime',
@@ -83,6 +87,7 @@ class Customer extends Model {
 	];
 
 	protected $indexes = [
+		'site_id',
 		'customer_active',
 		'customer_type',
 		'customer_token',
@@ -92,8 +97,8 @@ class Customer extends Model {
 	];
 
 	protected $uniques = [
-		'customer_login',
-		'customer_email',
+		['site_id', 'customer_login'],
+		['site_id', 'customer_email'],
 	];
 
 	protected $foreign_keys = [

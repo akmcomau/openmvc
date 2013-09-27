@@ -66,10 +66,17 @@
 							<li class="visible-xs"><a class="menu-item" href="<?php echo $this->url->getURL('Cart'); ?>">Shopping Cart</a></li>
 							<li><a class="menu-item" href="<?php echo $this->url->getURL('Checkout'); ?>">Checkout</a></li>
 						</ul>
-						<ul class="nav navbar-nav navbar-right main-menu">
-							<li><a class="menu-item" href="<?php echo $this->url->getURL('Account'); ?>">Signup</a></li>
-							<li><a class="menu-item" href="<?php echo $this->url->getURL('Account'); ?>">Login</a></li>
-						</ul>
+						<?php if ($logged_in) { ?>
+							<ul class="nav navbar-nav navbar-right main-menu">
+								<li><a class="menu-item" href="<?php echo $this->url->getURL('Account'); ?>">My Account</a></li>
+								<li><a class="menu-item" href="<?php echo $this->url->getURL('Account', 'logout'); ?>">Logout</a></li>
+							</ul>
+						<?php } else { ?>
+							<ul class="nav navbar-nav navbar-right main-menu">
+								<li><a class="menu-item" href="<?php echo $this->url->getURL('Account', 'register'); ?>">Signup</a></li>
+								<li><a class="menu-item" href="<?php echo $this->url->getURL('Account', 'login'); ?>">Login</a></li>
+							</ul>
+						<?php } ?>
 					</div>
 				</nav>
 			</div>

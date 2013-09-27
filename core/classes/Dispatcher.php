@@ -20,9 +20,6 @@ class Dispatcher {
 	}
 
 	public function dispatch(Request $request) {
-		$site_params = $this->getSiteFromRequest($request);
-		$this->config->setDomain($site_params->domain);
-
 		$controller_class = $this->getControllerClass($request);
 		$request->setControllerClass($controller_class);
 
@@ -35,7 +32,7 @@ class Dispatcher {
 		return $this->dispatchRequest($request);
 	}
 
-	protected function dispatchRequest($request) {
+	public function dispatchRequest($request) {
 		$response = new Response();
 		$controller_class = $request->getControllerClass();
 
@@ -115,18 +112,5 @@ class Dispatcher {
 		else {
 			return [];
 		}
-	}
-
-	protected function getSiteFromRequest(Request $request) {
-		$host  = $request->serverParam('HTTP_HOST');
-		$sites = $this->config->sites;
-		foreach ($sites as $domain => $site) {
-			if ($domain == $host || 'www.'.$domain == $host) {
-				$site->domain = $domain;
-				return $site;
-			}
-		}
-
-		throw new DispatcherException("HTTP_HOST does not reference a site");
 	}
 }

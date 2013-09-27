@@ -3,11 +3,28 @@
 namespace core\classes;
 
 class Session {
+	public function delete($name) {
+		if (is_array($name)) {
+			$data = &$_SESSION;
+			foreach ($name as $element) {
+				if (!isset($data[$element])) {
+					$data[$element] = NULL;
+				}
+				$data = &$data[$element];
+			}
+			unset($data);
+			return;
+		}
+
+		unset($_SESSION[$name]);
+		return;
+	}
+
 	public function set($name, $value) {
 		if (is_array($name)) {
 			$data = &$_SESSION;
 			foreach ($name as $element) {
-				if (!isset($data[$name])) {
+				if (!isset($data[$element])) {
 					$data[$element] = NULL;
 				}
 				$data = &$data[$element];
@@ -24,7 +41,7 @@ class Session {
 		if (is_array($name)) {
 			$data = &$_SESSION;
 			foreach ($name as $element) {
-				if (!isset($data[$name])) {
+				if (!isset($data[$element])) {
 					return NULL;
 				}
 				$data = &$data[$element];

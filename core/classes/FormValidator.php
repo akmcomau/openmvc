@@ -65,12 +65,12 @@ class FormValidator {
 		return $js;
 	}
 
-	public function getHtmlErrorDiv($name) {
+	public function getHtmlErrorDiv($name, $class = '') {
 		if (isset($this->form_errors[$name])) {
-			return '<div id="'.$name.'-error" class="form-error visible">'.$this->form_errors[$name].'</div>';
+			return '<div id="'.$name.'-error" class="form-error visible '.$class.'">'.$this->form_errors[$name].'</div>';
 		}
 		else {
-			return '<div id="'.$name.'-error" class="form-error"></div>';
+			return '<div id="'.$name.'-error" class="form-error '.$class.'"></div>';
 		}
 	}
 
@@ -193,6 +193,13 @@ class FormValidator {
 
 						case 'regex':
 							if (!preg_match('/'.$validator['regex'].'/'.$validator['modifiers'], $value)) {
+								$this->form_errors[$name] = $validator['message'];
+								$is_this_valid = FALSE;
+							}
+							break;
+
+						case 'function':
+							if (!$validator['function']($value)) {
 								$this->form_errors[$name] = $validator['message'];
 								$is_this_valid = FALSE;
 							}

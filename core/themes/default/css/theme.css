@@ -270,6 +270,10 @@ ul.inline li {
 	padding: 15px;
 	margin: 0 auto;
 }
+.form-login-register .login-failed {
+	font-size: 1.5em;
+	font-weight: bold;
+}
 .form-login-register .form-login-register-heading,
 .form-login-register .checkbox {
 	margin-bottom: 10px;

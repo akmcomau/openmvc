@@ -44,6 +44,14 @@ class Encryption {
 		}
 	}
 
+	public static function bcrypt($string, $cost) {
+		return password_hash($string, PASSWORD_BCRYPT, ['cost' => $cost]);
+	}
+
+	public static function bcrypt_verify($string, $hash) {
+		return password_verify($string, $hash);
+	}
+
 	public static function str2Hex($string) {
 		$hexstr = @unpack("H*", $string);
 		return array_shift($hexstr);

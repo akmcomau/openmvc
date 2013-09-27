@@ -41,6 +41,10 @@ class Model {
 		$this->logger   = Logger::getLogger(__CLASS__);
 	}
 
+	public function getRecord() {
+		return $this->record;
+	}
+
 	public function setRecord($record) {
 		$this->record = $record;
 	}
@@ -86,7 +90,11 @@ class Model {
 		$columns = [];
 		$values  = [];
 		foreach (array_keys($this->columns) as $column) {
-			if ($column != $primary_key && isset($this->record[$column])) {
+			if (!isset($this->record[$column]) && $column == "{$table}_created") {
+				$columns[] = $column;
+				$values[]  = 'NOW()';
+			}
+			elseif ($column != $primary_key && isset($this->record[$column])) {
 				$columns[] = $column;
 				$values[]  = $this->database->quote($this->record[$column]);
 			}
@@ -95,7 +103,15 @@ class Model {
 		$sql = "INSERT INTO $table (".join(',', $columns).") VALUES (".join(',', $values).")";
 		$this->database->executeQuery($sql);
 
-		$this->record[$primary_key] = $this->database->lastInsertId("$table.$primary_key");
+		if ($this->database->getEngine() == 'pgsql') {
+			$sql = "SELECT currval(pg_get_serial_sequence('$table', '$primary_key'))";
+			$this->record[$primary_key] = $this->database->queryValue($sql);
+		}
+		else {
+			$this->record[$primary_key] = $this->lastInsertId();
+		}
+		$this->logger->info("Inserted record in $table => ".$this->record[$primary_key]);
+		return $this->record[$primary_key];
 	}
 
 	public function update() {

@@ -2,6 +2,7 @@
 
 namespace core\classes\renderable;
 
+use core\classes\Authentication;
 use core\classes\Renderable;
 use core\classes\Config;
 use core\classes\Database;
@@ -16,20 +17,26 @@ class Layout extends Renderable {
 	protected $response;
 	protected $template;
 	protected $url;
+	protected $authentication;
 
-	public function __construct(Config $config, Database $database, Request $request, Response $response, $template) {
+	public function __construct(Config $config, Database $database, Request $request, Response $response, Authentication $auth, $template) {
 		parent::__construct($config, $database);
 		$this->request  = $request;
 		$this->response = $response;
 		$this->template = $template;
 		$this->url      = new URL($config);
+		$this->authentication = $auth;
 	}
 
 	public function render() {
+		$data = [
+			'page_content'            => $this->response->getContent(),
+			'logged_in'               => $this->authentication->loggedIn(),
+			'customer_logged_in'      => $this->authentication->customerLoggedIn(),
+			'administrator_logged_in' => $this->authentication->administratorLoggedIn(),
+		];
 		$template = new Template($this->config, $this->template);
-		$template->setData([
-			'page_content' => $this->response->getContent(),
-		]);
+		$template->setData($data);
 		$this->response->setContent($template->render());
 	}
 

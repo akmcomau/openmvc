@@ -7,6 +7,7 @@
 		"layout_template": "layouts/default.php",
 		"theme": "default",
 		"static_prefix": "static-1",
-		"display_errors": false
+		"display_errors": false,
+		"bcrypt_cost": 10
 	}
 }
