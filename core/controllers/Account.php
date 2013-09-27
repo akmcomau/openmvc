@@ -12,10 +12,11 @@ use core\classes\Model;
 
 class Account extends Controller {
 
+	protected $permissions = [
+		'index' => ['customer'],
+	];
+
 	public function index() {
-		if (!$this->authentication->customerLoggedIn()) {
-			throw new SoftRedirectException(__CLASS__, 'login');
-		}
 	}
 
 	public function logout() {
@@ -24,7 +25,9 @@ class Account extends Controller {
 	}
 
 	public function login() {
-		$bcrypt_cost   = $this->config->getSiteParams()->bcrypt_cost;
+		$this->language->loadLanguageFile('account.php');
+
+		$bcrypt_cost   = $this->config->siteConfig()->bcrypt_cost;
 		$model         = new Model($this->config, $this->database);
 		$form_register = $this->getRegisterForm();
 		$form_login    = $this->getLoginForm();
@@ -39,7 +42,7 @@ class Account extends Controller {
 				throw new RedirectException($this->url->getURL('Account'));
 			}
 			else {
-				$form_login->addError('login-failed', 'Login Failed');
+				$form_login->addError('login-failed', $this->language->get('login_failed'));
 			}
 		}
 
@@ -48,19 +51,21 @@ class Account extends Controller {
 			'login'    => $form_login,
 		];
 
-		$template = new Template($this->config, 'pages/account/login.php', $data);
+		$template = $this->getTemplate('pages/account/login.php', $data);
 		$this->response->setContent($template->render());
 	}
 
 	public function register() {
-		$bcrypt_cost   = $this->config->getSiteParams()->bcrypt_cost;
+		$this->language->loadLanguageFile('account.php');
+
+		$bcrypt_cost   = $this->config->siteConfig()->bcrypt_cost;
 		$model         = new Model($this->config, $this->database);
 		$form_register = $this->getRegisterForm();
 		$form_login    = $this->getLoginForm();
 
 		if ($form_register->validate()) {
 			$customer = $model->getModel('core\classes\models\Customer');
-			$customer->site_id    = $this->config->getSiteParams()->site_id;
+			$customer->site_id    = $this->config->siteConfig()->site_id;
 			$customer->login      = $form_register->getValue('username');
 			$customer->password   = Encryption::bcrypt($form_register->getValue('password1'), $bcrypt_cost);
 			$customer->first_name = $form_register->getValue('first-name');
@@ -77,7 +82,7 @@ class Account extends Controller {
 			'login'    => $form_login,
 		];
 
-		$template = new Template($this->config, 'pages/account/login.php', $data);
+		$template = $this->getTemplate('pages/account/login.php', $data);
 		$this->response->setContent($template->render());
 	}
 
@@ -89,35 +94,35 @@ class Account extends Controller {
 				'type' => 'string',
 				'min_length' => 2,
 				'max_length' => 32,
-				'message' => 'Between 2-32 characters',
+				'message' => $this->language->get('error_first_name'),
 			],
 			'last-name' => [
 				'type' => 'string',
 				'min_length' => 2,
 				'max_length' => 32,
-				'message' => 'Between 2-32 characters',
+				'message' => $this->language->get('error_last_name'),
 			],
 			'email' => [
 				'type' => 'email',
-				'message' => 'Please enter a valid email address',
+				'message' => $this->language->get('error_email')
 			],
 			'username' => [
 				'type' => 'string',
 				'min_length' => 6,
 				'max_length' => 32,
-				'message' => "Between 6-32 characters"
+				'message' => $this->language->get('error_username')
 			],
 			'password1' => [
 				'type' => 'string',
 				'min_length' => 6,
 				'max_length' => 32,
-				'message' => "Between 6-32 characters<br />With at least one number"
+				'message' => $this->language->get('error_password')
 			],
 			'password2' => [
 				'type' => 'string',
 				'min_length' => 6,
 				'max_length' => 32,
-				'message' => "Between 6-32 characters<br />With at least one number"
+				'message' => $this->language->get('error_password')
 			]
 		];
 
@@ -125,7 +130,7 @@ class Account extends Controller {
 			'email' => [
 				[
 					'type'     => 'function',
-					'message'  => 'Email already is already associated with an account',
+					'message'  => $this->language->get('error_email_taken'),
 					'function' => function($value) use ($model) {
 						$customer = $model->getModel('core\classes\models\Customer');
 						$customer = $customer->get(['email' => $value]);
@@ -141,7 +146,7 @@ class Account extends Controller {
 			'username' => [
 				[
 					'type'     => 'function',
-					'message'  => 'Username is taken',
+					'message'  => $this->language->get('error_username_taken'),
 					'function' => function($value) use ($model) {
 						$customer = $model->getModel('core\classes\models\Customer');
 						$customer = $customer->get(['login' => $value]);
@@ -158,13 +163,13 @@ class Account extends Controller {
 				[
 					'type'    => 'params-equal',
 					'param'   => 'password2',
-					'message' => 'Passwords do not match',
+					'message' => $this->language->get('error_password_mismatch'),
 				],
 				[
 					'type'      => 'regex',
 					'regex'     => '\d',
 					'modifiers' => '',
-					'message'   => 'Password must contain at least one number',
+					'message'   => $this->language->get('error_password_number'),
 				],
 			],
 		];
@@ -178,16 +183,27 @@ class Account extends Controller {
 				'type' => 'string',
 				'min_length' => 6,
 				'max_length' => 32,
-				'message' => 'Between 6-32 characters',
+				'message' => $this->language->get('error_username'),
 			],
 			'password' => [
 				'type' => 'string',
 				'min_length' => 6,
 				'max_length' => 32,
-				'message' => 'Between 6-32 characters<br />With at least one number',
+				'message' => $this->language->get('error_password'),
 			],
 		];
 
-		return new FormValidator($this->request, 'form-login', $inputs);
+		$validators = [
+			'password' => [
+				[
+					'type'      => 'regex',
+					'regex'     => '\d',
+					'modifiers' => '',
+					'message'   => $this->language->get('error_password_number'),
+				],
+			],
+		];
+
+		return new FormValidator($this->request, 'form-login', $inputs, $validators);
 	}
 }

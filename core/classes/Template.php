@@ -5,6 +5,7 @@ namespace core\classes;
 use core\classes\exceptions\TemplateException;
 use core\classes\Config;
 use core\classes\Database;
+use core\classes\Language;
 use core\classes\URL;
 
 class Template {
@@ -14,9 +15,11 @@ class Template {
 	protected $filename = NULL;
 	protected $data = NULL;
 	protected $url;
+	protected $language;
 
-	public function __construct(Config $config, $filename, $data = NULL) {
+	public function __construct(Config $config, Language $language, $filename, $data = NULL) {
 		$this->config = $config;
+		$this->language = $language;
 		$this->filename = $filename;
 		$this->data = $data;
 		$this->logger = Logger::getLogger(__CLASS__);
@@ -43,8 +46,12 @@ class Template {
 		$filename = $this->getAbsoluteFilename();
 
 		// default data for the template
-		$this->data['static_prefix'] = '/'.$this->config->getSiteParams()->static_prefix;
+		$this->data['static_prefix'] = '/'.$this->config->siteConfig()->static_prefix;
 		extract($this->data);
+
+		// load the language
+		$strings = $this->language->getStrings();
+		extract($strings, EXTR_PREFIX_ALL, 'text');
 
 		ob_start();
 		require($filename);
@@ -59,7 +66,7 @@ class Template {
 			throw new TemplateException('No template filename set');
 		}
 
-		$site = $this->config->getSiteParams();
+		$site = $this->config->siteConfig();
 		$theme = $site->theme;
 
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;

@@ -50,7 +50,7 @@ $logger = Logger::getLogger('');
 $config = new Config();
 
 $config->setSiteDomain($_SERVER['HTTP_HOST']);
-$display_errors = $config->getSiteParams()->display_errors;
+$display_errors = $config->siteConfig()->display_errors;
 
 try {
 	$database   = new Database(

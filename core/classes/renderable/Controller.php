@@ -9,6 +9,8 @@ use core\classes\Logger;
 use core\classes\Response;
 use core\classes\Request;
 use core\classes\URL;
+use core\classes\Template;
+use core\classes\Language;
 use core\classes\Renderable;
 use core\classes\renderable\Layout;
 
@@ -19,6 +21,9 @@ class Controller extends Renderable {
 	protected $layout;
 	protected $url;
 	protected $authentication;
+	protected $language;
+
+	protected $permissions = [];
 
 	public function __construct(Config $config, Database $database, Request $request, Response $response) {
 		parent::__construct($config, $database);
@@ -26,18 +31,31 @@ class Controller extends Renderable {
 		$this->response       = $response;
 		$this->url            = new URL($config);
 		$this->authentication = new Authentication($config, $database, $request);
+		$this->language       = new Language($config);
 
-		$layout_class    = $config->getSiteParams()->layout_class;
-		$layout_template = $config->getSiteParams()->layout_template;
-		$this->layout    = new $layout_class($config, $database, $request, $response, $this->authentication, $layout_template);
+		$layout_class    = $config->siteConfig()->layout_class;
+		$layout_template = $config->siteConfig()->layout_template;
+		$this->layout    = new $layout_class($config, $database, $request, $response, $this->authentication, $this->language, $layout_template);
 	}
 
 	public function getRequest() {
 		return $this->request;
 	}
 
+	public function getAuthentication() {
+		return $this->authentication;
+	}
+
+	public function getPermissions() {
+		return $this->permissions;
+	}
+
 	public function getLayout() {
 		return $this->layout;
+	}
+
+	public function getTemplate($filename, array $data = NULL) {
+		return new Template($this->config, $this->language, $filename, $data);
 	}
 
 	public function setLayout(Layout $layout = NULL) {

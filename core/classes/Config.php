@@ -10,37 +10,33 @@ class Config {
 
 	public function __construct() {
 		// get the default config
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'default_config.json';
-		$content = file_get_contents($filename);
-		$default = json_decode($content);
-		if (!$default) {
-			throw new ErrorException("Could not decode config file: $filename");
-		}
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'default_config.php';
+		require($filename);
 
 		// get the custom config
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.json';
-		$content = file_get_contents($filename);
-		$custom = json_decode($content);
-		if (!$custom) {
-			throw new ErrorException("Could not decode config file: $filename");
-		}
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		require($filename);
+
+		// Convert the config data to objects
+		$_CONFIG = json_decode(json_encode($_CONFIG), FALSE);
+		$_DEFAULT_CONFIG = json_decode(json_encode($_DEFAULT_CONFIG), FALSE);
 
 		// add the custom config to this object
-		foreach ($custom as $key => $value) {
+		foreach ($_CONFIG as $key => $value) {
 			$this->$key = $value;
 		}
 
 		// add the default config to this object
 		foreach ($this->sites as $domain => $site_data) {
-			foreach ($default->default_site as $key => $value) {
+			foreach ($_DEFAULT_CONFIG->default_site as $key => $value) {
 				if (!isset($site_data->$key)) {
 					$site_data->$key = $value;
 				}
 			}
 		}
-		unset($default->default_site);
+		unset($_DEFAULT_CONFIG->default_site);
 
-		foreach ($default as $key => $value) {
+		foreach ($_DEFAULT_CONFIG as $key => $value) {
 			if (!isset($this->$key)) {
 				$this->$key = $value;
 			}
@@ -51,7 +47,7 @@ class Config {
 		return $this->site_domain;
 	}
 
-	public function getSiteParams() {
+	public function siteConfig() {
 		return $this->sites->{$this->site_domain};
 	}
 

@@ -2,13 +2,131 @@
 
 namespace core\classes;
 
-use core\classes\URL;
+use ErrorException;
 
 class URL {
 	protected $url;
+	protected $url_map;
 
 	public function __construct(Config $config) {
-		$this->config = $config;
+		$this->config  = $config;
+		$this->generateUrlMap();
+	}
+
+	protected function generateUrlMap() {
+		$controllers = $this->listAllControllers();
+
+		$filename = $this->getUrlsFilename('DefaultMethod');
+		require($filename);
+
+		$url_config = [];
+		foreach ($controllers as $controller => $class) {
+			$_URLS = NULL;
+			$filename = $this->getUrlsFilename($controller);
+			if ($filename) {
+				require($filename);
+				if ($_URLS) {
+					// add ther default method data to the array
+					foreach ($_URLS['methods'] as $method => $data) {
+						if (!isset($_URLS['methods'][$method]['meta_tags'])) {
+							$_URLS['methods'][$method]['meta_tags'] = [];
+						}
+						foreach ($_DEFAULT_METHOD['meta_tags'] as $property => $value) {
+							if (!isset($data['meta_tags'][$property]) && !is_null($value)) {
+								$_URLS['methods'][$method]['meta_tags'][$property] = $value;
+							}
+						}
+					}
+					$url_config[$controller] = $_URLS;
+				}
+			}
+		}
+
+		$this->url_map = ['reverse' => ['controllers'=>[], 'methods'=>[]]];
+		foreach ($url_config as $controller => $data) {
+			$this->url_map['forward'][$controller] = $data;
+
+			foreach ($data['aliases'] as $language => $alias) {
+				$this->url_map['reverse']['controllers'][$alias] = $controller;
+			}
+			foreach ($data['methods'] as $method => $data) {
+				if (isset($data['aliases'])) {
+					foreach ($data['aliases'] as $language => $alias) {
+						$this->url_map['reverse']['methods'][$controller][$alias] = $method;
+					}
+				}
+			}
+		}
+
+		$this->url_map['controllers'] = $controllers;
+	}
+
+	protected function listAllControllers() {
+		$site = $this->config->siteConfig();
+		$site_controllers = [];
+		$core_controllers = [];
+
+		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$core_path = $root_path.'core'.DS.'controllers'.DS;
+		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'controllers'.DS;
+
+		foreach (glob("$site_path*.php") as $filename) {
+			if (preg_match('/\/([\w]+)\.php$/', $filename, $matches)) {
+				$site_controllers[$matches[1]] = '\\sites\\'.$site->namespace.'\\controllers\\'.$matches[1];
+			}
+		}
+
+		foreach (glob("$core_path*.php") as $filename) {
+			if (preg_match('/\/([\w]+)\.php$/', $filename, $matches)) {
+				$core_controllers[$matches[1]] = '\\core\\controllers\\'.$matches[1];
+			}
+		}
+
+		$controllers = $site_controllers;
+		foreach ($core_controllers as $controller => $class) {
+			if (!isset($controllers[$controller])) {
+				$controllers[$controller] = $class;
+			}
+		}
+
+		return $controllers;
+	}
+
+	protected function getUrlsFilename($controller) {
+		$site = $this->config->siteConfig();
+		$language = $site->language;
+		$theme = $site->theme;
+
+		$filename = $controller.'.php';
+		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$default_path = 'core'.DS.'meta'.DS.$language.DS;
+		$default_file = $root_path.$default_path.$filename;
+		$site_path = 'sites'.DS.$site->namespace.DS.'meta'.DS.$language.DS;
+		$site_file = $root_path.$site_path.$filename;
+		if (file_exists($site_file)) {
+			return $site_file;
+		}
+		if (file_exists($default_file)) {
+			return $default_file;
+		}
+
+		return NULL;
+	}
+
+	public function getMethodMetaTags($controller_name = NULL, $method_name = NULL) {
+		if (!$controller_name) $controller_name = 'Information';
+		if (!$method_name)     $method_name     = 'index';
+		$meta_tags = $this->url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'];
+		if (!isset($meta_tags['title'])) {
+			if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
+				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language].' | '.$this->config->siteConfig()->name;
+			}
+			else {
+				$meta_tags['title'] = $this->config->siteConfig()->name;
+			}
+		}
+
+		return $meta_tags;
 	}
 
 	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
@@ -25,6 +143,14 @@ class URL {
 			$params_string .= urlencode($value).'/';
 		}
 		if (strlen($params_string) > 0) $params_string = substr($params_string, 0, -1);
+
+		// seo the url
+		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language])) {
+			$method_name = $this->url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language];
+		}
+		if (isset($this->url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language])) {
+			$controller_name = $this->url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language];
+		}
 
 		$url = '/'.$controller_name;
 		if ($method_name != 'index' || count($params) > 0) {
@@ -43,5 +169,40 @@ class URL {
 	public function getInformationURL($page) {
 		$page = str_replace('_', '-', $page);
 		return $this->getURL('Information', 'page').'/'.$page;
+	}
+
+	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL) {
+		if (!$controller_name) $controller_name = 'Information';
+		if (!$method_name)     $method_name     = 'index';
+		$url = $this->getURL($controller_name, $method_name, $params);
+		$text = '!!NO LINK TEXT!!';
+		try {
+			if ($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language]) {
+				$text = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
+			}
+		}
+		catch (ErrorException $ex) {}
+		return '<a class="'.$class.'" href="'.$url.'">'.$text.'</a>';
+	}
+
+	public function getControllerClass($controller) {
+		if (isset($this->url_map['controllers'][$controller])) {
+			return $this->url_map['controllers'][$controller];
+		}
+		return NULL;
+	}
+
+	public function getControllerClassName($controller) {
+		if (isset($this->url_map['reverse']['controllers'][$controller])) {
+			return $this->url_map['reverse']['controllers'][$controller];
+		}
+		return $controller;
+	}
+
+	public function getMethodName($controller, $method) {
+		if (isset($this->url_map['reverse']['methods'][$controller][$method])) {
+			return $this->url_map['reverse']['methods'][$controller][$method];
+		}
+		return $method;
 	}
 }
