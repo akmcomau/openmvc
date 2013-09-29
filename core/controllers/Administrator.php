@@ -12,6 +12,8 @@ use core\classes\Model;
 
 class Administrator extends Controller {
 
+	protected $show_admin_layout = TRUE;
+
 	protected $permissions = [
 		'index' => ['administrator'],
 	];

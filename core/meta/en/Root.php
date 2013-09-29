@@ -23,5 +23,14 @@ $_URLS = [
 			'aliases' => ['en' => 'contact-us'],
 			'link_text' => ['en' => 'Contact Us'],
 		],
+		'error_401' => [
+			'aliases' => ['en' => 'error-401']
+		],
+		'error_404' => [
+			'aliases' => ['en' => 'error-404']
+		],
+		'error_500' => [
+			'aliases' => ['en' => 'error-500']
+		],
 	],
 ];

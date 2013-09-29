@@ -40,7 +40,7 @@ class Dispatcher {
 
 		if (!$controller_class) {
 			$this->logger->debug("Controller Not found: ".$request->getParam('controller'));
-			$request->setControllerClass('\\core\\controllers\\Error');
+			$request->setControllerClass($this->url->getControllerClass('Root'));
 			$request->setMethodName('error_404');
 			return $this->dispatchRequest($request);
 		}
@@ -49,7 +49,7 @@ class Dispatcher {
 		$method_name = $request->getMethodName();
 		if (!method_exists($controller, $method_name)) {
 			$this->logger->debug("Controller Not found: $controller_class => ".$request->getMethodName());
-			$request->setControllerClass('\\core\\controllers\\Error');
+			$request->setControllerClass($this->url->getControllerClass('Root'));
 			$request->setMethodName('error_404');
 			$request->setMethodParams([]);
 			return $this->dispatchRequest($request);
@@ -57,6 +57,9 @@ class Dispatcher {
 		$this->logger->debug("Dispatching request to $controller_class => $method_name");
 
 		// check permissions
+		$is_admin_required = FALSE;
+		$is_admin_logged_in = FALSE;
+		$is_customer_logged_in = FALSE;
 		if (isset($controller->getPermissions()[$method_name])) {
 			$authenticated    = FALSE;
 			$login_controller = NULL;
@@ -65,9 +68,12 @@ class Dispatcher {
 					case 'administrator':
 						if ($controller->getAuthentication()->administratorLoggedIn()) {
 							$authenticated = TRUE;
+							$is_admin_logged_in = TRUE;
+							$is_admin_required = TRUE;
 						}
 						elseif (empty($login_controller)) {
 							$login_controller = 'Administrator';
+							$is_customer_logged_in = TRUE;
 						}
 						break;
 
@@ -83,6 +89,19 @@ class Dispatcher {
 			}
 			if (!$authenticated) {
 				throw new RedirectException($this->url->getURL($login_controller, 'login'));
+			}
+		}
+
+		if (!($is_admin_required || $is_admin_logged_in)) {
+			if ($this->config->siteConfig()->site_offline_mode) {
+				$template = $controller->getTemplate('pages/site_offline.php');
+				$response->setContent($template->render());
+				return $response;
+			}
+			elseif ($this->config->siteConfig()->site_maintenance_mode) {
+				$template = $controller->getTemplate('pages/site_maintenance.php');
+				$response->setContent($template->render());
+				return $response;
 			}
 		}
 
@@ -135,7 +154,7 @@ class Dispatcher {
 
 				return $controller;
 			}
-			if (!empty($controller)) {
+			if (empty($controller)) {
 				$root_class  = $this->url->getControllerClass('Root');
 				$root_method = $this->url->getMethodName($root_class, $request->getParam('controller'));
 				if ($root_method) {

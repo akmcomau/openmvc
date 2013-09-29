@@ -16,6 +16,8 @@ use core\classes\renderable\Layout;
 
 class Controller extends Renderable {
 
+	protected $show_admin_layout = FALSE;
+
 	protected $request;
 	protected $response;
 	protected $layout;
@@ -33,8 +35,15 @@ class Controller extends Renderable {
 		$this->authentication = new Authentication($config, $database, $request);
 		$this->language       = new Language($config);
 
-		$layout_class    = $config->siteConfig()->layout_class;
-		$layout_template = $config->siteConfig()->layout_template;
+		if ($this->show_admin_layout) {
+			$layout_class    = $config->siteConfig()->admin_layout_class;
+			$layout_template = $config->siteConfig()->admin_layout_template;
+		}
+		else {
+			$layout_class    = $config->siteConfig()->default_layout_class;
+			$layout_template = $config->siteConfig()->default_layout_template;
+		}
+
 		$this->layout    = new $layout_class($config, $database, $request, $response, $this->authentication, $this->language, $layout_template);
 	}
 

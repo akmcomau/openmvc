@@ -203,11 +203,6 @@ class URL {
 		throw new \Exception('TODO');
 	}
 
-	public function getInformationURL($page) {
-		$page = str_replace('_', '-', $page);
-		return $this->getURL('Root', 'page').'/'.$page;
-	}
-
 	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';

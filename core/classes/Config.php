@@ -43,12 +43,12 @@ class Config {
 		}
 	}
 
-	public function getDomain() {
-		return $this->site_domain;
-	}
-
 	public function siteConfig() {
 		return $this->sites->{$this->site_domain};
+	}
+
+	public function getSiteDomain() {
+		return $this->site_domain;
 	}
 
 	public function setSiteDomain($host) {

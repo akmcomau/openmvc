@@ -2,6 +2,7 @@
 
 namespace core\classes;
 
+use core\classes\models\Administrator;
 use core\classes\models\Customer;
 use core\classes\exceptions\AuthenticationException;
 
@@ -45,7 +46,7 @@ class Authentication {
 	}
 
 	public function administratorLoggedIn() {
-		if ($this->logged_in && $this->getAministratorID()) {
+		if ($this->logged_in && $this->getAdministratorID()) {
 			return TRUE;
 		}
 		return FALSE;
@@ -58,7 +59,7 @@ class Authentication {
 		return NULL;
 	}
 
-	public function getAministratorID() {
+	public function getAdministratorID() {
 		if (isset($this->administrator_data['administrator_id'])) {
 			return $this->administrator_data['administrator_id'];
 		}
@@ -80,6 +81,21 @@ class Authentication {
 		return TRUE;
 	}
 
+	public function loginAdministrator(Administrator $admin) {
+		if ($this->administratorLoggedIn()) {
+			$this->logger->info("Administrator already logged in, logging out: ".$this->getAdministratorID());
+			$this->logoutAdministrator();
+		}
+		if (!$admin->id) {
+			throw new AuthenticationException("Cannot login a administrator with no admin_id");
+		}
+		$this->logged_in = TRUE;
+		$this->request->session->set(['authentication', 'administrator'], $admin->getRecord());
+		$this->administrator_data = $admin->getRecord();
+		$this->logger->info("Administrator logged in: ".$this->getAdministratorID());
+		return TRUE;
+	}
+
 	public function logout() {
 		$auth = $this->request->session->delete('authentication');
 		$this->logged_in = FALSE;
@@ -88,7 +104,13 @@ class Authentication {
 	}
 
 	public function logoutCustomer() {
-		$auth = $this->request->session->delete('authentication');
+		$auth = $this->request->session->delete(['authentication', 'customer']);
+		$this->logged_in = $this->administratorLoggedIn();
+		$this->customer_data  = NULL;
+	}
+
+	public function logoutAdministrator() {
+		$auth = $this->request->session->delete(['authentication', 'administrator']);
 		$this->logged_in = $this->administratorLoggedIn();
 		$this->customer_data  = NULL;
 	}

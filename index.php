@@ -14,6 +14,7 @@ $display_errors = TRUE;
 $script_start = microtime(TRUE);
 
 function log_display_exception($display_error, $logger, $ex) {
+	global $config;
 	$logger->error("Error during dispatch: $ex");
 	if ($display_error) {
 		?>
@@ -24,7 +25,8 @@ function log_display_exception($display_error, $logger, $ex) {
 		<?php
 	}
 	else {
-		header("Location: /Error/error-500");
+		$url = new URL($config);
+		header("Location: ".$url->getURL('Error', 'error_500'));
 	}
 }
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
@@ -61,7 +63,7 @@ try {
 		$config->database->password
 	);
 	$request    = new Request($config, $database);
-	$logger->info('Start Request: '.json_encode($request->get_params));
+	$logger->info('Start Request: '.$config->getSiteDomain().' => '.json_encode($request->get_params));
 
 	$dispatcher = new Dispatcher($config, $database);
 	$response = $dispatcher->dispatch($request);

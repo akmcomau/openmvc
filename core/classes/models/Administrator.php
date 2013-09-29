@@ -3,6 +3,7 @@
 namespace core\classes\models;
 
 use core\classes\Model;
+use core\classes\Encryption;
 
 class Administrator extends Model {
 
@@ -61,7 +62,7 @@ class Administrator extends Model {
 		'administrator_token' => [
 			'data_type'      => 'text',
 			'data_length'    => '64',
-			'null_allowed'   => FALSE,
+			'null_allowed'   => TRUE,
 		],
 		'administrator_token_created' => [
 			'data_type'      => 'datetime',
@@ -80,5 +81,4 @@ class Administrator extends Model {
 		'administrator_login',
 		'administrator_email',
 	];
-
 }

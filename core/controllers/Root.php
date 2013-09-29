@@ -8,7 +8,7 @@ use core\classes\renderable\Controller;
 class Root extends Controller {
 
 	public function index() {
-		$template = $this->getTemplate('pages/information/homepage.php');
+		$template = $this->getTemplate('pages/homepage.php');
 		$this->response->setContent($template->render());
 	}
 
@@ -20,22 +20,22 @@ class Root extends Controller {
 
 		$page_name = str_replace('-', '_', $page_name);
 
-		$template = $this->getTemplate("pages/information/$page_name.php");
+		$template = $this->getTemplate("pages/misc/$page_name.php");
 		$this->response->setContent($template->render());
 	}
 
 	public function terms() {
-		$template = $this->getTemplate('pages/information/terms.php');
+		$template = $this->getTemplate('pages/terms.php');
 		$this->response->setContent($template->render());
 	}
 
 	public function privacy() {
-		$template = $this->getTemplate('pages/information/privacy.php');
+		$template = $this->getTemplate('pages/privacy.php');
 		$this->response->setContent($template->render());
 	}
 
 	public function aboutUs() {
-		$template = $this->getTemplate('pages/information/about_us.php');
+		$template = $this->getTemplate('pages/about_us.php');
 		$this->response->setContent($template->render());
 	}
 
@@ -75,7 +75,28 @@ class Root extends Controller {
 			'contact_us_email' => $site_params->email_addresses->contact_us,
 		];
 
-		$template = $this->getTemplate('pages/information/contact_us.php', $data);
+		$template = $this->getTemplate('pages/contact_us.php', $data);
+		$this->response->setContent($template->render());
+	}
+
+	public function error_401() {
+		$this->language->loadLanguageFile('error.php');
+		header("HTTP/1.1 401 Permission Denied");
+		$template = $this->getTemplate('pages/error_401.php');
+		$this->response->setContent($template->render());
+	}
+
+	public function error_404() {
+		$this->language->loadLanguageFile('error.php');
+		header("HTTP/1.1 404 Not Found");
+		$template = $this->getTemplate('pages/error_404.php');
+		$this->response->setContent($template->render());
+	}
+
+	public function error_500() {
+		$this->language->loadLanguageFile('error.php');
+		header("HTTP/1.1 500 Internal Server Error");
+		$template = $this->getTemplate('pages/error_500.php');
 		$this->response->setContent($template->render());
 	}
 }

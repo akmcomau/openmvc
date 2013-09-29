@@ -12,12 +12,12 @@ class Model {
 
 	protected $record = [];
 
-	protected $table        = NULL;
-	protected $primary_key  = NULL;
-	protected $columns      = NULL;
-	protected $indexes      = [];
-	protected $foreign_keys = [];
-	protected $uniques      = [];
+	protected $table          = NULL;
+	protected $primary_key    = NULL;
+	protected $columns        = NULL;
+	protected $indexes        = [];
+	protected $foreign_keys   = [];
+	protected $uniques        = [];
 
 	protected $available_models = [
 		'Address',
@@ -520,5 +520,28 @@ class Model {
 		}
 
 		return $type;
+	}
+
+	public function listAllModels() {
+		$site = $this->config->siteConfig();
+		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$base_core_path = $root_path.'core'.DS.'classes'.DS.'models'.DS;
+		$base_site_path = $root_path.'sites'.DS.$site->namespace.DS.'classes'.DS.'models'.DS;
+		$base_core_namespace = '\\core\\classes\\models\\';
+		$base_site_namespace = '\\sites\\'.$site->namespace.'\\classes\\models\\';
+
+		$models = [];
+		foreach (glob("$base_core_path*.php") as $filename) {
+			if (preg_match('/\/([\w]+).php$/', $filename, $matches)) {
+				$models[] = $base_core_namespace.$matches[1];
+			}
+		}
+		foreach (glob("$base_site_path*.php") as $filename) {
+			if (preg_match('/\/([\w]+).php$/', $filename, $matches)) {
+				$models[] = $base_site_namespace.$matches[1];
+			}
+		}
+
+		return $models;
 	}
 }
