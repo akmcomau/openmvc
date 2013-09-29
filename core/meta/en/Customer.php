@@ -1,7 +1,7 @@
 <?php
 
 $_URLS = [
-	'aliases' => ['en' => 'account'],
+	'aliases' => ['en' => 'customer'],
 	'methods' => [
 		'index' => [
 			'link_text' => ['en' => 'My Account'],

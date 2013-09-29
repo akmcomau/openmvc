@@ -10,7 +10,7 @@ use core\classes\FormValidator;
 use core\classes\renderable\Controller;
 use core\classes\Model;
 
-class Account extends Controller {
+class Customer extends Controller {
 
 	protected $permissions = [
 		'index' => ['customer'],
@@ -25,11 +25,14 @@ class Account extends Controller {
 	}
 
 	public function login() {
-		$this->language->loadLanguageFile('account.php');
+		if ($this->authentication->customerLoggedIn()) {
+			throw new RedirectException($this->url->getURL('Customer'));
+		}
+
+		$this->language->loadLanguageFile('customer.php');
 
 		$bcrypt_cost   = $this->config->siteConfig()->bcrypt_cost;
 		$model         = new Model($this->config, $this->database);
-		$form_register = $this->getRegisterForm();
 		$form_login    = $this->getLoginForm();
 
 		if ($form_login->validate()) {
@@ -39,29 +42,25 @@ class Account extends Controller {
 			]);
 			if ($customer && Encryption::bcrypt_verify($form_login->getValue('password'), $customer->password)) {
 				$this->authentication->loginCustomer($customer);
-				throw new RedirectException($this->url->getURL('Account'));
+				throw new RedirectException($this->url->getURL('Customer'));
 			}
 			else {
 				$form_login->addError('login-failed', $this->language->get('login_failed'));
 			}
 		}
 
-		$data = [
-			'register' => $form_register,
-			'login'    => $form_login,
-		];
+		$data = ['login' => $form_login];
 
-		$template = $this->getTemplate('pages/account/login.php', $data);
+		$template = $this->getTemplate('pages/customer/login.php', $data);
 		$this->response->setContent($template->render());
 	}
 
 	public function register() {
-		$this->language->loadLanguageFile('account.php');
+		$this->language->loadLanguageFile('customer.php');
 
 		$bcrypt_cost   = $this->config->siteConfig()->bcrypt_cost;
 		$model         = new Model($this->config, $this->database);
 		$form_register = $this->getRegisterForm();
-		$form_login    = $this->getLoginForm();
 
 		if ($form_register->validate()) {
 			$customer = $model->getModel('core\classes\models\Customer');
@@ -77,12 +76,9 @@ class Account extends Controller {
 			throw new RedirectException($this->url->getURL('Account'));
 		}
 
-		$data = [
-			'register' => $form_register,
-			'login'    => $form_login,
-		];
+		$data = ['register' => $form_register];
 
-		$template = $this->getTemplate('pages/account/login.php', $data);
+		$template = $this->getTemplate('pages/customer/register.php', $data);
 		$this->response->setContent($template->render());
 	}
 

@@ -40,6 +40,10 @@ class URL {
 					$url_config[$controller] = $_URLS;
 				}
 			}
+
+			if (!isset($url_config[$controller])) {
+				$url_config[$controller] = ['aliases' => [], 'methods' => []];
+			}
 		}
 
 		$this->url_map = ['reverse' => ['controllers'=>[], 'methods'=>[]]];
@@ -65,27 +69,47 @@ class URL {
 		$site = $this->config->siteConfig();
 		$site_controllers = [];
 		$core_controllers = [];
-
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
-		$core_path = $root_path.'core'.DS.'controllers'.DS;
-		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'controllers'.DS;
+		$base_core_path = $root_path.'core'.DS.'controllers'.DS;
+		$base_site_path = $root_path.'sites'.DS.$site->namespace.DS.'controllers'.DS;
 
-		foreach (glob("$site_path*.php") as $filename) {
-			if (preg_match('/\/([\w]+)\.php$/', $filename, $matches)) {
-				$site_controllers[$matches[1]] = '\\sites\\'.$site->namespace.'\\controllers\\'.$matches[1];
+		$dirs = [''];
+		foreach (glob("$base_core_path*", GLOB_ONLYDIR) as $dir) {
+			if (preg_match('/\/([\w]+)$/', $dir, $matches)) {
+				$dirs[] = $matches[1];
+			}
+		}
+		foreach (glob("$base_site_path*", GLOB_ONLYDIR) as $dir) {
+			if (preg_match('/\/([\w]+)$/', $dir, $matches)) {
+				if (!in_array($matches[1])) {
+					$dirs[] = $matches[1];
+				}
 			}
 		}
 
-		foreach (glob("$core_path*.php") as $filename) {
-			if (preg_match('/\/([\w]+)\.php$/', $filename, $matches)) {
-				$core_controllers[$matches[1]] = '\\core\\controllers\\'.$matches[1];
-			}
-		}
+		foreach ($dirs as $prefix) {
+			$path_prefix = $prefix == '' ? '' : $prefix.DS;
+			$class_prefix = $prefix == '' ? '' : $prefix.'\\';
+			$core_path = $base_core_path.$path_prefix;
+			$site_path = $base_site_path.$path_prefix;
 
-		$controllers = $site_controllers;
-		foreach ($core_controllers as $controller => $class) {
-			if (!isset($controllers[$controller])) {
-				$controllers[$controller] = $class;
+			foreach (glob("$site_path*.php") as $filename) {
+				if (preg_match('/\/([\w]+)\.php$/', $filename, $matches)) {
+					$site_controllers[$class_prefix.$matches[1]] = '\\sites\\'.$site->namespace.'\\controllers\\'.$class_prefix.$matches[1];
+				}
+			}
+
+			foreach (glob("$core_path*.php") as $filename) {
+				if (preg_match('/\/([\w]+)\.php$/', $filename, $matches)) {
+					$core_controllers[$class_prefix.$matches[1]] = '\\core\\controllers\\'.$class_prefix.$matches[1];
+				}
+			}
+
+			$controllers = $site_controllers;
+			foreach ($core_controllers as $controller => $class) {
+				if (!isset($controllers[$controller])) {
+					$controllers[$controller] = $class;
+				}
 			}
 		}
 
@@ -114,9 +138,14 @@ class URL {
 	}
 
 	public function getMethodMetaTags($controller_name = NULL, $method_name = NULL) {
-		if (!$controller_name) $controller_name = 'Information';
+		$meta_tags = [];
+		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
-		$meta_tags = $this->url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'];
+
+		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'])) {
+			$meta_tags = $this->url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'];
+		}
+
 		if (!isset($meta_tags['title'])) {
 			if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
 				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language].' | '.$this->config->siteConfig()->name;
@@ -130,11 +159,11 @@ class URL {
 	}
 
 	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
-		if (!$controller_name) $controller_name = 'Information';
+		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 		if (!$params)          $params          = [];
 
-		if ($controller_name == 'Information' && $method_name == 'index' && count($params) == 0) {
+		if ($controller_name == 'Root' && $method_name == 'index' && count($params) == 0) {
 			return '/';
 		}
 
@@ -145,6 +174,8 @@ class URL {
 		if (strlen($params_string) > 0) $params_string = substr($params_string, 0, -1);
 
 		// seo the url
+		$orig_method = $method_name;
+		$orig_controller = $controller_name;
 		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language])) {
 			$method_name = $this->url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language];
 		}
@@ -152,12 +183,18 @@ class URL {
 			$controller_name = $this->url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language];
 		}
 
-		$url = '/'.$controller_name;
-		if ($method_name != 'index' || count($params) > 0) {
-			$url .= '/'.$method_name;
+		$url = '/';
+		if ($orig_controller != 'Root') {
+			$url .= $controller_name.'/';
+		}
+		if ($orig_method != 'index' || count($params) > 0) {
+			$url .= $method_name.'/';
 		}
 		if (count($params) > 0) {
-			$url .= '/'.$params_string;
+			$url .= $params_string;
+		}
+		if (preg_match('/\/$/', $url)) {
+			$url = substr($url, 0, -1);
 		}
 		return $url;
 	}
@@ -168,11 +205,11 @@ class URL {
 
 	public function getInformationURL($page) {
 		$page = str_replace('_', '-', $page);
-		return $this->getURL('Information', 'page').'/'.$page;
+		return $this->getURL('Root', 'page').'/'.$page;
 	}
 
 	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL) {
-		if (!$controller_name) $controller_name = 'Information';
+		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 		$url = $this->getURL($controller_name, $method_name, $params);
 		$text = '!!NO LINK TEXT!!';

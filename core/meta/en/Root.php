@@ -1,7 +1,7 @@
 <?php
 
 $_URLS = [
-	'aliases' => ['en' => 'info'],
+	'aliases' => ['en' => 'root'],
 	'methods' => [
 		'index' => [
 			'link_text' => ['en' => 'Home'],

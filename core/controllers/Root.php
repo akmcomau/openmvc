@@ -5,7 +5,7 @@ namespace core\controllers;
 use core\classes\exceptions\RedirectException;
 use core\classes\renderable\Controller;
 
-class Information extends Controller {
+class Root extends Controller {
 
 	public function index() {
 		$template = $this->getTemplate('pages/information/homepage.php');

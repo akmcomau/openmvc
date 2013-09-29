@@ -58,8 +58,8 @@
 					<div class="collapse navbar-collapse navbar-ex1-collapse">
 						<ul class="nav navbar-nav main-menu">
 							<li><?php echo $this->url->getLink('menu-item'); ?></li>
-							<li><?php echo $this->url->getLink('menu-item', 'Information', 'aboutUs'); ?></li>
-							<li><?php echo $this->url->getLink('menu-item', 'Information', 'contactUs'); ?></li>
+							<li><?php echo $this->url->getLink('menu-item', 'Root', 'aboutUs'); ?></li>
+							<li><?php echo $this->url->getLink('menu-item', 'Root', 'contactUs'); ?></li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Products <b class="caret"></b></a>
 								<ul class="dropdown-menu">
@@ -72,13 +72,13 @@
 						</ul>
 						<?php if ($logged_in) { ?>
 							<ul class="nav navbar-nav navbar-right main-menu">
-								<li><?php echo $this->url->getLink('menu-item', 'Account'); ?></li>
-								<li><?php echo $this->url->getLink('menu-item', 'Account', 'logout'); ?></li>
+								<li><?php echo $this->url->getLink('menu-item', 'Customer'); ?></li>
+								<li><?php echo $this->url->getLink('menu-item', 'Customer', 'logout'); ?></li>
 							</ul>
 						<?php } else { ?>
 							<ul class="nav navbar-nav navbar-right main-menu">
-								<li><?php echo $this->url->getLink('menu-item', 'Account', 'register'); ?></li>
-								<li><?php echo $this->url->getLink('menu-item', 'Account', 'login'); ?></li>
+								<li><?php echo $this->url->getLink('menu-item', 'Customer', 'register'); ?></li>
+								<li><?php echo $this->url->getLink('menu-item', 'Customer', 'login'); ?></li>
 							</ul>
 						<?php } ?>
 					</div>
@@ -97,7 +97,7 @@
 				<div class="row">
 					<div class="col-md-4 col">
 						<div class="block contact-block">
-							<h3><?php echo $this->url->getLink('', 'Information', 'contactUs'); ?></h3>
+							<h3><?php echo $this->url->getLink('', 'Root', 'contactUs'); ?></h3>
 							<address>
 								<p><abbr title="Phone"><i class="icon-phone"></i></abbr> <?php echo $text_footer_phone; ?></p>
 								<p><abbr title="Email"><i class="icon-envelope"></i></abbr> <?php echo $this->config->siteConfig()->email_addresses->contact_us; ?></p>
@@ -106,7 +106,7 @@
 					</div>
 					<div class="col-md-5 col">
 						<div class="block">
-							<h3><?php echo $this->url->getLink('', 'Information', 'aboutUs'); ?></h3>
+							<h3><?php echo $this->url->getLink('', 'Root', 'aboutUs'); ?></h3>
 							<p><?php echo $text_footer_about; ?></p>
 						</div>
 					</div>
@@ -118,9 +118,9 @@
 						<a href="#"><i class="icon-google-plus"></i></a> </div>
 
 						<ul class="list-inline align-center">
-							<li><?php echo $this->url->getLink('', 'Information', 'terms'); ?></li>
-							<li><?php echo $this->url->getLink('', 'Information', 'privacy'); ?></li>
-							<li><?php echo $this->url->getLink('', 'Information', 'contactUs'); ?></li>
+							<li><?php echo $this->url->getLink('', 'Root', 'terms'); ?></li>
+							<li><?php echo $this->url->getLink('', 'Root', 'privacy'); ?></li>
+							<li><?php echo $this->url->getLink('', 'Root', 'contactUs'); ?></li>
 						</ul>
 					</div>
 				</div>

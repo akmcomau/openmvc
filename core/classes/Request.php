@@ -55,7 +55,11 @@ class Request {
 		return $this->method_params;
 	}
 
-	public function getParam($name) {
+	public function getParam($name, $value = NULL) {
+		if ($value) {
+			$this->get_params[$name] = $value;
+		}
+
 		if (isset($this->get_params[$name])) {
 			return $this->get_params[$name];
 		}
@@ -64,7 +68,11 @@ class Request {
 		}
 	}
 
-	public function postParam($name) {
+	public function postParam($name, $value = NULL) {
+		if ($value) {
+			$this->post_params[$name] = $value;
+		}
+
 		if (isset($this->post_params[$name])) {
 			return $this->post_params[$name];
 		}
@@ -73,7 +81,11 @@ class Request {
 		}
 	}
 
-	public function requestParam($name) {
+	public function requestParam($name, $value = NULL) {
+		if ($value) {
+			$this->request_params[$name] = $value;
+		}
+
 		if (isset($this->request_params[$name])) {
 			return $this->request_params[$name];
 		}

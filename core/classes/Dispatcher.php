@@ -39,7 +39,7 @@ class Dispatcher {
 		$controller_class = $request->getControllerClass();
 
 		if (!$controller_class) {
-			$this->logger->debug("Controller Not found");
+			$this->logger->debug("Controller Not found: ".$request->getParam('controller'));
 			$request->setControllerClass('\\core\\controllers\\Error');
 			$request->setMethodName('error_404');
 			return $this->dispatchRequest($request);
@@ -58,12 +58,16 @@ class Dispatcher {
 
 		// check permissions
 		if (isset($controller->getPermissions()[$method_name])) {
-			$authenticated = FALSE;
+			$authenticated    = FALSE;
+			$login_controller = NULL;
 			foreach ($controller->getPermissions()[$method_name] as $auth_type) {
 				switch ($auth_type) {
 					case 'administrator':
 						if ($controller->getAuthentication()->administratorLoggedIn()) {
 							$authenticated = TRUE;
+						}
+						elseif (empty($login_controller)) {
+							$login_controller = 'Administrator';
 						}
 						break;
 
@@ -71,11 +75,14 @@ class Dispatcher {
 						if ($controller->getAuthentication()->customerLoggedIn()) {
 							$authenticated = TRUE;
 						}
+						elseif (empty($login_controller)) {
+							$login_controller = 'Customer';
+						}
 						break;
 				}
 			}
 			if (!$authenticated) {
-				throw new RedirectException($this->url->getURL('Account', 'login'));
+				throw new RedirectException($this->url->getURL($login_controller, 'login'));
 			}
 		}
 
@@ -106,12 +113,46 @@ class Dispatcher {
 		$site = $this->config->siteConfig();
 		if ($request->getParam('controller')) {
 			$controller = $request->getParam('controller');
+			$controller_parts = explode('\\', $controller, 2);
 			$controller = $this->url->getControllerClassName($controller);
 			$controller = $this->url->getControllerClass($controller);
-			return $controller;
+
+			if (!empty($controller)) {
+				return $controller;
+			}
+			elseif (count($controller_parts) == 2) {
+				$controller = $controller_parts[0];
+				$controller = $this->url->getControllerClassName($controller);
+				$controller = $this->url->getControllerClass($controller);
+
+				$params = $request->getParam('method');
+				if ($request->getParam('params')) {
+					$params .= '/'.$request->getParam('params');
+				}
+				$request->getParam('params', $params);
+				$request->getParam('method', $controller_parts[1]);
+				$request->getParam('controller', $controller_parts[0]);
+
+				return $controller;
+			}
+			if (!empty($controller)) {
+				$root_class  = $this->url->getControllerClass('Root');
+				$root_method = $this->url->getMethodName($root_class, $request->getParam('controller'));
+				if ($root_method) {
+					$params = $request->getParam('method');
+					if ($request->getParam('params')) {
+						$params .= '/'.$request->getParam('params');
+					}
+					$request->getParam('params', $params);
+					$request->getParam('method', $request->getParam('controller'));
+					$request->getParam('controller', 'Root');
+					return $root_class;
+				}
+			}
+			return NULL;
 		}
 		else {
-			return '\\core\\controllers\\Information';
+			return '\\core\\controllers\\Root';
 		}
 	}
 
