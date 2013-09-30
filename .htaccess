@@ -19,10 +19,17 @@ DirectoryIndex index.php
 	RewriteCond %{DOCUMENT_ROOT}/$1/themes/$2 -f
 	RewriteRule ^(.*)/themes/(.*)$ $1/themes/$2 [PT,L]
 
+	# For the file manager
+	RewriteRule ^/?admin/scripts/filemanager.config.js$ /index.php?controller=admin\%5Cfile-manager&method=config [QSA,L]
+	RewriteRule ^/?admin/connectors/php/filemanager.php$ /index.php?controller=admin\%5Cfile-manager&method=rpc [QSA,L]
+	RewriteRule ^/?admin/scripts/filemanager.liveSearch.min.js$ /core/themes/default/js/file_manager/filemanager.liveSearch.min.js [QSA,L]
+	RewriteRule ^/?admin/scripts/languages/en.js$ /core/themes/default/js/file_manager/languages/en.js [QSA,L]
+
 	# Rewrite controller methods to index.php
 	RewriteRule ^/?admin/([^/]+)(/([^/]+))?(/(.*))?$ /index.php?controller=admin\%5C$1&method=$3&params=$5 [QSA,L]
 	RewriteRule ^/?customer/([^/]+)(/([^/]+))?(/(.*))?$ /index.php?controller=customer\%5C$1&method=$3&params=$5 [QSA,L]
 	RewriteCond %{REQUEST_URI} !^/?index.php
 	RewriteCond %{REQUEST_URI} !^/?google.*html
+	RewriteCond %{REQUEST_URI} !^/?composer
 	RewriteRule ^/?([^/]+)(/([^/]+))?(/(.*))?$ /index.php?controller=$1&method=$3&params=$5 [QSA,L]
 </IfModule>

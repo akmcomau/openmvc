@@ -4,7 +4,7 @@ update-composer:
 
 # update dependancies
 update-depends:
-	cd composer && php composer.phar install;
+	cd composer && php composer.phar install && php composer.phar update;
 
 # update dependancies
 create-database:

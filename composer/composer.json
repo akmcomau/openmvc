@@ -1,5 +1,45 @@
 {
+	"repositories": [
+		{
+			"type":"package",
+			"package": {
+				"name": "simogeo/Filemanager",
+				"version":"v1.0",
+				"source": {
+					"url": "https://github.com/simogeo/Filemanager.git",
+					"type": "git",
+					"reference":"master"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "ckeditor/ckeditor",
+				"version": "4.2.1",
+				"dist": {
+					"url": "http://download.cksource.com/CKEditor/CKEditor/CKEditor%204.2.1/ckeditor_4.2.1_standard.zip",
+					"type": "zip"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "spekkionu/wideimage",
+				"version":"11.02.19",
+				"source": {
+					"url": "https://github.com/spekkionu/wideimage.git",
+					"type": "git",
+					"reference":"master"
+				}
+			}
+		}
+	],
 	"require": {
-		"apache/log4php": "2.3.0"
+		"apache/log4php": "2.3.0",
+		"simogeo/Filemanager": "v1.0",
+		"ckeditor/ckeditor": "4.2.1",
+		"spekkionu/wideimage": "11.02.19"
 	}
 }

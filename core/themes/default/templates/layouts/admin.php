@@ -8,7 +8,6 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/bootstrap.min.css" rel="stylesheet" media="screen" />
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/bootstrap.min.js"></script>
 
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font_awesome.min.css" rel="stylesheet" media="screen" />

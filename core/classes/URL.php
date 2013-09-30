@@ -50,6 +50,7 @@ class URL {
 		foreach ($url_config as $controller => $data) {
 			$this->url_map['forward'][$controller] = $data;
 
+			$this->url_map['reverse']['controllers'][$controller] = $controller;
 			foreach ($data['aliases'] as $language => $alias) {
 				$this->url_map['reverse']['controllers'][$alias] = $controller;
 			}
@@ -151,7 +152,7 @@ class URL {
 
 		if (!isset($meta_tags['title'])) {
 			if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
-				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language].' | '.$this->config->siteConfig()->name;
+				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language].' :: '.$this->config->siteConfig()->name;
 			}
 			else {
 				$meta_tags['title'] = $this->config->siteConfig()->name;
