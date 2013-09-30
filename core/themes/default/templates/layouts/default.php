@@ -3,15 +3,21 @@
 <head>
 	<title><?php echo $meta_tags['title']; ?></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/bootstrap.min.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/navigation.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/colour_blue.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/theme.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font-awesome.min.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font-awesome-ie7.min.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font_awesome.min.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font_awesome_ie7.min.css" rel="stylesheet" media="screen" />
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/bootstrap.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
+	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 
 	<link rel="shortcut icon" href="/core/themes/default/images/favicon.ico" />
 	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/core/themes/default/images/icon_logo_114.gif" />

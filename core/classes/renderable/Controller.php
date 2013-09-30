@@ -44,7 +44,14 @@ class Controller extends Renderable {
 			$layout_template = $config->siteConfig()->default_layout_template;
 		}
 
-		$this->layout    = new $layout_class($config, $database, $request, $response, $this->authentication, $this->language, $layout_template);
+		$this->layout = new $layout_class($config, $database, $request, $response, $this->authentication, $this->language, $layout_template);
+
+		if ($this->show_admin_layout) {
+			$this->layout->loadLanguageFile('admin/layout.php');
+		}
+		else {
+			$this->layout->loadLanguageFile('layout.php');
+		}
 	}
 
 	public function getRequest() {

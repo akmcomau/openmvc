@@ -34,12 +34,16 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 }
 function shutdown_error_handler() {
 	global $display_errors;
+	global $script_start;
+
+	$logger = Logger::getLogger('');
 	$error = error_get_last();
 	if ($error) {
 		$ex = new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']);
-		$logger = Logger::getLogger('');
 		log_display_exception($display_errors, $logger, $ex);
 	}
+	$script_time = number_format(microtime(TRUE) - $script_start, 6);
+	$logger->info("End Request: $script_time");
 }
 set_error_handler("exception_error_handler");
 register_shutdown_function("shutdown_error_handler");
@@ -70,9 +74,6 @@ try {
 
 	$response->sendHeaders();
 	$response->sendContent();
-
-	$script_time = number_format(microtime(TRUE) - $script_start, 6);
-	$logger->info("End Request: $script_time");
 }
 catch (RedirectException $ex) {
 	$logger->info($ex->getMessage());

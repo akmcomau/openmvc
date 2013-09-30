@@ -53,6 +53,16 @@ class Administrator extends Controller {
 		$this->response->setContent($template->render());
 	}
 
+	public function account_settings() {
+		$template = $this->getTemplate('pages/not_implemented.php');
+		$this->response->setContent($template->render());
+	}
+
+	public function change_password() {
+		$template = $this->getTemplate('pages/not_implemented.php');
+		$this->response->setContent($template->render());
+	}
+
 	protected function getLoginForm() {
 		$inputs = [
 			'username' => [

@@ -121,12 +121,15 @@ class URL {
 		$language = $site->language;
 		$theme = $site->theme;
 
+		$controller = str_replace('\\', DS, $controller);
+
 		$filename = $controller.'.php';
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
 		$default_path = 'core'.DS.'meta'.DS.$language.DS;
 		$default_file = $root_path.$default_path.$filename;
 		$site_path = 'sites'.DS.$site->namespace.DS.'meta'.DS.$language.DS;
 		$site_file = $root_path.$site_path.$filename;
+
 		if (file_exists($site_file)) {
 			return $site_file;
 		}
@@ -206,8 +209,11 @@ class URL {
 	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
+		$controller_name = str_replace('/', '\\', $controller_name);
+
 		$url = $this->getURL($controller_name, $method_name, $params);
-		$text = '!!NO LINK TEXT!!';
+		$text = $controller_name.'::'.$method_name;
+
 		try {
 			if ($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language]) {
 				$text = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
@@ -225,6 +231,7 @@ class URL {
 	}
 
 	public function getControllerClassName($controller) {
+		$controller = str_replace('\\', '/', $controller);
 		if (isset($this->url_map['reverse']['controllers'][$controller])) {
 			return $this->url_map['reverse']['controllers'][$controller];
 		}
@@ -232,6 +239,7 @@ class URL {
 	}
 
 	public function getMethodName($controller, $method) {
+		$controller = str_replace('\\', '/', $controller);
 		if (isset($this->url_map['reverse']['methods'][$controller][$method])) {
 			return $this->url_map['reverse']['methods'][$controller][$method];
 		}

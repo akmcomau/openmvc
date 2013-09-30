@@ -58,7 +58,6 @@ class Dispatcher {
 
 		// check permissions
 		$is_admin_required = FALSE;
-		$is_admin_logged_in = FALSE;
 		$is_customer_logged_in = FALSE;
 		if (isset($controller->getPermissions()[$method_name])) {
 			$authenticated    = FALSE;
@@ -68,7 +67,6 @@ class Dispatcher {
 					case 'administrator':
 						if ($controller->getAuthentication()->administratorLoggedIn()) {
 							$authenticated = TRUE;
-							$is_admin_logged_in = TRUE;
 							$is_admin_required = TRUE;
 						}
 						elseif (empty($login_controller)) {
@@ -92,7 +90,8 @@ class Dispatcher {
 			}
 		}
 
-		if (!($is_admin_required || $is_admin_logged_in)) {
+		$admin_class = $this->url->getControllerClass('Administrator');
+		if (!($is_admin_required || $controller->getAuthentication()->administratorLoggedIn()) && !($method_name == 'login' && $controller_class == $admin_class)) {
 			if ($this->config->siteConfig()->site_offline_mode) {
 				$template = $controller->getTemplate('pages/site_offline.php');
 				$response->setContent($template->render());

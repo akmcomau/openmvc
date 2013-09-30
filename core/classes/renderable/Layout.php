@@ -32,8 +32,11 @@ class Layout extends Renderable {
 		$this->authentication = $auth;
 	}
 
+	public function loadLanguageFile($filename) {
+		$this->language->loadLanguageFile($filename);
+	}
+
 	public function render() {
-		$this->language->loadLanguageFile('layout.php');
 		$data = [
 			'meta_tags'               => $this->meta_tags,
 			'page_content'            => $this->response->getContent(),
