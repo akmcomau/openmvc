@@ -17,6 +17,8 @@ class Customer extends Controller {
 	];
 
 	public function index() {
+		$template = $this->getTemplate('pages/not_implemented.php');
+		$this->response->setContent($template->render());
 	}
 
 	public function logout() {
@@ -73,12 +75,22 @@ class Customer extends Controller {
 			$customer->insert();
 
 			$this->authentication->loginCustomer($customer);
-			throw new RedirectException($this->url->getURL('Account'));
+			throw new RedirectException($this->url->getURL('Customer'));
 		}
 
 		$data = ['register' => $form_register];
 
 		$template = $this->getTemplate('pages/customer/register.php', $data);
+		$this->response->setContent($template->render());
+	}
+
+	public function contact_details() {
+		$template = $this->getTemplate('pages/not_implemented.php');
+		$this->response->setContent($template->render());
+	}
+
+	public function change_password() {
+		$template = $this->getTemplate('pages/not_implemented.php');
 		$this->response->setContent($template->render());
 	}
 

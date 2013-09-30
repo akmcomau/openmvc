@@ -8,9 +8,11 @@
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/bootstrap.min.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/navigation.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/colour_blue.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/common.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/theme.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font_awesome.min.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font_awesome_ie7.min.css" rel="stylesheet" media="screen" />
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet" />
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/bootstrap.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
@@ -78,7 +80,16 @@
 						</ul>
 						<?php if ($logged_in) { ?>
 							<ul class="nav navbar-nav navbar-right main-menu">
-								<li><?php echo $this->url->getLink('menu-item', 'Customer'); ?></li>
+								<li class="dropdown">
+												  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $text_my_account; ?><b class="caret"></b></a>
+									<ul class="dropdown-menu">
+										<li><?php echo $this->url->getLink('menu-item', 'Customer'); ?></li>
+										<li><?php echo $this->url->getLink('menu-item', 'Customer', 'contact_details'); ?></li>
+										<li><?php echo $this->url->getLink('menu-item', 'Customer', 'change_password'); ?></li>
+										<li class="divider"></li>
+										<li><?php echo $this->url->getLink('menu-item', 'customer/Orders'); ?></li>
+									</ul>
+								</li>
 								<li><?php echo $this->url->getLink('menu-item', 'Customer', 'logout'); ?></li>
 							</ul>
 						<?php } else { ?>

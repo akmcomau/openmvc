@@ -53,7 +53,7 @@ class Administrator extends Controller {
 		$this->response->setContent($template->render());
 	}
 
-	public function account_settings() {
+	public function account_details() {
 		$template = $this->getTemplate('pages/not_implemented.php');
 		$this->response->setContent($template->render());
 	}

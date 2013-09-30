@@ -18,6 +18,7 @@
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin_responsive.css" rel="stylesheet" />
     <link href="<?php echo $static_prefix; ?>/core/themes/default/css/jquery_ui.css" rel="stylesheet">
 
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/common.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin_theme.css" rel="stylesheet" media="screen" />
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
@@ -61,7 +62,7 @@
 								<b class="caret"></b>
 							</a>
 							<ul class="dropdown-menu">
-								<li><?php echo $this->url->getLink('', 'Administrator', 'account_settings'); ?></li>
+								<li><?php echo $this->url->getLink('', 'Administrator', 'account_details'); ?></li>
 								<li><?php echo $this->url->getLink('', 'Administrator', 'change_password'); ?></li>
 								<li class="divider"></li>
 								<li><?php echo $this->url->getLink('', 'Administrator', 'logout'); ?></li>
