@@ -15,7 +15,7 @@ class Root extends Controller {
 	public function page($page_name = NULL) {
 		// go to homepage if there is no page
 		if (!$page_name) {
-			throw new RedirectException($this->request->getURL());
+			throw new SoftRedirectException(__CLASS__, 'error_404');
 		}
 
 		$page_name = str_replace('-', '_', $page_name);

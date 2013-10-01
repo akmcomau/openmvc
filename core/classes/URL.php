@@ -177,6 +177,8 @@ class URL {
 		}
 		if (strlen($params_string) > 0) $params_string = substr($params_string, 0, -1);
 
+		$controller_name = str_replace('/', '\\', $controller_name);
+
 		// seo the url
 		$orig_method = $method_name;
 		$orig_controller = $controller_name;
@@ -210,7 +212,6 @@ class URL {
 	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
-		$controller_name = str_replace('/', '\\', $controller_name);
 
 		$url = $this->getURL($controller_name, $method_name, $params);
 		$text = $controller_name.'::'.$method_name;

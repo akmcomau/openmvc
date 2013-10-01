@@ -2,6 +2,7 @@
 
 namespace core\classes;
 
+use core\classes\exceptions\RedirectException;
 use ErrorException;
 
 class Config {
@@ -51,10 +52,19 @@ class Config {
 		return $this->site_domain;
 	}
 
+	public function getSiteURL() {
+		return 'http://www.'.$this->site_domain;
+	}
+
 	public function setSiteDomain($host) {
 		$sites = $this->sites;
 		foreach ($sites as $domain => $site) {
-			if ($domain == $host || 'www.'.$domain == $host) {
+			if ($domain == $host) {
+				$this->site_domain = $domain;
+				header('Location: '.$this->getSiteURL());
+				exit;
+			}
+			elseif ('www.'.$domain == $host) {
 				$this->site_domain = $domain;
 				return;
 			}

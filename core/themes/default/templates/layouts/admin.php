@@ -49,11 +49,12 @@
 					<span class="sr-only">Toggle navigation</span>
 					<i class="icon-cog"></i>
 				</button>
-				<a class="navbar-brand" href="<?php echo $this->getURL('Administrator');?>"><?php echo $this->config->siteConfig()->name; ?></a>
+				<a class="navbar-brand" href="<?php echo $this->url->getURL('Administrator');?>"><?php echo $this->config->siteConfig()->name; ?></a>
 			</div>
 			<?php if ($logged_in) { ?>
 				<div class="collapse navbar-collapse navbar-ex1-collapse">
 					<ul class="nav navbar-nav navbar-right">
+						<li><a href="<?php echo $this->url->getURL();?>"><i class="icon-home"></i> Public Site</a></li>
 						<li class="dropdown">
 							<a href="javscript:;" class="dropdown-toggle" data-toggle="dropdown">
 								<i class="icon-user"></i>
@@ -84,7 +85,7 @@
 					<div class="collapse subnav-collapse">
 						<ul class="mainnav">
 							<li class="active">
-								<a href="<?php echo $this->getURL('Administrator');?>">
+								<a href="<?php echo $this->url->getURL('Administrator');?>">
 									<i class="icon-home"></i>
 									<span><?php echo $text_home; ?></span>
 								</a>

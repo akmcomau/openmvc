@@ -31,6 +31,27 @@
 	} ?>
 </head>
 <body>
+<?php if ($administrator_logged_in) { ?>
+	<nav class="navbar navbar-inverse" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex2-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<i class="icon-cog"></i>
+				</button>
+				<a class="navbar-brand" href="<?php echo $this->url->getURL('Administrator');?>"><?php echo $text_administrator_panel; ?></a>
+			</div>
+			<div class="collapse navbar-collapse navbar-ex1-collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="<?php echo $this->url->getURL('Administrator');?>"><i class="icon-cog"></i> <?php echo $text_admin_site; ?></a></li>
+					<li><a href="<?php echo $this->url->getURL('administrator/LanguageEditor');?>"><i class="icon-copy"></i> <?php echo $text_admin_language; ?></a></li>
+					<li><a href="<?php echo $this->url->getURL('administrator/MetaData');?>"><i class="icon-anchor"></i> <?php echo $text_admin_meta_data; ?></a></li>
+					<li><a href="<?php echo $this->url->getURL('Administrator', 'logout');?>"><i class="icon-user"></i> <?php echo $text_admin_logout; ?></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+<?php } ?>
 <div id="navigation" class="wrapper">
 	<div class="navbar  navbar-static-top">
 		<div class="header">
@@ -78,7 +99,7 @@
 							<li class="visible-xs"><?php echo $this->url->getLink('menu-item', 'Cart'); ?></li>
 							<li><?php echo $this->url->getLink('menu-item', 'Checkout'); ?></li>
 						</ul>
-						<?php if ($logged_in) { ?>
+						<?php if ($customer_logged_in) { ?>
 							<ul class="nav navbar-nav navbar-right main-menu">
 								<li class="dropdown">
 												  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $text_my_account; ?><b class="caret"></b></a>

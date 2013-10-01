@@ -2,6 +2,11 @@
 
 $_LANGUAGE = [
 	'shopping_cart' => 'Shopping Cart',
+	'administrator_panel' => 'Administrator Panel',
+	'admin_site' => 'Admin',
+	'admin_language' => 'Language',
+	'admin_meta_data' => 'Meta Data',
+	'admin_logout' => 'Logout',
 	'search' => 'Search',
 	'search_button' => 'Search',
 	'my_account' => 'My Account',

@@ -46,6 +46,7 @@ class Template {
 		$filename = $this->getAbsoluteFilename();
 
 		// default data for the template
+		$this->data['site_url'] = $this->config->getSiteURL();
 		$this->data['static_prefix'] = '/'.$this->config->siteConfig()->static_prefix;
 		extract($this->data);
 
@@ -83,17 +84,5 @@ class Template {
 		else {
 			throw new TemplateException("Could not find template file: {$this->filename}");
 		}
-	}
-
-	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
-		return $this->url->getURL($controller_name, $method_name, $params);
-	}
-
-	public function getSecureURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
-		return $this->url->getSecureURL($controller_name, $method_name, $params);
-	}
-
-	public function getInformationURL($page) {
-		return $this->url->getInformationURL($page);
 	}
 }

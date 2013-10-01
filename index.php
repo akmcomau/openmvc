@@ -55,10 +55,11 @@ Logger::init();
 $logger = Logger::getLogger('');
 $config = new Config();
 
-$config->setSiteDomain($_SERVER['HTTP_HOST']);
-$display_errors = $config->siteConfig()->display_errors;
-
 try {
+	$logger->info($_SERVER['HTTP_HOST']);
+	$config->setSiteDomain($_SERVER['HTTP_HOST']);
+	$display_errors = $config->siteConfig()->display_errors;
+
 	$database   = new Database(
 		$config->database->engine,
 		$config->database->hostname,

@@ -41,6 +41,9 @@
 		<li class="delete separator"><a href="#delete"></a></li>
 	</ul>
 
+	<script type="text/javascript">
+		var file_manager_site_url = '<?php echo $site_url; ?>';
+	</script>
 	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.form.js"></script>
 	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.splitter/jquery.splitter.js"></script>
 	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.filetree/jqueryFileTree.js"></script>
