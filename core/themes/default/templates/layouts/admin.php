@@ -98,15 +98,14 @@
 								</a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-submenu">
-										<a href="javascript:;"><?php echo $text_pages; ?></a>
+										<a href="<?php echo $this->url->getURL('administrator/Pages');?>"><?php echo $text_pages; ?></a>
 										<ul class="dropdown-menu">
 											<li><?php echo $this->url->getLink('', 'administrator/Pages');?></li>
-
-											<li><?php echo $this->url->getLink('', 'administrator/MetaData');?></li>
+											<li><?php echo $this->url->getLink('', 'administrator/Pages', 'add');?></li>
 											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'index', []);?></li>
 									</ul>
 									<li class="dropdown-submenu">
-										<a href="javascript:;"><?php echo $text_latex; ?></a>
+										<a href="<?php echo $this->url->getURL('administrator/Latex');?>"><?php echo $text_latex; ?></a>
 										<ul class="dropdown-menu">
 											<li><?php echo $this->url->getLink('', 'administrator/Latex');?></li>
 

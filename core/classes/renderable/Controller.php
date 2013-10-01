@@ -2,6 +2,8 @@
 
 namespace core\classes\renderable;
 
+use ReflectionClass;
+use ReflectionMethod;
 use core\classes\Authentication;
 use core\classes\Config;
 use core\classes\Database;
@@ -47,7 +49,7 @@ class Controller extends Renderable {
 		$this->layout = new $layout_class($config, $database, $request, $response, $this->authentication, $this->language, $layout_template);
 
 		if ($this->show_admin_layout) {
-			$this->layout->loadLanguageFile('admin/layout.php');
+			$this->layout->loadLanguageFile('administrator/layout.php');
 		}
 		else {
 			$this->layout->loadLanguageFile('layout.php');
@@ -80,5 +82,27 @@ class Controller extends Renderable {
 
 	public function render() {
 		// Nothing needed here
+	}
+
+	public function getAllMethods() {
+		$class = new ReflectionClass(__CLASS__);
+		$ignored = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+		$class = new ReflectionClass(get_class($this));
+		$methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+
+		$controller_methods = [];
+		foreach ($methods as $method) {
+			$ignore_method = FALSE;
+			foreach ($ignored as $ignore) {
+				if ($ignore->name == $method->name) {
+					$ignore_method = TRUE;
+				}
+			}
+			if (!$ignore_method) {
+				$controller_methods[] = $method->name;
+			}
+		}
+
+		return $controller_methods;
 	}
 }

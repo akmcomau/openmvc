@@ -46,7 +46,8 @@ class Dispatcher {
 		}
 		$controller = new $controller_class($this->config, $this->database, $request, $response);
 		$method_name = $request->getMethodName();
-		if (!method_exists($controller, $method_name)) {
+		$methods = $controller->getAllMethods();
+		if (!in_array($method_name, $methods)) {
 			$this->logger->debug("Method Not found: $controller_class::".$request->getMethodName());
 			$request->setControllerClass($this->url->getControllerClass('Root'));
 			$request->setMethodName('error_404');

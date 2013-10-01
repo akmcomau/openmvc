@@ -6,5 +6,8 @@ $_URLS = [
 		'index' => [
 			'link_text' => ['en' => 'Pages'],
 		],
+		'add' => [
+			'link_text' => ['en' => 'New Page'],
+		],
 	],
 ];

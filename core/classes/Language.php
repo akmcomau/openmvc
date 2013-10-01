@@ -2,10 +2,7 @@
 
 namespace core\classes;
 
-use core\classes\exceptions\SoftRedirectException;
-use core\classes\exceptions\AutoLoaderException;
-use core\classes\exceptions\DispatcherException;
-use core\classes\exceptions\RedirectException;
+use core\classes\exceptions\LanguageException;
 
 class Language {
 
@@ -56,7 +53,9 @@ class Language {
 			return $default_file;
 		}
 		else {
-			throw new TemplateException("Could not find language file: $filename");
+			print $theme_file."\n";
+			print $default_file;
+			throw new LanguageException("Could not find language file: $filename");
 		}
 	}
 }

@@ -13,6 +13,10 @@ class URL {
 		$this->generateUrlMap();
 	}
 
+	public function getUrlMap() {
+		return $this->url_map;
+	}
+
 	protected function generateUrlMap() {
 		$controllers = $this->listAllControllers();
 
@@ -66,7 +70,7 @@ class URL {
 		$this->url_map['controllers'] = $controllers;
 	}
 
-	protected function listAllControllers() {
+	public function listAllControllers() {
 		$site = $this->config->siteConfig();
 		$site_controllers = [];
 		$core_controllers = [];
@@ -141,7 +145,7 @@ class URL {
 		return NULL;
 	}
 
-	public function getMethodMetaTags($controller_name = NULL, $method_name = NULL) {
+	public function getMethodMetaTags($controller_name = NULL, $method_name = NULL, $postfix_site = TRUE) {
 		$meta_tags = [];
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
@@ -151,11 +155,18 @@ class URL {
 		}
 
 		if (!isset($meta_tags['title'])) {
+			$postfix = '';
+			if ($postfix_site) $postfix = ' :: '.$this->config->siteConfig()->name;
 			if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
-				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language].' :: '.$this->config->siteConfig()->name;
+				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language].$postfix;
 			}
 			else {
-				$meta_tags['title'] = $this->config->siteConfig()->name;
+				if ($postfix_site) {
+					$meta_tags['title'] = $this->config->siteConfig()->name;
+				}
+				else {
+					$meta_tags['title'] = '';
+				}
 			}
 		}
 
@@ -177,7 +188,9 @@ class URL {
 		}
 		if (strlen($params_string) > 0) $params_string = substr($params_string, 0, -1);
 
-		$controller_name = str_replace('/', '\\', $controller_name);
+		if (!isset($this->url_map['forward'][$controller_name])) {
+			$controller_name = str_replace('/', '\\', $controller_name);
+		}
 
 		// seo the url
 		$orig_method = $method_name;
@@ -216,6 +229,10 @@ class URL {
 		$url = $this->getURL($controller_name, $method_name, $params);
 		$text = $controller_name.'::'.$method_name;
 
+		if (!isset($this->url_map['forward'][$controller_name])) {
+			$controller_name = str_replace('/', '\\', $controller_name);
+		}
+
 		try {
 			if ($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language]) {
 				$text = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
@@ -223,6 +240,27 @@ class URL {
 		}
 		catch (ErrorException $ex) {}
 		return '<a class="'.$class.'" href="'.$url.'">'.$text.'</a>';
+	}
+
+	public function seoController($controller) {
+		if (!isset($this->url_map['forward'][$controller])) {
+			$controller = str_replace('/', '\\', $controller);
+		}
+		if (isset($this->url_map['forward'][$controller]['aliases'][$this->config->siteConfig()->language])) {
+			return $this->url_map['forward'][$controller]['aliases'][$this->config->siteConfig()->language];
+		}
+		$controller = str_replace('\\', '/', $controller);
+		return $controller;
+	}
+
+	public function seoMethod($controller, $method) {
+		if (!isset($this->url_map['forward'][$controller])) {
+			$controller = str_replace('/', '\\', $controller);
+		}
+		if (isset($this->url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
+			return $this->url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language];
+		}
+		return $method;
 	}
 
 	public function getControllerClass($controller) {
@@ -233,7 +271,9 @@ class URL {
 	}
 
 	public function getControllerClassName($controller) {
-		$controller = str_replace('\\', '/', $controller);
+		if (!isset($this->url_map['reverse']['controllers'][$controller])) {
+			$controller = str_replace('\\', '/', $controller);
+		}
 		if (isset($this->url_map['reverse']['controllers'][$controller])) {
 			return $this->url_map['reverse']['controllers'][$controller];
 		}
@@ -241,7 +281,9 @@ class URL {
 	}
 
 	public function getMethodName($controller, $method) {
-		$controller = str_replace('\\', '/', $controller);
+		if (!isset($this->url_map['reverse']['methods'][$controller][$method])) {
+			$controller = str_replace('\\', '/', $controller);
+		}
 		if (isset($this->url_map['reverse']['methods'][$controller][$method])) {
 			return $this->url_map['reverse']['methods'][$controller][$method];
 		}
