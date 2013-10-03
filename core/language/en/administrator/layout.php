@@ -11,10 +11,5 @@ $_LANGUAGE = [
 	'content' => 'Content',
 	'pages' => 'Web Pages',
 	'latex' => 'LaTeX',
-	'products' => 'Products',
-	'subscriptions' => 'Subscriptions',
 	'users' => 'Users',
-	'reports' => 'Reports',
-	'reports_orders' => 'Orders',
-	'reports_subscriptions' => 'Subscriptions',
 ];

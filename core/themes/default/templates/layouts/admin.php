@@ -121,30 +121,6 @@
 							</li>
 							<li class="dropdown">
 								<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-									<i class="icon-th"></i>
-									<span><?php echo $text_products; ?></span>
-									<b class="caret"></b>
-								</a>
-								<ul class="dropdown-menu">
-									<li><?php echo $this->url->getLink('', 'administrator/Products', 'index');?></li>
-									<li><?php echo $this->url->getLink('', 'administrator/Products', 'add');?></li>
-									<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'index', []);?></li>
-									<li><?php echo $this->url->getLink('', 'administrator/Products', 'attributes');?></li>
-								</ul>
-							</li>
-							<li class="dropdown">
-								<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-									<i class="icon-th-list"></i>
-									<span><?php echo $text_subscriptions; ?></span>
-									<b class="caret"></b>
-								</a>
-								<ul class="dropdown-menu">
-									<li><?php echo $this->url->getLink('', 'administrator/Subscriptions', 'index');?></li>
-									<li><?php echo $this->url->getLink('', 'administrator/Subscriptions', 'types');?></li>
-								</ul>
-							</li>
-							<li class="dropdown">
-								<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
 									<i class="icon-th-list"></i>
 									<span><?php echo $text_users; ?></span>
 									<b class="caret"></b>
@@ -152,25 +128,6 @@
 								<ul class="dropdown-menu">
 									<li><?php echo $this->url->getLink('', 'administrator/Customers', 'index');?></li>
 									<li><?php echo $this->url->getLink('', 'administrator/Administrators', 'index');?></li>
-								</ul>
-							</li>
-							<li class="dropdown">
-								<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-									<i class="icon-external-link"></i>
-									<span><?php echo $text_reports; ?></span>
-									<b class="caret"></b>
-								</a>
-								<ul class="dropdown-menu">
-									<li class="dropdown-submenu">
-										<a tabindex="-1" href="#"><?php echo $text_reports_orders; ?></a>
-										<ul class="dropdown-menu">
-											<li><?php echo $this->url->getLink('', 'administrator/ReportOrders', 'index');?></li>
-
-											<li><?php echo $this->url->getLink('', 'administrator/ReportOrders', 'sales');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/ReportOrders', 'products');?></li>
-										</ul>
-									</li>
-									<li><?php echo $this->url->getLink('', 'administrator/ReportSubscriptions', 'index');?></li>
 								</ul>
 							</li>
 						</ul>

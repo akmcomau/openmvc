@@ -42,14 +42,6 @@ class Customer extends Model {
 			'data_length'    => '64',
 			'null_allowed'   => FALSE,
 		],
-		'subscription_type_id' => [
-			'data_type'      => 'int',
-			'null_allowed'   => TRUE,
-		],
-		'customer_subscription_expire' => [
-			'data_type'      => 'datetime',
-			'null_allowed'   => TRUE,
-		],
 		'customer_first_name' => [
 			'data_type'      => 'text',
 			'data_length'    => '128',
@@ -92,17 +84,11 @@ class Customer extends Model {
 		'customer_type',
 		'customer_token',
 		'customer_token_created',
-		'subscription_type_id',
-		'customer_subscription_expire',
 	];
 
 	protected $uniques = [
 		['site_id', 'customer_login'],
 		['site_id', 'customer_email'],
-	];
-
-	protected $foreign_keys = [
-		'subscription_type_id' => ['subscription_type', 'subscription_type_id'],
 	];
 
 }

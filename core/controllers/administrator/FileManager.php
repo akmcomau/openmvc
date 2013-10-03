@@ -27,9 +27,7 @@ class FileManager extends Controller {
 		$site = $this->config->siteConfig();
 		$path = 'sites'.DS.$site->namespace.DS.'themes'.DS;
 		if (!is_dir($path)) {
-			$template = $this->getTemplate('pages/administrator/file_manager_no_dir.php');
-			$this->response->setContent($template->render());
-			return;
+			mkdir($path, 0775, TRUE);
 		}
 
 		$template = $this->getTemplate('pages/administrator/file_manager.php');

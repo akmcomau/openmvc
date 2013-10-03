@@ -63,12 +63,11 @@
 						</a>
 					</div>
 					<div class="col-md-4 col-sm-4 hidden-xs">
-						<a href="cart.html"><h4><?php echo $text_shopping_cart;?></h4></a>
-						<a href="cart.html">2 item(s) - $40.00</a>
+						<?php echo $text_slogan;?>
 					</div>
 					<div class="col-md-4 col-sm-4 col-xs-12 header-search">
 						<a href="cart.html"><h4><?php echo $text_search;?></h4></a>
-						<form action="<?php echo $this->url->getURL('Product', 'search'); ?>">
+						<form action="<?php echo $this->url->getURL('Root', 'search'); ?>">
 							<input type="text" class="float-left" name="search" value="" />
 							<input type="submit" class="btn btn-primary btn-small hidden-sm hidden-xs float-left" value="<?php echo $text_search_button;?>" />
 						</form>
@@ -89,15 +88,6 @@
 							<li><?php echo $this->url->getLink('menu-item'); ?></li>
 							<li><?php echo $this->url->getLink('menu-item', 'Root', 'aboutUs'); ?></li>
 							<li><?php echo $this->url->getLink('menu-item', 'Root', 'contactUs'); ?></li>
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Products <b class="caret"></b></a>
-								<ul class="dropdown-menu">
-									<li><a class="menu-item" href="#">Search Products</a></li>
-									<li><a class="menu-item" href="#">Browse Products</a></li>
-								</ul>
-							</li>
-							<li class="visible-xs"><?php echo $this->url->getLink('menu-item', 'Cart'); ?></li>
-							<li><?php echo $this->url->getLink('menu-item', 'Checkout'); ?></li>
 						</ul>
 						<?php if ($customer_logged_in) { ?>
 							<ul class="nav navbar-nav navbar-right main-menu">

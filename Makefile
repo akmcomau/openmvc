@@ -11,7 +11,4 @@ update-depends:
 # update dependancies
 create-database:
 	./bin/create_database.php;
-
-# update dependancies
-create-database-data:
 	./bin/create_database_data.php;

@@ -20,19 +20,17 @@ class Model {
 	protected $uniques        = [];
 
 	protected $available_models = [
-		'Address',
 		'Administrator',
-		'City',
 		'Customer',
+		'City',
 		'Country',
+		'State',
+		'Suburb',
+		'Address',
 		'Latex',
 		'LatexCategory',
 		'LatexCombination',
 		'LatexCombinationItem',
-		'State',
-		'Subscription',
-		'SubscriptionType',
-		'Suburb',
 	];
 
 	public function __construct(Config $config, Database $database) {
