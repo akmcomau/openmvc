@@ -45,7 +45,7 @@
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="<?php echo $this->url->getURL('Administrator');?>"><i class="icon-cog"></i> <?php echo $text_admin_site; ?></a></li>
 					<li><a href="<?php echo $this->url->getURL('administrator/LanguageEditor');?>"><i class="icon-copy"></i> <?php echo $text_admin_language; ?></a></li>
-					<li><a href="<?php echo $this->url->getURL('administrator/MetaData');?>"><i class="icon-anchor"></i> <?php echo $text_admin_meta_data; ?></a></li>
+					<li><a href="<?php echo $this->url->getURL('administrator/Pages', 'edit');?>"><i class="icon-anchor"></i> <?php echo $text_admin_meta_data; ?></a></li>
 					<li><a href="<?php echo $this->url->getURL('Administrator', 'logout');?>"><i class="icon-user"></i> <?php echo $text_admin_logout; ?></a></li>
 				</ul>
 			</div>

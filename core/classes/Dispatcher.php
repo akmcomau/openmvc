@@ -34,7 +34,7 @@ class Dispatcher {
 		return $this->dispatchRequest($request);
 	}
 
-	public function dispatchRequest($request) {
+	public function dispatchRequest(Request $request) {
 		$response = new Response();
 		$controller_class = $request->getControllerClass();
 
@@ -45,6 +45,7 @@ class Dispatcher {
 			return $this->dispatchRequest($request);
 		}
 		$controller = new $controller_class($this->config, $this->database, $request, $response);
+		$controller->setUrl($this->url);
 		$method_name = $request->getMethodName();
 		$methods = $controller->getAllMethods();
 		if (!in_array($method_name, $methods)) {
@@ -54,6 +55,13 @@ class Dispatcher {
 			$request->setMethodParams([]);
 			return $this->dispatchRequest($request);
 		}
+
+		if (preg_match('/^page\/(.*)$/', $method_name, $matches)) {
+			$method_name = 'page';
+			$request->setMethodName('page');
+			$request->setMethodParams([$matches[1]]);
+		}
+
 		$this->logger->debug("Dispatching request to $controller_class::$method_name");
 
 		// check permissions

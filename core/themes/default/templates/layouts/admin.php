@@ -30,6 +30,8 @@
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.flot.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.flot.pie.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.flot.resize.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/ckeditor/ckeditor.js"></script>
+
 
 	<link rel="shortcut icon" href="/core/themes/default/images/favicon.ico" />
 	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/core/themes/default/images/icon_logo_114.gif" />

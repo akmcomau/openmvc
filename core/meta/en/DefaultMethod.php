@@ -2,8 +2,8 @@
 
 $_DEFAULT_METHOD = [
 	'meta_tags' => [
-		'title'       => NULL,
-		'description' => NULL,
-		'keywords'    => NULL,
+		'title'       => ['en' => NULL],
+		'description' => ['en' => NULL],
+		'keywords'    => ['en' => NULL],
 	],
 ];

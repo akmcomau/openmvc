@@ -9,7 +9,7 @@ class URL {
 	protected $url_map;
 
 	public function __construct(Config $config) {
-		$this->config  = $config;
+		$this->config = $config;
 		$this->generateUrlMap();
 	}
 
@@ -19,27 +19,42 @@ class URL {
 
 	protected function generateUrlMap() {
 		$controllers = $this->listAllControllers();
+		$language    = $this->config->siteConfig()->language;
 
 		$filename = $this->getUrlsFilename('DefaultMethod');
 		require($filename);
 
 		$url_config = [];
-		foreach ($controllers as $controller => $class) {
+		foreach ($controllers as $controller => $controller_class) {
 			$_URLS = NULL;
 			$filename = $this->getUrlsFilename($controller);
 			if ($filename) {
 				require($filename);
 				if ($_URLS) {
+					// Add references for methods not in here
+					$controller_obj = new $controller_class($this->config);
+					$controller_obj->setUrl($this);
+					foreach ($controller_obj->getAllMethods() as $method) {
+						if (!isset($_URLS['methods'][$method])) {
+							$_URLS['methods'][$method] = [];
+						}
+					}
+
 					// add ther default method data to the array
 					foreach ($_URLS['methods'] as $method => $data) {
+						$meta_tags = [];
 						if (!isset($_URLS['methods'][$method]['meta_tags'])) {
 							$_URLS['methods'][$method]['meta_tags'] = [];
 						}
-						foreach ($_DEFAULT_METHOD['meta_tags'] as $property => $value) {
-							if (!isset($data['meta_tags'][$property]) && !is_null($value)) {
-								$_URLS['methods'][$method]['meta_tags'][$property] = $value;
+						foreach ($_DEFAULT_METHOD['meta_tags'] as $property => $prop_data) {
+							if (isset($_URLS['methods'][$method]['meta_tags'][$property][$language])) {
+								$meta_tags[$property] = $_URLS['methods'][$method]['meta_tags'][$property][$language];
+							}
+							elseif (!isset($meta_tags[$property]) && !is_null($prop_data[$language])) {
+								$meta_tags[$property] = $prop_data[$language];
 							}
 						}
+						$_URLS['methods'][$method]['meta_tags'] = $meta_tags;
 					}
 					$url_config[$controller] = $_URLS;
 				}
@@ -223,23 +238,25 @@ class URL {
 	}
 
 	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL) {
+		$url = $this->getURL($controller_name, $method_name, $params);
+		$text = $this->getLinkText($controller_name, $method_name);
+
+		return '<a class="'.$class.'" href="'.$url.'">'.$text.'</a>';
+	}
+
+	public function getLinkText($controller_name = NULL, $method_name = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
-
-		$url = $this->getURL($controller_name, $method_name, $params);
-		$text = $controller_name.'::'.$method_name;
 
 		if (!isset($this->url_map['forward'][$controller_name])) {
 			$controller_name = str_replace('/', '\\', $controller_name);
 		}
 
-		try {
-			if ($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language]) {
-				$text = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
-			}
+		$text = $controller_name.'::'.$method_name;
+		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
+			$text = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
 		}
-		catch (ErrorException $ex) {}
-		return '<a class="'.$class.'" href="'.$url.'">'.$text.'</a>';
+		return $text;
 	}
 
 	public function seoController($controller) {

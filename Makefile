@@ -4,7 +4,9 @@ update-composer:
 
 # update dependancies
 update-depends:
+	rm -f composer/vendor/ckeditor/ckeditor/plugins/pbckcode
 	cd composer && php composer.phar install && php composer.phar update;
+	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ../../PBCKCode/ ./pbckcode
 
 # update dependancies
 create-database:

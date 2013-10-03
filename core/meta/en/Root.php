@@ -5,7 +5,7 @@ $_URLS = [
 	'methods' => [
 		'index' => [
 			'link_text' => ['en' => 'Home'],
-			'meta_tags' => ['title' => $this->config->siteConfig()->name],
+			'meta_tags' => ['title' => ['en' => $this->config->siteConfig()->name]],
 		],
 		'terms' => [
 			'aliases' => ['en' => 'terms-and-conditions'],

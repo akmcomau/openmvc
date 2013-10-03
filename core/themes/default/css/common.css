@@ -94,6 +94,25 @@ ul.inline li {
 .float-right {
 	float: right;
 }
+.title-2column {
+	font-weight: bold;
+	text-align: right;
+}
+.separator-2column {
+	padding-top: 0px;
+	padding-bottom: 0px;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	color: #DDD;
+	background-color: #DDD;
+	height: 1px;
+}
+@media (max-width: 768px) {
+	.title-2column {
+		margin-top: 5px;
+		text-align: left;
+	}
+}
 /* --------------------------------------------------
  * Login/Register styles
  *-------------------------------------------------- */

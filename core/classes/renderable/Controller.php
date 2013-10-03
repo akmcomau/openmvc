@@ -29,13 +29,21 @@ class Controller extends Renderable {
 
 	protected $permissions = [];
 
-	public function __construct(Config $config, Database $database, Request $request, Response $response) {
+	public function __construct(Config $config, Database $database = NULL, Request $request = NULL, Response $response = NULL) {
+
+		// Controller has been created for meta data, don't need much
+		if (is_null($request)) {
+			$this->config = $config;
+			return;
+		}
+
 		parent::__construct($config, $database);
+
 		$this->request        = $request;
 		$this->response       = $response;
 		$this->url            = new URL($config);
-		$this->authentication = new Authentication($config, $database, $request);
 		$this->language       = new Language($config);
+		$this->authentication = new Authentication($config, $database, $request);
 
 		if ($this->show_admin_layout) {
 			$layout_class    = $config->siteConfig()->admin_layout_class;
@@ -54,6 +62,10 @@ class Controller extends Renderable {
 		else {
 			$this->layout->loadLanguageFile('layout.php');
 		}
+	}
+
+	public function setUrl($url) {
+		return $this->url = $url;
 	}
 
 	public function getRequest() {

@@ -42,6 +42,10 @@ class Template {
 		$this->data = $data;
 	}
 
+	public function getTemplateContent() {
+		return file_get_contents($this->getAbsoluteFilename());
+	}
+
 	public function render() {
 		$filename = $this->getAbsoluteFilename();
 

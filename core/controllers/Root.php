@@ -2,8 +2,11 @@
 
 namespace core\controllers;
 
+use core\classes\exceptions\SoftRedirectException;
 use core\classes\exceptions\RedirectException;
+use core\classes\exceptions\TemplateException;
 use core\classes\renderable\Controller;
+use core\classes\URL;
 
 class Root extends Controller {
 
@@ -20,8 +23,14 @@ class Root extends Controller {
 
 		$page_name = str_replace('-', '_', $page_name);
 
-		$template = $this->getTemplate("pages/misc/$page_name.php");
-		$this->response->setContent($template->render());
+		try {
+			$template = $this->getTemplate("pages/misc/$page_name.php");
+			$this->response->setContent('<div class="container">'.$template->render().'</div>');
+		}
+		catch (TemplateException $ex) {
+			$this->logger->debug('Misc page template not found');
+			throw new SoftRedirectException(__CLASS__, 'error_404');
+		}
 	}
 
 	public function terms() {
@@ -98,5 +107,19 @@ class Root extends Controller {
 		header("HTTP/1.1 500 Internal Server Error");
 		$template = $this->getTemplate('pages/error_500.php');
 		$this->response->setContent($template->render());
+	}
+
+	public function getAllMethods() {
+		$methods = parent::getAllMethods();
+		$url_map = $this->url->getUrlMap();
+		$controller_map = $url_map['forward']['Root'];
+		if (isset($controller_map['methods'])) {
+			foreach ($controller_map['methods'] as $method => $data) {
+				if (!in_array($method, $methods)) {
+					$methods[] = $method;
+				}
+			}
+		}
+		return $methods;
 	}
 }

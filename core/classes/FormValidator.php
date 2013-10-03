@@ -90,6 +90,13 @@ class FormValidator {
 		return htmlspecialchars($this->request->requestParam($name));
 	}
 
+	public function isSubmitted() {
+		if (is_null($this->request->requestParam($this->name.'-submit'))) {
+			return FALSE;
+		}
+		return TRUE;
+	}
+
 	public function validate() {
 		$this->form_errors = [];
 		$form_valid = TRUE;
@@ -262,7 +269,7 @@ class FormValidator {
 	}
 
 	public function isUrlFragment ($string) {
-		if (preg_match('/[^A-Za-z0-9-_]/i', $string)) {
+		if (preg_match('/[^A-Za-z0-9\/_-]/i', $string)) {
 			return FALSE;
 		}
 		return TRUE;
