@@ -53,8 +53,6 @@ class Language {
 			return $default_file;
 		}
 		else {
-			print $theme_file."\n";
-			print $default_file;
 			throw new LanguageException("Could not find language file: $filename");
 		}
 	}

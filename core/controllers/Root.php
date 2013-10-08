@@ -33,21 +33,6 @@ class Root extends Controller {
 		}
 	}
 
-	public function terms() {
-		$template = $this->getTemplate('pages/terms.php');
-		$this->response->setContent($template->render());
-	}
-
-	public function privacy() {
-		$template = $this->getTemplate('pages/privacy.php');
-		$this->response->setContent($template->render());
-	}
-
-	public function aboutUs() {
-		$template = $this->getTemplate('pages/about_us.php');
-		$this->response->setContent($template->render());
-	}
-
 	public function contactUs($status = NULL) {
 		$site_params = $this->config->siteConfig();
 		if ($this->request->postParam('send_message') == 1) {

@@ -21,6 +21,9 @@ class Layout extends Renderable {
 	protected $authentication;
 	protected $language;
 	protected $meta_tags = [];
+	protected $controller;
+	protected $method;
+	protected $sub_page;
 
 	public function __construct(Config $config, Database $database, Request $request, Response $response, Authentication $auth, Language $language, $template) {
 		parent::__construct($config, $database);
@@ -32,12 +35,24 @@ class Layout extends Renderable {
 		$this->authentication = $auth;
 	}
 
+	public function setControllerMethod($controller, $method, $sub_page = NULL) {
+		$this->controller = $controller;
+		$this->method = $method;
+		$this->sub_page = $sub_page;
+	}
+
 	public function loadLanguageFile($filename) {
 		$this->language->loadLanguageFile($filename);
 	}
 
 	public function render() {
+		$controller = '';
+		$method = [ urlencode($this->controller), urlencode($this->method) ];
+		if ($this->sub_page) {
+			$method[] = $this->sub_page;
+		}
 		$data = [
+			'method'                  => $method,
 			'meta_tags'               => $this->meta_tags,
 			'page_content'            => $this->response->getContent(),
 			'logged_in'               => $this->authentication->loggedIn(),

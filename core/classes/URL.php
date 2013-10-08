@@ -82,6 +82,10 @@ class URL {
 			}
 		}
 
+		foreach ($controllers as $controller => $controller_class) {
+			$this->url_map['reverse']['controllers'][$controller_class] = $controller;
+		}
+
 		$this->url_map['controllers'] = $controllers;
 	}
 
@@ -257,6 +261,21 @@ class URL {
 			$text = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
 		}
 		return $text;
+	}
+
+	public function getCategory($controller_name = NULL, $method_name = NULL) {
+		if (!$controller_name) $controller_name = 'Root';
+		if (!$method_name)     $method_name     = 'index';
+
+		if (!isset($this->url_map['forward'][$controller_name])) {
+			$controller_name = str_replace('/', '\\', $controller_name);
+		}
+
+		$categ = NULL;
+		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['category'])) {
+			$categ = $this->url_map['forward'][$controller_name]['methods'][$method_name]['category'];
+		}
+		return $categ;
 	}
 
 	public function seoController($controller) {

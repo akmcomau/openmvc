@@ -7,15 +7,15 @@ $_URLS = [
 			'link_text' => ['en' => 'Home'],
 			'meta_tags' => ['title' => ['en' => $this->config->siteConfig()->name]],
 		],
-		'terms' => [
+		'page/terms' => [
 			'aliases' => ['en' => 'terms-and-conditions'],
 			'link_text' => ['en' => 'Terms'],
 		],
-		'privacy' => [
+		'page/privacy' => [
 			'aliases' => ['en' => 'privacy-policy'],
 			'link_text' => ['en' => 'Privacy'],
 		],
-		'aboutUs' => [
+		'page/about_us' => [
 			'aliases' => ['en' => 'about-us'],
 			'link_text' => ['en' => 'About Us'],
 		],

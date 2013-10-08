@@ -35,6 +35,7 @@ class Dispatcher {
 	}
 
 	public function dispatchRequest(Request $request) {
+		$sub_page = NULL;
 		$response = new Response();
 		$controller_class = $request->getControllerClass();
 
@@ -60,6 +61,7 @@ class Dispatcher {
 			$method_name = 'page';
 			$request->setMethodName('page');
 			$request->setMethodParams([$matches[1]]);
+			$sub_page = $matches[1];
 		}
 
 		$this->logger->debug("Dispatching request to $controller_class::$method_name");
@@ -129,6 +131,7 @@ class Dispatcher {
 			$class = $class[count($class)-1];
 			$meta_tags = $this->url->getMethodMetaTags($class, $method_name);
 			$controller->getLayout()->addMetaTags($meta_tags);
+			$controller->getLayout()->setControllerMethod($this->url->getControllerClassName($request->getControllerName()), $request->getMethodName(), $sub_page);
 			$controller->getLayout()->render();
 		}
 

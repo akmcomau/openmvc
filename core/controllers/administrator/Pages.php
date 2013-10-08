@@ -52,6 +52,10 @@ class Pages extends Controller {
 		$page  = new Page($this->config, $this->database);
 		$data = $page->getPage();
 
+		$model = new Model($this->config, $this->database);
+		$page_category = $model->getModel('\core\classes\models\PageCategory');
+		$data['categories'] = $page_category->getAsOptions();
+
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
 			$page->update($data, FALSE);
@@ -74,6 +78,10 @@ class Pages extends Controller {
 
 		$page  = new Page($this->config, $this->database);
 		$data = $page->getPage($controller, $method);
+
+		$model = new Model($this->config, $this->database);
+		$page_category = $model->getModel('\core\classes\models\PageCategory');
+		$data['categories'] = $page_category->getAsOptions();
 
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
@@ -105,9 +113,12 @@ class Pages extends Controller {
 		$data['method_alias'] = $form_page->getValue('method_alias');
 		$data['content'] = $form_page->getValue('content');
 		$data['link_text'] = $form_page->getValue('link_text');
+
+		$data['category'] = $form_page->getValue('category');
+		if ((int)$data['category'] == 0) $data['category'] = NULL;
 	}
 
-	protected function getPageForm($data = []) {
+	protected function getPageForm() {
 		$inputs = [
 			'meta_title' => [
 				'type' => 'string',

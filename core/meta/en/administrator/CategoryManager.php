@@ -6,5 +6,8 @@ $_URLS = [
 		'index' => [
 			'link_text' => ['en' => 'Category Manager'],
 		],
+		'page' => [
+			'link_text' => ['en' => 'Page Categories'],
+		],
 	],
 ];

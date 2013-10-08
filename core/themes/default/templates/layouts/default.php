@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 	<title><?php echo $meta_tags['title']; ?></title>
@@ -46,7 +46,7 @@
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="<?php echo $this->url->getURL('Administrator');?>"><i class="icon-cog"></i> <?php echo $text_admin_site; ?></a></li>
 					<li><a href="<?php echo $this->url->getURL('administrator/LanguageEditor');?>"><i class="icon-copy"></i> <?php echo $text_admin_language; ?></a></li>
-					<li><a href="<?php echo $this->url->getURL('administrator/Pages', 'edit');?>"><i class="icon-anchor"></i> <?php echo $text_admin_meta_data; ?></a></li>
+					<li><a href="<?php echo $this->url->getURL('administrator/Pages', 'edit', $method);?>"><i class="icon-anchor"></i> <?php echo $text_admin_edit_page; ?></a></li>
 					<li><a href="<?php echo $this->url->getURL('Administrator', 'logout');?>"><i class="icon-user"></i> <?php echo $text_admin_logout; ?></a></li>
 				</ul>
 			</div>
@@ -87,7 +87,7 @@
 					<div class="collapse navbar-collapse navbar-ex1-collapse">
 						<ul class="nav navbar-nav main-menu">
 							<li><?php echo $this->url->getLink('menu-item'); ?></li>
-							<li><?php echo $this->url->getLink('menu-item', 'Root', 'aboutUs'); ?></li>
+							<li><?php echo $this->url->getLink('menu-item', 'Root', 'page/about_us'); ?></li>
 							<li><?php echo $this->url->getLink('menu-item', 'Root', 'contactUs'); ?></li>
 						</ul>
 						<?php if ($customer_logged_in) { ?>
@@ -147,8 +147,8 @@
 						<a href="#"><i class="icon-google-plus"></i></a> </div>
 
 						<ul class="list-inline align-center">
-							<li><?php echo $this->url->getLink('', 'Root', 'terms'); ?></li>
-							<li><?php echo $this->url->getLink('', 'Root', 'privacy'); ?></li>
+							<li><?php echo $this->url->getLink('', 'Root', 'page/terms'); ?></li>
+							<li><?php echo $this->url->getLink('', 'Root', 'page/privacy'); ?></li>
 							<li><?php echo $this->url->getLink('', 'Root', 'contactUs'); ?></li>
 						</ul>
 					</div>

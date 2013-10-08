@@ -20,6 +20,18 @@
 						</div>
 						<hr class="separator-2column" />
 						<div class="row">
+							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_category; ?></div>
+							<div class="col-md-9 col-sm-9 ">
+								<select name="category">
+									<option value=""></option>
+									<?php foreach ($categories as $value => $text) { ?>
+										<option value="<?php echo $value; ?>" <?php if ($value == $category) echo 'selected="selected"'; ?>><?php echo $text; ?></option>
+									<?php } ?>
+								</select>
+							</div>
+						</div>
+						<hr class="separator-2column" />
+						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_controller; ?></div>
 							<div class="col-md-9 col-sm-9 "><?php echo $controller; ?></div>
 						</div>

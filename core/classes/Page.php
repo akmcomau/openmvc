@@ -20,11 +20,18 @@ class Page {
 		$pages = [];
 		$controllers = $this->url->listAllControllers();
 		foreach ($controllers as $controller_name => $controller_class) {
+			// Ignore admin pages
+			if (preg_match('/\\\\(a|A)dministrator\\\\?/', $controller_class)) continue;
+
 			$controller = new $controller_class($this->config);
 			$controller->setUrl($this->url);
 			$methods = $controller->getAllMethods();
 			$permissions = $controller->getPermissions();
 			foreach ($methods as $method) {
+				// skip the Root::page method
+				if ($method == 'page' && $controller_name == 'Root') continue;
+				if ($controller_name == 'Root' && preg_match('/^error_/', $method)) continue;
+
 				$meta_tags = $this->url->getMethodMetaTags($controller_name, $method, FALSE);
 				$main_method = $method;
 				$sub_method  = NULL;
@@ -64,6 +71,7 @@ class Page {
 				'controller_alias' => 'Root',
 				'method_alias'     => '',
 				'content'          => '',
+				'category'         => '',
 			];
 		}
 
@@ -84,6 +92,7 @@ class Page {
 			'controller_alias' => $this->url->seoController($controller),
 			'method_alias'     => $this->url->seoMethod($controller, $method),
 			'content'          => '',
+			'category'         => $this->url->getCategory($controller, $method),
 		];
 	}
 
@@ -126,6 +135,9 @@ class Page {
 		}
 		if (!empty($data['meta_tags']['keywords'])) {
 			$method_map['meta_tags']['keywords'] = [$language => $data['meta_tags']['keywords']];
+		}
+		if (!empty($data['category'])) {
+			$method_map['category'] = $data['category'];
 		}
 
 		$controller_map['aliases'][$language] = $data['controller_alias'];

@@ -39,6 +39,10 @@ class Request {
 		return $this->controller_class;
 	}
 
+	public function getControllerName() {
+		return $this->controller_class;
+	}
+
 	public function setMethodName($method_name) {
 		$this->method_name = $method_name;
 	}

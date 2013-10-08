@@ -26,7 +26,8 @@ class Model {
 		'Country',
 		'State',
 		'Suburb',
-		'Address'
+		'Address',
+		'PageCategory',
 	];
 
 	public function __construct(Config $config, Database $database) {
@@ -152,15 +153,35 @@ class Model {
 		}
 	}
 
-	public function getMulti(array $params) {
-		$table   = $this->table;
-		$where   = $this->generateWhereClause($params);
-		$sql     = "SELECT * FROM $table WHERE $where";
+	public function getMulti(array $params = NULL, array $ordering = NULL) {
+		$table = $this->table;
+		$sql   = "SELECT * FROM $table";
+		if ($params) {
+			$where = $this->generateWhereClause($params);
+			$sql  .= " WHERE $where";
+		}
 		$records = $this->database->queryMulti($sql);
 
 		$models = [];
 		foreach ($records as $record) {
 			$models[] = $this->getModel(get_class($this), $record);
+		}
+
+		return $models;
+	}
+
+	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL) {
+		$table = $this->table;
+		$sql   = "SELECT * FROM $table";
+		if ($params) {
+			$where = $this->generateWhereClause($params);
+			$sql  .= " WHERE $where";
+		}
+		$records = $this->database->queryMulti($sql);
+
+		$models = [];
+		foreach ($records as $record) {
+			$models[$record[$key]] = $this->getModel(get_class($this), $record);
 		}
 
 		return $models;

@@ -60,7 +60,7 @@
 						<li class="dropdown">
 							<a href="javscript:;" class="dropdown-toggle" data-toggle="dropdown">
 								<i class="icon-user"></i>
-								Rod Howard
+								<?php echo $text_administrator; ?>
 								<b class="caret"></b>
 							</a>
 							<ul class="dropdown-menu">
@@ -104,7 +104,7 @@
 										<ul class="dropdown-menu">
 											<li><?php echo $this->url->getLink('', 'administrator/Pages');?></li>
 											<li><?php echo $this->url->getLink('', 'administrator/Pages', 'add');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'index', []);?></li>
+											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'page');?></li>
 									</ul>
 									<li><?php echo $this->url->getLink('', 'administrator/LanguageEditor');?></li>
 									<li><?php echo $this->url->getLink('', 'administrator/FileManager');?></li>

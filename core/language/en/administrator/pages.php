@@ -2,6 +2,7 @@
 
 $_LANGUAGE = [
 	'url' => 'URL',
+	'category' => 'Category',
 	'title' => 'Title',
 	'description' => 'Description',
 	'keywords' => 'Keywords',

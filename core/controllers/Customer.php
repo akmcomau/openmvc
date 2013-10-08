@@ -14,6 +14,8 @@ class Customer extends Controller {
 
 	protected $permissions = [
 		'index' => ['customer'],
+		'change_password' => ['customer'],
+		'contact_details' => ['customer'],
 	];
 
 	public function index() {
