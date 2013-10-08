@@ -79,6 +79,9 @@ a:hover img {
 ul.inline li {
 	display: inline;
 }
+.default-padding {
+	padding: 10px;
+}
 .align-center {
 	text-align: center;
 }

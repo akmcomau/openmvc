@@ -31,7 +31,7 @@
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.flot.pie.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.flot.resize.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/ckeditor/ckeditor.js"></script>
-
+	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/mathjax/MathJax.js?config=TeX-AMS_HTML-full"></script>
 
 	<link rel="shortcut icon" href="/core/themes/default/images/favicon.ico" />
 	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/core/themes/default/images/icon_logo_114.gif" />
@@ -106,15 +106,6 @@
 											<li><?php echo $this->url->getLink('', 'administrator/Pages', 'add');?></li>
 											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'index', []);?></li>
 									</ul>
-									<li class="dropdown-submenu">
-										<a href="<?php echo $this->url->getURL('administrator/Latex');?>"><?php echo $text_latex; ?></a>
-										<ul class="dropdown-menu">
-											<li><?php echo $this->url->getLink('', 'administrator/Latex');?></li>
-
-											<li><?php echo $this->url->getLink('', 'administrator/Latex', 'combinations');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'index', []);?></li>
-										</ul>
-									</li>
 									<li><?php echo $this->url->getLink('', 'administrator/LanguageEditor');?></li>
 									<li><?php echo $this->url->getLink('', 'administrator/FileManager');?></li>
 								</ul>
@@ -151,4 +142,9 @@
 		</div>
 	</div>
 </body>
+<script type="text/javascript">
+	MathJax.Hub.Config({
+		tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+	});
+</script>
 </html>

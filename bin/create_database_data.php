@@ -29,7 +29,7 @@ $all_models = [];
 $sites = $config->sites;
 foreach ($sites as $domain => $data) {
 	$config = new Config();
-	$config->setSiteDomain($domain);
+	$config->setSiteDomain('www.'.$domain);
 	$model = new Model($config, $database);
 	$models = $model->listAllModels();
 
@@ -46,6 +46,7 @@ foreach ($all_models as $model_class => $data_class) {
 	try {
 		$data_model = $model->getModel($data_class);
 		$records    = $data_model->getRecords();
+		print $model_class."\n";
 
 		foreach ($records as $record) {
 			$object = $model->getModel($model_class);

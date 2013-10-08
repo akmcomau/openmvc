@@ -4,9 +4,14 @@ update-composer:
 
 # update dependancies
 update-depends:
-	rm -f composer/vendor/ckeditor/ckeditor/plugins/pbckcode
+	rm -f composer/vendor/ckeditor/ckeditor/plugins/mathjax
+	rm -f composer/vendor/ckeditor/ckeditor/plugins/onchange
+
 	cd composer && php composer.phar install && php composer.phar update;
-	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ../../PBCKCode/ ./pbckcode
+
+	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ${PWD}/core/themes/default/ck_mathjax ./mathjax
+	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ${PWD}/composer/vendor/ckeditor/onchange ./onchange
+	cd composer/vendor/mathquill/mathquill && make
 
 # update dependancies
 create-database:

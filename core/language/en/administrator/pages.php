@@ -18,4 +18,5 @@ $_LANGUAGE = [
 	'method_alias' => 'Method Alias',
 	'link_text' => 'Link Text',
 	'content' => 'Content',
+	'preview' => 'Content Preview',
 ];

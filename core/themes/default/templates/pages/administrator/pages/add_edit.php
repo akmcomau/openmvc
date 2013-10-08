@@ -1,3 +1,7 @@
+<link href="http://latex.codecogs.com/css/equation-embed.css" rel="stylesheet" media="screen" />
+<script src="http://latex.codecogs.com/js/eq_config.js"></script>
+<script src="http://latex.codecogs.com/js/eq_editor-lite-16.js"></script>
+
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
@@ -12,7 +16,7 @@
 					<div class="widget-content">
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_url; ?></div>
-							<div class="col-md-9 col-sm-9 "><?php echo $url; ?></div>
+							<div class="col-md-9 col-sm-9 "><a href="<?php echo $url; ?>"><?php echo $url; ?></a></div>
 						</div>
 						<hr class="separator-2column" />
 						<div class="row">
@@ -113,8 +117,17 @@
 									if ($is_add_page) echo $text_add_button;
 									else echo $text_update_button;
 								?></button>
+								<br /><br />
 							</div>
 						</div>
+						<?php if ($misc_page) { ?>
+							<div class="row default-padding">
+								<hr class="separator-2column" />
+								<h2 class="align-center"><?php echo $text_preview; ?></h2>
+								<hr class="separator-2column" />
+								<div id="content-preview"></div>
+							</div>
+						<?php } ?>
 					</div>
 				</form>
 			</div>
@@ -123,5 +136,18 @@
 </div>
 <script type="text/javascript">
 	<?php echo $form->getJavascriptValidation(); ?>
+
+	function updatePreview(content) {
+		$('#content-preview').html(content);
+		MathJax.Hub.Queue(["Typeset", MathJax.Hub, 'content-preview']);
+	}
+	CKEDITOR.on('instanceCreated', function (e) {
+		var editor = e.editor;
+		editor.on('change', function (ev) {
+			var content = e.editor.getData();
+			updatePreview(content);
+		});
+	});
+	updatePreview($('textarea[name="content"]').val());
 </script>
 

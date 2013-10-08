@@ -16,6 +16,7 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'about' },
 	];
 
+	config.extraPlugins = 'mathjax,onchange';
 	config.protectedSource.push(/<\?[\s\S]*?\?>/g);
 	config.removeButtons = 'Underline,Subscript,Superscript';
 	config.format_tags = 'p;h1;h2;h3;pre';

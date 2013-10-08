@@ -26,11 +26,7 @@ class Model {
 		'Country',
 		'State',
 		'Suburb',
-		'Address',
-		'Latex',
-		'LatexCategory',
-		'LatexCombination',
-		'LatexCombinationItem',
+		'Address'
 	];
 
 	public function __construct(Config $config, Database $database) {
