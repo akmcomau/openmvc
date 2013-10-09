@@ -10,6 +10,7 @@ use core\classes\FormValidator;
 use core\classes\renderable\Controller;
 use core\classes\Model;
 use core\classes\Page;
+use core\classes\Pagination;
 
 function sort_pages($a, $b) {
 	return 0;
@@ -26,19 +27,16 @@ class Pages extends Controller {
 	public function index() {
 		$this->language->loadLanguageFile('administrator/pages.php');
 
+		$pagination = new Pagination($this->request, ['url']);
+
 		// get all the pages
 		$page  = new Page($this->config, $this->database);
-		$pages = $page->getPageList();
-
-		$sort_field = 'url';
-		usort($pages, function ($a, $b) use ($sort_field) {
-			if ($a[$sort_field] < $b[$sort_field]) return -1;
-			if ($a[$sort_field] > $b[$sort_field]) return 1;
-			return 0;
-		});
+		$pages = $page->getPageList($pagination->getOrdering(), $pagination->getPagination());
+		$pagination->setRecordCount(count($page->getPageList()));
 
 		$data = [
 			'pages' => $pages,
+			'pagination' => $pagination->getPageLinks(),
 		];
 
 		$template = $this->getTemplate('pages/administrator/pages/list.php', $data);

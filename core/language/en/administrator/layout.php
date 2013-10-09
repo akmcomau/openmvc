@@ -11,6 +11,7 @@ $_LANGUAGE = [
 	'home' => 'Home',
 	'content' => 'Content',
 	'pages' => 'Web Pages',
+	'blocks' => 'Blocks',
 	'latex' => 'LaTeX',
 	'users' => 'Users',
 ];

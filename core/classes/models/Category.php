@@ -44,7 +44,9 @@ class Category extends Model {
 		}
 
 		$options = [];
-		$this->getAsOptionRecursive($options, $by_parent[NULL]);
+		if (isset($by_parent[NULL])) {
+			$this->getAsOptionRecursive($options, $by_parent[NULL]);
+		}
 		return $options;
 	}
 

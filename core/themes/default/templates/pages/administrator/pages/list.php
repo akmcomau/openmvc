@@ -1,4 +1,8 @@
 <div class="container">
+	<div class="pagination">
+		<?php echo $pagination; ?>
+	</div>
+
 	<table class="table">
 		<tr>
 			<th><?php echo $text_url; ?></th>

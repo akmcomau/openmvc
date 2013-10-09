@@ -105,7 +105,16 @@
 											<li><?php echo $this->url->getLink('', 'administrator/Pages');?></li>
 											<li><?php echo $this->url->getLink('', 'administrator/Pages', 'add');?></li>
 											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'page');?></li>
-									</ul>
+										</ul>
+									</li>
+									<li class="dropdown-submenu">
+										<a href="<?php echo $this->url->getURL('administrator/Blocks');?>"><?php echo $text_blocks; ?></a>
+										<ul class="dropdown-menu">
+											<li><?php echo $this->url->getLink('', 'administrator/Blocks');?></li>
+											<li><?php echo $this->url->getLink('', 'administrator/Blocks', 'add');?></li>
+											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'block');?></li>
+										</ul>
+									</li>
 									<li><?php echo $this->url->getLink('', 'administrator/LanguageEditor');?></li>
 									<li><?php echo $this->url->getLink('', 'administrator/FileManager');?></li>
 								</ul>

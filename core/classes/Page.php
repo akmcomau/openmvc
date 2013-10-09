@@ -3,7 +3,6 @@
 namespace core\classes;
 
 use core\classes\exceptions\ModelException;
-use core\classes\URL;
 
 class Page {
 
@@ -16,7 +15,7 @@ class Page {
 		$this->logger   = Logger::getLogger(__CLASS__);
 	}
 
-	public function getPageList() {
+	public function getPageList(array $ordering = NULL, array $pagination = NULL) {
 		$pages = [];
 		$controllers = $this->url->listAllControllers();
 		foreach ($controllers as $controller_name => $controller_class) {
@@ -56,6 +55,26 @@ class Page {
 			}
 		}
 
+		// do the ordering
+		if ($ordering) {
+			foreach ($ordering as $field) {
+				if ($field == 'url') {
+					// sort the list
+					$sort_field = 'url';
+					usort($pages, function ($a, $b) use ($sort_field) {
+						if ($a[$sort_field] < $b[$sort_field]) return -1;
+						if ($a[$sort_field] > $b[$sort_field]) return 1;
+						return 0;
+					});
+				}
+			}
+		}
+
+		// do the pagination
+		if ($pagination) {
+			$pages = array_splice($pages, $pagination['offset'], $pagination['limit']);
+		}
+
 		return $pages;
 	}
 
@@ -80,7 +99,15 @@ class Page {
 		if (!isset($meta_tags['description'])) $meta_tags['description'] = NULL;
 		if (!isset($meta_tags['keywords'])) $meta_tags['keywords'] = NULL;
 
-		$template = NULL;
+		$category_id = '';
+		$model = new Model($this->config, $this->database);
+		$page  = $model->getModel('\\core\\classes\\models\\Page')->get([
+			'controller' => $controller,
+			'method' => $method,
+		]);
+		if ($page) {
+			$category_id = $page->category_id;
+		}
 
 		return [
 			'url'              => $this->url->getURL($controller, $method),
@@ -92,7 +119,7 @@ class Page {
 			'controller_alias' => $this->url->seoController($controller),
 			'method_alias'     => $this->url->seoMethod($controller, $method),
 			'content'          => '',
-			'category'         => $this->url->getCategory($controller, $method),
+			'category'         => $category_id,
 		];
 	}
 
@@ -137,7 +164,21 @@ class Page {
 			$method_map['meta_tags']['keywords'] = [$language => $data['meta_tags']['keywords']];
 		}
 		if (!empty($data['category'])) {
-			$method_map['category'] = $data['category'];
+			$model = new Model($this->config, $this->database);
+			$page  = $model->getModel('\\core\\classes\\models\\Page')->get([
+				'controller' => $controller,
+				'method' => $method,
+			]);
+			if ($page) {
+				$page->category_id = (int)$data['category'];
+			}
+			else {
+				$page  = $model->getModel('\\core\\classes\\models\\Page');
+				$page->controller = $controller;
+				$page->method = $method;
+				$page->category_id = (int)$data['category'];
+				$page->insert();
+			}
 		}
 
 		$controller_map['aliases'][$language] = $data['controller_alias'];

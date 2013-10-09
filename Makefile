@@ -11,7 +11,6 @@ update-depends:
 
 	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ${PWD}/core/themes/default/ck_mathjax ./mathjax
 	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ${PWD}/composer/vendor/ckeditor/onchange ./onchange
-	cd composer/vendor/mathquill/mathquill && make
 
 # update dependancies
 create-database:

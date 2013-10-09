@@ -15,6 +15,8 @@ $_DEFAULT_CONFIG = (object)[
 		'site_offline_mode' => false,
 		'site_maintenance_mode' => false,
 		'bcrypt_cost' => 10,
-		'language' => 'en'
+		'language' => 'en',
+		'records_per_page' => 20,
+		'num_pagination_links' => 11
 	]
 ];

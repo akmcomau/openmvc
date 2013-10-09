@@ -14,10 +14,12 @@ class Request {
 	protected $controller_class = NULL;
 	protected $method_name = NULL;
 
-	private $authentication;
-	private $url;
+	protected $authentication;
+	protected $url;
+	protected $config;
 
 	public function __construct(Config $config, Database $database) {
+		$this->config = $config;
 		$this->get_params = $_GET;
 		$this->post_params = $_POST;
 		$this->request_params = $_REQUEST;
@@ -25,6 +27,10 @@ class Request {
 		$this->session = new Session();
 		$this->authentication = new Authentication($config, $database, $this);
 		$this->url = new URL($config);
+	}
+
+	public function getConfig() {
+		return $this->config;
 	}
 
 	public function getAuthentication() {
@@ -108,13 +114,7 @@ class Request {
 	}
 
 	public function currentURL(array $params = NULL) {
-		if ($params === NULL) {
-			$params = $this->request->get_params;
-		}
-
-		$class_parts = explode('\\', $this->controller_class);
-		$controller_class = $class_parts[count($class_parts)-1];
-
+		$controller_class = $this->url->getControllerClassName($this->controller_class);
 		return $this->url->getURL($controller_class, $this->method_name, $params);
 	}
 

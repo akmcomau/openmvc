@@ -28,6 +28,7 @@ class Model {
 		'Suburb',
 		'Address',
 		'PageCategory',
+		'Page',
 	];
 
 	public function __construct(Config $config, Database $database) {
@@ -153,12 +154,15 @@ class Model {
 		}
 	}
 
-	public function getMulti(array $params = NULL, array $ordering = NULL) {
+	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
 		$table = $this->table;
 		$sql   = "SELECT * FROM $table";
 		if ($params) {
 			$where = $this->generateWhereClause($params);
 			$sql  .= " WHERE $where";
+		}
+		if ($pagination) {
+			$sql .= " OFFSET ".(int)$pagination['offset']." LIMIT ".(int)$pagination['limit'];
 		}
 		$records = $this->database->queryMulti($sql);
 
