@@ -12,10 +12,6 @@ use core\classes\Model;
 use core\classes\Page;
 use core\classes\Pagination;
 
-function sort_pages($a, $b) {
-	return 0;
-}
-
 class Pages extends Controller {
 
 	protected $show_admin_layout = TRUE;
@@ -120,15 +116,15 @@ class Pages extends Controller {
 		$inputs = [
 			'meta_title' => [
 				'type' => 'string',
-				'required' => false,
+				'required' => FALSE,
 			],
 			'meta_keywords' => [
 				'type' => 'string',
-				'required' => false,
+				'required' => FALSE,
 			],
 			'meta_description' => [
 				'type' => 'string',
-				'required' => false,
+				'required' => FALSE,
 			],
 			'controller_alias' => [
 				'type' => 'url-fragment',
@@ -144,7 +140,11 @@ class Pages extends Controller {
 			],
 			'link_text' => [
 				'type' => 'string',
-				'required' => false,
+				'required' => FALSE,
+			],
+			'category' => [
+				'type' => 'integer',
+				'required' => FALSE,
 			],
 		];
 

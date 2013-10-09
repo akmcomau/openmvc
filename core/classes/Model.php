@@ -12,6 +12,8 @@ class Model {
 
 	protected $record = [];
 
+	protected $objects = [];
+
 	protected $table          = NULL;
 	protected $primary_key    = NULL;
 	protected $columns        = NULL;
@@ -28,7 +30,10 @@ class Model {
 		'Suburb',
 		'Address',
 		'PageCategory',
-		'Page',
+		'PageCategoryLink',
+		'BlockCategory',
+		'Block',
+		'BlockCategoryLink',
 	];
 
 	public function __construct(Config $config, Database $database) {
@@ -53,7 +58,7 @@ class Model {
 			$this->record[$name] = $value;
 		}
 		else {
-			throw new ModelException("Undefined model property: $name ".get_class($this));
+			throw new ModelException("Undefined model property: $name on ".get_class($this));
 		}
 	}
 
@@ -75,7 +80,7 @@ class Model {
 			}
 		}
 		else {
-			throw new ModelException("Undefined model property: $name");
+			throw new ModelException("Undefined model property: $name on ".get_class($this));
 		}
 	}
 

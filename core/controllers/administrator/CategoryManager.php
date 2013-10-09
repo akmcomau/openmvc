@@ -35,6 +35,10 @@ class CategoryManager extends Controller {
 		$this->category_manager('\core\classes\models\PageCategory');
 	}
 
+	public function block() {
+		$this->category_manager('\core\classes\models\BlockCategory');
+	}
+
 	protected function category_manager($model_class) {
 		$this->language->loadLanguageFile('administrator/category_manager.php');
 

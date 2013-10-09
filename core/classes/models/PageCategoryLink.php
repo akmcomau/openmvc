@@ -4,12 +4,12 @@ namespace core\classes\models;
 
 use core\classes\Model;
 
-class Page extends Model {
+class PageCategoryLink extends Model {
 
-	protected $table       = 'page';
-	protected $primary_key = 'page_id';
+	protected $table       = 'page_category_link';
+	protected $primary_key = 'page_category_link_id';
 	protected $columns     = [
-		'page_id' => [
+		'page_category_link_id' => [
 			'data_type'      => 'int',
 			'auto_increment' => TRUE,
 			'null_allowed'   => FALSE,

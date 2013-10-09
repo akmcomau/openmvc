@@ -9,5 +9,8 @@ $_URLS = [
 		'page' => [
 			'link_text' => ['en' => 'Page Categories'],
 		],
+		'block' => [
+			'link_text' => ['en' => 'Block Categories'],
+		],
 	],
 ];

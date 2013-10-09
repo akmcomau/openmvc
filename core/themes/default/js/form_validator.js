@@ -82,10 +82,10 @@ $.extend(FormValidator, {
 				element.required = true;
 			}
 
-			if (element_value == '' && !element.required) {
+			if ((element_value == '' || element_value == null) && !element.required) {
 				is_this_valid = true;
 			}
-			else if (element_value == '' && element.required) {
+			else if ((element_value == '' || element_value == null) && element.required) {
 				is_this_valid = false;
 			}
 			else {
@@ -121,10 +121,10 @@ $.extend(FormValidator, {
 					break;
 
 					case 'string':
-						if (typeof(element.max_length) != 'undefined' && element_value.length > element.max_length) {
+						if (typeof(element.max_length) != 'undefined' && element_value && element_value.length > element.max_length) {
 							is_this_valid  = false;
 						}
-						else if (typeof(element.min_length) != 'undefined' && element_value.length < element.min_length) {
+						else if (typeof(element.min_length) != 'undefined' && element_value && element_value.length < element.min_length) {
 							is_this_valid  = false;
 						}
 						else element_error.hide();
@@ -191,7 +191,7 @@ $.extend(FormValidator, {
 				}
 				is_valid = false;
 
-				scroll = $("#"+form_id+" input[name='"+element_name+"']").offset().top-80;
+				scroll = $("#"+form_id+" *[name='"+element_name+"']").offset().top-80;
 				if (scroll < scroll_position) {
 					scroll_position = scroll;
 				}

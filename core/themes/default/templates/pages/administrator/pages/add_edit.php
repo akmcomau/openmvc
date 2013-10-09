@@ -5,7 +5,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form class="admin-form" method="post">
+			<form class="admin-form" method="post" id="form-page">
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php

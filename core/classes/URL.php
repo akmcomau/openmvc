@@ -263,6 +263,21 @@ class URL {
 		return $text;
 	}
 
+	public function getCategory($controller_name = NULL, $method_name = NULL) {
+		if (!$controller_name) $controller_name = 'Root';
+		if (!$method_name)     $method_name     = 'index';
+
+		if (!isset($this->url_map['forward'][$controller_name])) {
+			$controller_name = str_replace('/', '\\', $controller_name);
+		}
+
+		$categ = NULL;
+		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['category'])) {
+			$categ = $this->url_map['forward'][$controller_name]['methods'][$method_name]['category'];
+		}
+		return $categ;
+	}
+
 	public function seoController($controller) {
 		if (!isset($this->url_map['forward'][$controller])) {
 			$controller = str_replace('/', '\\', $controller);

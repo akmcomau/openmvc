@@ -101,12 +101,12 @@ class Page {
 
 		$category_id = '';
 		$model = new Model($this->config, $this->database);
-		$page  = $model->getModel('\\core\\classes\\models\\Page')->get([
-			'controller' => $controller,
-			'method' => $method,
+		$page  = $model->getModel('\\core\\classes\\models\\PageCategoryLink')->get([
+			'page_controller' => $controller,
+			'page_method' => $method,
 		]);
 		if ($page) {
-			$category_id = $page->category_id;
+			$category_id = $page->page_category_id;
 		}
 
 		return [
@@ -163,20 +163,30 @@ class Page {
 		if (!empty($data['meta_tags']['keywords'])) {
 			$method_map['meta_tags']['keywords'] = [$language => $data['meta_tags']['keywords']];
 		}
-		if (!empty($data['category'])) {
+		if (empty($data['category'])) {
 			$model = new Model($this->config, $this->database);
-			$page  = $model->getModel('\\core\\classes\\models\\Page')->get([
-				'controller' => $controller,
-				'method' => $method,
+			$page  = $model->getModel('\\core\\classes\\models\\PageCategoryLink')->get([
+				'page_controller' => $controller,
+				'page_method' => $method,
 			]);
 			if ($page) {
-				$page->category_id = (int)$data['category'];
+				$page->delete();
+			}
+		}
+		else {
+			$model = new Model($this->config, $this->database);
+			$page  = $model->getModel('\\core\\classes\\models\\PageCategoryLink')->get([
+				'page_controller' => $controller,
+				'page_method' => $method,
+			]);
+			if ($page) {
+				$page->page_category_id = (int)$data['category'];
 			}
 			else {
-				$page  = $model->getModel('\\core\\classes\\models\\Page');
-				$page->controller = $controller;
-				$page->method = $method;
-				$page->category_id = (int)$data['category'];
+				$page  = $model->getModel('\\core\\classes\\models\\PageCategoryLink');
+				$page->page_controller = $controller;
+				$page->page_method = $method;
+				$page->page_category_id = (int)$data['category'];
 				$page->insert();
 			}
 		}
