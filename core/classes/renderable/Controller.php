@@ -47,20 +47,34 @@ class Controller extends Renderable {
 
 		if ($this->show_admin_layout) {
 			$layout_class    = $config->siteConfig()->admin_layout_class;
-			$layout_template = $config->siteConfig()->admin_layout_template;
+			if ($this->config->siteConfig()->enable_admin) {
+				$layout_template = $config->siteConfig()->admin_layout_template;
+			}
+			else {
+				$layout_template = 'layouts/bare.php';
+			}
 		}
 		else {
 			$layout_class    = $config->siteConfig()->default_layout_class;
-			$layout_template = $config->siteConfig()->default_layout_template;
+			if ($this->config->siteConfig()->enable_public) {
+				$layout_template = $config->siteConfig()->default_layout_template;
+			}
+			else {
+				$layout_template = 'layouts/bare.php';
+			}
 		}
 
 		$this->layout = new $layout_class($config, $database, $request, $response, $this->authentication, $this->language, $layout_template);
 
 		if ($this->show_admin_layout) {
-			$this->layout->loadLanguageFile('administrator/layout.php');
+			if ($this->config->siteConfig()->enable_admin) {
+				$this->layout->loadLanguageFile('administrator/layout.php');
+			}
 		}
 		else {
-			$this->layout->loadLanguageFile('layout.php');
+			if ($this->config->siteConfig()->enable_public) {
+				$this->layout->loadLanguageFile('layout.php');
+			}
 		}
 	}
 

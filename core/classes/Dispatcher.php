@@ -41,9 +41,7 @@ class Dispatcher {
 
 		if (!$controller_class) {
 			$this->logger->debug("Controller Not found: ".$request->getParam('controller'));
-			$request->setControllerClass($this->url->getControllerClass('Root'));
-			$request->setMethodName('error_404');
-			return $this->dispatchRequest($request);
+			return $this->error_404($request);
 		}
 		$controller = new $controller_class($this->config, $this->database, $request, $response);
 		$controller->setUrl($this->url);
@@ -51,10 +49,7 @@ class Dispatcher {
 		$methods = $controller->getAllMethods();
 		if (!in_array($method_name, $methods)) {
 			$this->logger->debug("Method Not found: $controller_class::".$request->getMethodName());
-			$request->setControllerClass($this->url->getControllerClass('Root'));
-			$request->setMethodName('error_404');
-			$request->setMethodParams([]);
-			return $this->dispatchRequest($request);
+			return $this->error_404($request);
 		}
 
 		if (preg_match('/^page\/(.*)$/', $method_name, $matches)) {
@@ -114,6 +109,16 @@ class Dispatcher {
 			}
 		}
 
+		if ($is_admin_required && !$this->config->siteConfig()->enable_admin) {
+			$this->logger->debug("Admin is disabled");
+			return $this->error_404($request);
+		}
+
+		if (!$is_admin_required && !$this->config->siteConfig()->enable_public && !preg_match('/^error_/', $method_name)) {
+			$this->logger->debug("Public is disabled");
+			return $this->error_404($request);
+		}
+
 		try {
 			call_user_func_array([$controller, $request->getMethodName()], $request->getMethodParams());
 		}
@@ -136,6 +141,13 @@ class Dispatcher {
 		}
 
 		return $response;
+	}
+
+	protected function error_404($request) {
+		$request->setControllerClass($this->url->getControllerClass('Root'));
+		$request->setMethodName('error_404');
+		$request->setMethodParams([]);
+		return $this->dispatchRequest($request);
 	}
 
 	protected function getControllerClass(Request $request) {
