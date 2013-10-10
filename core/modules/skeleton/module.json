@@ -1,0 +1,14 @@
+{
+	"name": "skeleton",
+	"description": "Skeleton Module",
+	"namespace": "\\core\\modules\\skeleton",
+	"config_controller": "administrator\\Skeleton",
+	"controllers": [
+		"Skeleton",
+		"administrator\\Skeleton"
+	],
+	"default_config": {
+		"param1": "value1",
+		"param2": "value2"
+	}
+}

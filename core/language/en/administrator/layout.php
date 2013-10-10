@@ -2,6 +2,8 @@
 
 $_LANGUAGE = [
 	'administrator' => 'Administrator',
+	'public_site' => 'Public Site',
+	'toggle_navigation' => 'Toggle navigation',
 	'header_settings' => 'Settings',
 	'footer_text' => 'Site Powered by <a href="http://www.openmvc.com">OpenMVC</a> | Copyright 2013 &copy; OpenMVC',
 	'account_settings' => 'Account Settings',

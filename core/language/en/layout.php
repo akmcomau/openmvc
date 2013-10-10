@@ -3,6 +3,7 @@
 $_LANGUAGE = [
 	'administrator_panel' => 'Administrator Panel',
 	'admin_site' => 'Admin',
+	'toggle_navigation' => 'Toggle navigation',
 	'slogan' => '<br />The best website framework eva',
 	'admin_language' => 'Language',
 	'admin_edit_page' => 'Edit Page',

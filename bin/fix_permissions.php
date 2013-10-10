@@ -21,6 +21,8 @@ $cmd = "sudo find $root_path -type f -exec chmod 644 {} \\;";
 system($cmd);
 $cmd = "sudo find $root_path -type d -exec chmod 755 {} \\;";
 system($cmd);
+$cmd = "sudo chmod 664 $root_path/core/config/config.php";
+system($cmd);
 
 $logger->info("Fixing permissions on dir: $root_path/bin");
 $cmd = "sudo find $root_path/bin/ -type f -exec chmod 755 {} \\;";

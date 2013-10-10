@@ -21,13 +21,13 @@ class URL {
 		$controllers = $this->listAllControllers();
 		$language    = $this->config->siteConfig()->language;
 
-		$filename = $this->getUrlsFilename('DefaultMethod');
+		$filename = $this->getUrlsFilename('DefaultMethod', '');
 		require($filename);
 
 		$url_config = [];
 		foreach ($controllers as $controller => $controller_class) {
 			$_URLS = NULL;
-			$filename = $this->getUrlsFilename($controller);
+			$filename = $this->getUrlsFilename($controller, $controller_class);
 			if ($filename) {
 				require($filename);
 				if ($_URLS) {
@@ -58,6 +58,9 @@ class URL {
 					}
 					$url_config[$controller] = $_URLS;
 				}
+			}
+			else {
+				print $controller_class.'<br />';
 			}
 
 			if (!isset($url_config[$controller])) {
@@ -97,6 +100,7 @@ class URL {
 		$base_core_path = $root_path.'core'.DS.'controllers'.DS;
 		$base_site_path = $root_path.'sites'.DS.$site->namespace.DS.'controllers'.DS;
 
+		// find all the core and site controller paths
 		$dirs = [''];
 		foreach (glob("$base_core_path*", GLOB_ONLYDIR) as $dir) {
 			if (preg_match('/\/([\w]+)$/', $dir, $matches)) {
@@ -111,6 +115,7 @@ class URL {
 			}
 		}
 
+		// get all the core and site controllers
 		foreach ($dirs as $prefix) {
 			$path_prefix = $prefix == '' ? '' : $prefix.DS;
 			$class_prefix = $prefix == '' ? '' : $prefix.'\\';
@@ -137,10 +142,20 @@ class URL {
 			}
 		}
 
+		// get all the module controllers
+		$modules = (new Module($this->config))->getModules();
+		foreach ($modules as $module) {
+			if ($module['enabled']) {
+				foreach ($module['controllers'] as $controller) {
+					$controllers[$controller] = $module['namespace'].'\\controllers\\'.$controller;
+				}
+			}
+		}
+
 		return $controllers;
 	}
 
-	protected function getUrlsFilename($controller) {
+	protected function getUrlsFilename($controller, $class) {
 		$site = $this->config->siteConfig();
 		$language = $site->language;
 		$theme = $site->theme;
@@ -148,17 +163,22 @@ class URL {
 		$controller = str_replace('\\', DS, $controller);
 
 		$filename = $controller.'.php';
-		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$root_path = __DIR__.DS.'..'.DS.'..';
 		$default_path = 'core'.DS.'meta'.DS.$language.DS;
-		$default_file = $root_path.$default_path.$filename;
+		$default_file = $root_path.DS.$default_path.$filename;
 		$site_path = 'sites'.DS.$site->namespace.DS.'meta'.DS.$language.DS;
-		$site_file = $root_path.$site_path.$filename;
+		$site_file = $root_path.DS.$site_path.$filename;
 
 		if (file_exists($site_file)) {
 			return $site_file;
 		}
 		if (file_exists($default_file)) {
 			return $default_file;
+		}
+
+		$module_path = $root_path.str_replace('\\', DS, str_replace('\\controllers\\', '\\meta\\'.$language.'\\', $class)).'.php';
+		if (file_exists($module_path)) {
+			return $module_path;
 		}
 
 		return NULL;

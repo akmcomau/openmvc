@@ -1,8 +1,10 @@
 <?php
 
 $_DEFAULT_CONFIG = (object)[
+	'modules' => [],
 	'default_site' => [
 		'email_addresses' => [],
+		'modules' => [],
 		'name' => 'OpenMVC',
 		'namespace' => 'default',
 		'default_layout_class' => '\\core\\classes\\renderable\\Layout',

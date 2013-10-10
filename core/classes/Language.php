@@ -30,14 +30,14 @@ class Language {
 		return $this->strings[$tag];
 	}
 
-	public function loadLanguageFile($filename) {
+	public function loadLanguageFile($filename, $path = NULL) {
 		// load the language file
-		$filename = $this->getAbsoluteFilename($filename);
+		$filename = $this->getAbsoluteFilename($filename, $path);
 		require($filename);
 		$this->strings = array_merge($this->strings, $_LANGUAGE);
 	}
 
-	public function getAbsoluteFilename($filename) {
+	public function getAbsoluteFilename($filename, $path = NULL) {
 		$site = $this->config->siteConfig();
 		$theme = $site->theme;
 
@@ -52,8 +52,13 @@ class Language {
 		if (file_exists($default_file)) {
 			return $default_file;
 		}
-		else {
-			throw new LanguageException("Could not find language file: $filename");
+		if ($path) {
+			$path_file = $root_path.$path.DS.'language'.DS.$this->language.DS.$filename;
+			if (file_exists($path_file)) {
+				return $path_file;
+			}
 		}
+
+		throw new LanguageException("Could not find language file: $filename");
 	}
 }

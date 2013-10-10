@@ -96,7 +96,9 @@ class Dispatcher {
 		}
 
 		$admin_class = $this->url->getControllerClass('Administrator');
-		if (!($is_admin_required || $controller->getAuthentication()->administratorLoggedIn()) && !($method_name == 'login' && $controller_class == $admin_class)) {
+		$is_admin_method = ($method_name == 'login' && $controller_class == $admin_class);
+
+		if (!($is_admin_required || $controller->getAuthentication()->administratorLoggedIn()) && !$is_admin_method) {
 			if ($this->config->siteConfig()->site_offline_mode) {
 				$template = $controller->getTemplate('pages/site_offline.php');
 				$response->setContent($template->render());
@@ -109,12 +111,12 @@ class Dispatcher {
 			}
 		}
 
-		if ($is_admin_required && !$this->config->siteConfig()->enable_admin) {
+		if (($is_admin_required || $is_admin_method) && !$this->config->siteConfig()->enable_admin) {
 			$this->logger->debug("Admin is disabled");
 			return $this->error_404($request);
 		}
 
-		if (!$is_admin_required && !$this->config->siteConfig()->enable_public && !preg_match('/^error_/', $method_name)) {
+		if (!($is_admin_required || $is_admin_method) && !$this->config->siteConfig()->enable_public && !preg_match('/^error_/', $method_name)) {
 			$this->logger->debug("Public is disabled");
 			return $this->error_404($request);
 		}

@@ -7,6 +7,7 @@ use core\classes\exceptions\ModelException;
 class Page {
 
 	protected $config;
+	protected $database;
 
 	public function __construct(Config $config, Database $database) {
 		$this->config   = $config;

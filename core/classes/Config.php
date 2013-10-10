@@ -44,6 +44,49 @@ class Config {
 		}
 	}
 
+	public function installModule($module) {
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		require($filename);
+
+		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
+
+		if (!in_array($module['name'], $_CONFIG['modules'])) {
+			$_CONFIG['modules'][] = $module['name'];
+		}
+
+		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+	}
+
+	public function enableModule($module) {
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		require($filename);
+
+		if (!isset($_CONFIG['sites'][$this->site_domain]['modules'])) {
+			$_CONFIG['sites'][$this->site_domain]['modules'] = [];
+		}
+
+		if (!in_array($module['name'], $_CONFIG['sites'][$this->site_domain]['modules'])) {
+			$_CONFIG['sites'][$this->site_domain]['modules'][$module['name']] = $module['default_config'];
+		}
+
+		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+	}
+
+	public function disableModule($module) {
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		require($filename);
+
+		if (!isset($_CONFIG['sites'][$this->site_domain]['modules'])) {
+			$_CONFIG['sites'][$this->site_domain]['modules'] = [];
+		}
+
+		if (isset($_CONFIG['sites'][$this->site_domain]['modules'][$module['name']])) {
+			unset($_CONFIG['sites'][$this->site_domain]['modules'][$module['name']]);
+		}
+
+		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+	}
+
 	public function siteConfig() {
 		return $this->sites->{$this->site_domain};
 	}

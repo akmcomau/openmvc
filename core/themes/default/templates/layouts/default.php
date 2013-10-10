@@ -37,7 +37,7 @@
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex2-collapse">
-					<span class="sr-only">Toggle navigation</span>
+					<span class="sr-only"><?php echo $text_toggle_navigation; ?></span>
 					<i class="icon-cog"></i>
 				</button>
 				<a class="navbar-brand" href="<?php echo $this->url->getURL('Administrator');?>"><?php echo $text_administrator_panel; ?></a>

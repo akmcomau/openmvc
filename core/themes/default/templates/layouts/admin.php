@@ -48,7 +48,7 @@
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-					<span class="sr-only">Toggle navigation</span>
+					<span class="sr-only"><?php echo $text_toggle_navigation; ?></span>
 					<i class="icon-cog"></i>
 				</button>
 				<a class="navbar-brand" href="<?php echo $this->url->getURL('Administrator');?>"><?php echo $this->config->siteConfig()->name; ?></a>
@@ -56,7 +56,7 @@
 			<?php if ($logged_in) { ?>
 				<div class="collapse navbar-collapse navbar-ex1-collapse">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="<?php echo $this->url->getURL();?>"><i class="icon-home"></i> Public Site</a></li>
+						<li><a href="<?php echo $this->url->getURL();?>"><i class="icon-home"></i> <?php echo $text_public_site; ?></a></li>
 						<li class="dropdown">
 							<a href="javscript:;" class="dropdown-toggle" data-toggle="dropdown">
 								<i class="icon-user"></i>
@@ -115,6 +115,7 @@
 											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'block');?></li>
 										</ul>
 									</li>
+									<li><?php echo $this->url->getLink('', 'administrator/Modules');?></li>
 									<li><?php echo $this->url->getLink('', 'administrator/LanguageEditor');?></li>
 									<li><?php echo $this->url->getLink('', 'administrator/FileManager');?></li>
 								</ul>
