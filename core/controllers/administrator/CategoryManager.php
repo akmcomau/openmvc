@@ -16,6 +16,8 @@ class CategoryManager extends Controller {
 
 	protected $permissions = [
 		'index' => ['administrator'],
+		'block' => ['administrator'],
+		'page' => ['administrator'],
 	];
 
 	public function index($type) {

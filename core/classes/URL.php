@@ -212,7 +212,7 @@ class URL {
 		return $meta_tags;
 	}
 
-	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL) {
+	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 		if (!$params)          $params          = [];
@@ -248,12 +248,22 @@ class URL {
 		if ($orig_method != 'index' || count($params) > 0) {
 			$url .= $method_name.'/';
 		}
+
+		// add parameters
 		if (count($params) > 0) {
 			$url .= $params_string;
 		}
+
+		// remove trailing slash
 		if (preg_match('/\/$/', $url)) {
 			$url = substr($url, 0, -1);
 		}
+
+		// add get params
+		if ($get_params) {
+			$url .= '?'.http_build_query($get_params);
+		}
+
 		return $url;
 	}
 
@@ -261,8 +271,8 @@ class URL {
 		throw new \Exception('TODO');
 	}
 
-	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL) {
-		$url = $this->getURL($controller_name, $method_name, $params);
+	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+		$url = $this->getURL($controller_name, $method_name, $params, $get_params);
 		$text = $this->getLinkText($controller_name, $method_name);
 
 		return '<a class="'.$class.'" href="'.$url.'">'.$text.'</a>';

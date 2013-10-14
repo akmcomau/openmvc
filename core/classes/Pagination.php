@@ -5,26 +5,34 @@ namespace core\classes;
 class Pagination {
 
 	protected $config;
+	protected $url;
 	protected $request;
 	protected $ordering;
+	protected $direction;
 	protected $records_per_page;
 	protected $num_pagination_links;
 	protected $current_page;
 
 	protected $record_count = 0;
 
-	public function __construct(Request $request, array $ordering) {
+	public function __construct(Request $request, $default_ordering, $default_direction = 'asc') {
+		$this->current_page = 1;
 		$this->config = $request->getConfig();
 		$this->request = $request;
-		$this->ordering = $ordering;
+		$this->ordering = $default_ordering;
+		$this->direction = $default_direction;
 		$this->records_per_page = $this->config->siteConfig()->records_per_page;
 		$this->num_pagination_links = $this->config->siteConfig()->num_pagination_links;
+		$this->url = new URL($this->config);
 
 		if ((int)$this->request->requestParam('page')) {
 			$this->current_page = (int)$this->request->requestParam('page');
 		}
-		else {
-			$this->current_page = 1;
+		if ($this->request->requestParam('direction')) {
+			$this->direction = $this->request->requestParam('direction');
+		}
+		if ($this->request->requestParam('ordering')) {
+			$this->ordering = $this->request->requestParam('ordering');
 		}
 	}
 
@@ -32,7 +40,7 @@ class Pagination {
 		$this->record_count = $record_count;
 	}
 
-	public function getPagination() {
+	public function getLimitOffset() {
 		return [
 		   'limit'  => $this->records_per_page,
 		   'offset' => ($this->current_page-1)*$this->records_per_page
@@ -40,10 +48,7 @@ class Pagination {
 	}
 
 	public function getOrdering() {
-		if ($this->request->requestParam('ordering')) {
-			return [$this->request->requestParam('ordering')];
-		}
-		return $this->ordering;
+		return [$this->ordering => $this->direction];
 	}
 
 	public function getMaxPage() {
@@ -115,5 +120,31 @@ class Pagination {
 		}
 
 		return $pages;
+	}
+
+	public function getSortUrls($column) {
+		$controller = $this->request->getControllerName();
+		$method     = $this->request->getMethodName();
+		$params     = $this->request->getMethodParams();
+
+		$params_up   = ['ordering' => $column, 'direction' => 'asc',  'page' => 1];
+		$params_down = ['ordering' => $column, 'direction' => 'desc', 'page' => 1];
+
+		if ($column == $this->ordering && strtolower($this->direction) == 'asc') {
+			$sort_asc = '<i class="icon-arrow-up"></i> ';
+		}
+		else {
+			$sort_asc = $this->url->getURL($controller, $method, $params, $params_up);
+			$sort_asc = '<a href="'.$sort_asc.'"><i class="icon-arrow-up"></i></a> ';
+		}
+		if ($column == $this->ordering && strtolower($this->direction) == 'desc') {
+			$sort_desc = '<i class="icon-arrow-down"></i>';
+		}
+		else {
+			$sort_desc = $this->url->getURL($controller, $method, $params, $params_down);
+			$sort_desc = '<a href="'.$sort_desc.'"><i class="icon-arrow-down"></i></a>';
+		}
+
+		return $sort_asc.$sort_desc;
 	}
 }

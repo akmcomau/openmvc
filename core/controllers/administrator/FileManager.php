@@ -21,6 +21,7 @@ class FileManager extends Controller {
 	protected $permissions = [
 		'index' => ['administrator'],
 		'config' => ['administrator'],
+		'rpc' => ['administrator'],
 	];
 
 	public function index() {

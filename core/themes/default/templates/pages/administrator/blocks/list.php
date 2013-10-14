@@ -1,13 +1,13 @@
 <div class="container">
 	<div class="pagination">
-		<?php echo $pagination; ?>
+		<?php echo $pagination->getPageLinks(); ?>
 	</div>
 
 	<table class="table">
 		<tr>
-			<th><?php echo $text_title; ?></th>
-			<th><?php echo $text_tag; ?></th>
-			<th><?php echo $text_category; ?></th>
+			<th><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
+			<th><?php echo $text_tag; ?> <?php echo $pagination->getSortUrls('tag'); ?></th>
+			<th><?php echo $text_category; ?> <?php echo $pagination->getSortUrls('category_name'); ?></th>
 			<th></th>
 		</tr>
 		<?php foreach ($blocks as $block) { ?>

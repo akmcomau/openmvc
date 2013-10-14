@@ -18,6 +18,8 @@ class Blocks extends Controller {
 
 	protected $permissions = [
 		'index' => ['administrator'],
+		'add' => ['administrator'],
+		'edit' => ['administrator'],
 	];
 
 	public function index() {
@@ -28,12 +30,12 @@ class Blocks extends Controller {
 		// get all the pages
 		$model  = new Model($this->config, $this->database);
 		$block  = $model->getModel('\\core\\classes\\models\\Block');
-		$blocks = $block->getMulti(NULL, $pagination->getOrdering(), $pagination->getPagination());
+		$blocks = $block->getMulti(NULL, $pagination->getOrdering(), $pagination->getLimitOffset());
 		$pagination->setRecordCount(10);
 
 		$data = [
 			'blocks' => $blocks,
-			'pagination' => $pagination->getPageLinks(),
+			'pagination' => $pagination,
 		];
 
 		$template = $this->getTemplate('pages/administrator/blocks/list.php', $data);

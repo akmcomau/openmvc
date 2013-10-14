@@ -1,15 +1,15 @@
 <div class="container">
 	<div class="pagination">
-		<?php echo $pagination; ?>
+		<?php echo $pagination->getPageLinks(); ?>
 	</div>
 
 	<table class="table">
 		<tr>
-			<th><?php echo $text_url; ?></th>
-			<th><?php echo $text_title; ?></th>
-			<th><?php echo $text_permissions; ?></th>
-			<th class="align-center"><?php echo $text_description; ?></th>
-			<th class="align-center"><?php echo $text_keywords; ?></th>
+			<th><?php echo $text_url; ?> <?php echo $pagination->getSortUrls('url'); ?></th>
+			<th><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
+			<th><?php echo $text_permissions; ?> <?php echo $pagination->getSortUrls('permissions'); ?></th>
+			<th class="align-center"><?php echo $text_description; ?> <?php echo $pagination->getSortUrls('description'); ?></th>
+			<th class="align-center"><?php echo $text_keywords; ?> <?php echo $pagination->getSortUrls('keywords'); ?></th>
 			<th></th>
 		</tr>
 		<?php foreach ($pages as $controller => $method) { ?>

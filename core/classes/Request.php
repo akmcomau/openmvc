@@ -46,7 +46,7 @@ class Request {
 	}
 
 	public function getControllerName() {
-		return $this->controller_class;
+		return $this->url->getControllerClassName($this->controller_class);
 	}
 
 	public function setMethodName($method_name) {

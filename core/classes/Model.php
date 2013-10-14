@@ -84,6 +84,16 @@ class Model {
 		}
 	}
 
+	public function getColumnName($name) {
+		if (isset($this->columns[$this->table.'_'.$name])) {
+			return $this->table.'_'.$name;
+		}
+		elseif (isset($this->columns[$name])) {
+			return $name;
+		}
+		return NULL;
+	}
+
 	public function insert() {
 		$table       = $this->table;
 		$primary_key = $this->primary_key;
@@ -165,6 +175,19 @@ class Model {
 		if ($params) {
 			$where = $this->generateWhereClause($params);
 			$sql  .= " WHERE $where";
+		}
+		if ($ordering && count($ordering)) {
+			$ordering_sql = [];
+			foreach ($ordering as $column => $direction) {
+				$direction = (strtolower($direction) == 'asc') ? 'ASC' : 'DESC';
+				$column = $this->getColumnName($column);
+				if ($column) {
+					$ordering_sql[] = "$column $direction";
+				}
+			}
+			if (count($ordering_sql)) {
+				$sql  .= " ORDER BY ".join(',', $ordering_sql);
+			}
 		}
 		if ($pagination) {
 			$sql .= " OFFSET ".(int)$pagination['offset']." LIMIT ".(int)$pagination['limit'];

@@ -58,13 +58,14 @@ class Page {
 
 		// do the ordering
 		if ($ordering) {
-			foreach ($ordering as $field) {
-				if ($field == 'url') {
-					// sort the list
-					$sort_field = 'url';
-					usort($pages, function ($a, $b) use ($sort_field) {
-						if ($a[$sort_field] < $b[$sort_field]) return -1;
-						if ($a[$sort_field] > $b[$sort_field]) return 1;
+			foreach ($ordering as $field => $direction) {
+				$direction = (strtolower($direction) == 'asc') ? TRUE : FALSE;
+
+				// sort the list
+				if (in_array($field, ['url', 'title', 'keywords', 'description', 'permissions'])) {
+					usort($pages, function ($a, $b) use ($field, $direction) {
+						if ($a[$field] < $b[$field]) return $direction ? -1 : 1;
+						if ($a[$field] > $b[$field]) return $direction ? 1 : -1;
 						return 0;
 					});
 				}

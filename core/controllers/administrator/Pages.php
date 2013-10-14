@@ -18,21 +18,23 @@ class Pages extends Controller {
 
 	protected $permissions = [
 		'index' => ['administrator'],
+		'add' => ['administrator'],
+		'edit' => ['administrator'],
 	];
 
 	public function index() {
 		$this->language->loadLanguageFile('administrator/pages.php');
 
-		$pagination = new Pagination($this->request, ['url']);
+		$pagination = new Pagination($this->request, 'url');
 
 		// get all the pages
 		$page  = new Page($this->config, $this->database);
-		$pages = $page->getPageList($pagination->getOrdering(), $pagination->getPagination());
+		$pages = $page->getPageList($pagination->getOrdering(), $pagination->getLimitOffset());
 		$pagination->setRecordCount(count($page->getPageList()));
 
 		$data = [
 			'pages' => $pages,
-			'pagination' => $pagination->getPageLinks(),
+			'pagination' => $pagination,
 		];
 
 		$template = $this->getTemplate('pages/administrator/pages/list.php', $data);

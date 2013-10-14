@@ -1,7 +1,3 @@
-<link href="http://latex.codecogs.com/css/equation-embed.css" rel="stylesheet" media="screen" />
-<script src="http://latex.codecogs.com/js/eq_config.js"></script>
-<script src="http://latex.codecogs.com/js/eq_editor-lite-16.js"></script>
-
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
@@ -113,7 +109,10 @@
 						<?php if ($misc_page) { ?>
 							<hr class="separator-2column" />
 							<div class="row">
-								<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_content; ?></div>
+								<div class="col-md-3 col-sm-3 title-2column">
+									<?php echo $text_content; ?>
+									<br />
+								</div>
 								<div class="col-md-9 col-sm-9 ">
 									<textarea class="form-control ckeditor" name="content"><?php echo htmlspecialchars($content); ?></textarea>
 									<?php echo $form->getHtmlErrorDiv('content'); ?>
@@ -124,7 +123,8 @@
 						<?php } ?>
 						<hr class="separator-2column" />
 						<div class="row">
-							<div class="col-md-12 align-center">
+							<div class="col-md-12 align-right">
+								<a class="btn btn-primary float-left" href="javascript:togglePreview()"><?php echo $text_preview; ?></a>
 								<button class="btn btn-primary" type="submit" name="form-page-submit"><?php
 									if ($is_add_page) echo $text_add_button;
 									else echo $text_update_button;
@@ -133,7 +133,7 @@
 							</div>
 						</div>
 						<?php if ($misc_page) { ?>
-							<div class="row default-padding">
+							<div id="preview" class="row default-padding">
 								<hr class="separator-2column" />
 								<h2 class="align-center"><?php echo $text_preview; ?></h2>
 								<hr class="separator-2column" />
@@ -149,6 +149,17 @@
 <script type="text/javascript">
 	<?php echo $form->getJavascriptValidation(); ?>
 
+	var showPreview = true;
+	function togglePreview() {
+		if ($('#preview').is(':visible')) {
+			$('#preview').hide();
+		}
+		else {
+			$('#preview').show();
+		}
+	}
+	togglePreview();
+
 	function updatePreview(content) {
 		$('#content-preview').html(content);
 		MathJax.Hub.Queue(["Typeset", MathJax.Hub, 'content-preview']);
@@ -156,8 +167,10 @@
 	CKEDITOR.on('instanceCreated', function (e) {
 		var editor = e.editor;
 		editor.on('change', function (ev) {
-			var content = e.editor.getData();
-			updatePreview(content);
+			if (showPreview) {
+				var content = e.editor.getData();
+				updatePreview(content);
+			}
 		});
 	});
 	updatePreview($('textarea[name="content"]').val());
