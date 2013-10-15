@@ -82,6 +82,17 @@ class FormValidator {
 		return $this->request->requestParam($name);
 	}
 
+	public function getSubmittedValues() {
+		$values = [];
+		foreach ($this->inputs as $name => $data) {
+			$value = $this->getValue($name);
+			if (!is_null($name)) {
+				$values[$name] = $value;
+			}
+		}
+		return $values;
+	}
+
 	public function getEncodedValue($name) {
 		// Make sure the form has been submitted
 		if (is_null($this->request->requestParam($this->name.'-submit'))) {

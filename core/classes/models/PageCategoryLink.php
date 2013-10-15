@@ -39,4 +39,27 @@ class PageCategoryLink extends Model {
 	protected $foreign_keys = [
 		'page_category_id' => ['page_category', 'page_category_id'],
 	];
+
+	public function getPageCategories() {
+		$sql = "
+			SELECT
+				page_controller,
+				page_method,
+				page_category.*
+			FROM
+				page_category_link
+				JOIN page_category USING (page_category_id)
+		";
+		$result = $this->database->queryMulti($sql);
+		$categories = [];
+		foreach ($result as $category) {
+			$controller = $category['page_controller'];
+			$method = $category['page_method'];
+			unset($category['page_controller']);
+			unset($category['page_method']);
+			$categories[$controller][$method] = $this->getModel('\core\classes\models\PageCategory', $category);
+		}
+
+		return $categories;
+	}
 }

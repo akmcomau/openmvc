@@ -43,6 +43,13 @@ class Block extends Model {
 		'block_tag',
 	];
 
+	protected $relationships = [
+		'block_category' => [
+			'where_fields'  => ['block_category_id'],
+			'join_clause'   => 'LEFT JOIN block_category_link USING (block_id) LEFT JOIN block_category USING (block_category_id)',
+		],
+	];
+
 	public function setCategory(BlockCategory $category = NULL) {
 		$this->objects['category'] = $category;
 	}

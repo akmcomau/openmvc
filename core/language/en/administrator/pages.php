@@ -20,4 +20,12 @@ $_LANGUAGE = [
 	'link_text' => 'Link Text',
 	'content' => 'Content',
 	'preview' => 'Content Preview',
+	'search' => 'Search',
+	'search_results' => 'Pages',
+	'editable' => 'Content',
+	'editable_all' => 'All',
+	'editable_yes' => 'Editable',
+	'editable_no' => 'Fixed',
+	'error_search_title' => 'Must not exceed 256 characters',
+	'error_search_url' => 'Must not exceed 256 characters',
 ];

@@ -16,7 +16,11 @@ class Page {
 		$this->logger   = Logger::getLogger(__CLASS__);
 	}
 
-	public function getPageList(array $ordering = NULL, array $pagination = NULL) {
+	public function getPageList(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
+		$model = new Model($this->config, $this->database);
+		$categories = $model->getModel('\core\classes\models\PageCategoryLink');
+		$page_categories = $categories->getPageCategories();
+
 		$pages = [];
 		$controllers = $this->url->listAllControllers();
 		foreach ($controllers as $controller_name => $controller_class) {
@@ -32,6 +36,10 @@ class Page {
 				if ($method == 'page' && $controller_name == 'Root') continue;
 				if ($controller_name == 'Root' && preg_match('/^error_/', $method)) continue;
 
+				$category = NULL;
+				if (isset($page_categories[$controller_name][$method])) {
+					$category = $page_categories[$controller_name][$method];
+				}
 				$meta_tags = $this->url->getMethodMetaTags($controller_name, $method, FALSE);
 				$main_method = $method;
 				$sub_method  = NULL;
@@ -50,9 +58,35 @@ class Page {
 					'method' => $method,
 					'main_method' => $main_method,
 					'sub_method' => $sub_method,
+					'category_id' => $category ? $category->id : NULL,
+					'category_name' => $category ? $category->name : NULL,
 					'editable' => $controller_name == 'Root' && preg_match('/^page\//', $method),
 				];
-				$pages[] = $method;
+
+				// check the params
+				$add_method = TRUE;
+				if ($params) {
+					foreach ($params as $property => $value) {
+						if ($property == 'category') $property = 'category_id';
+
+						$value = strtolower($value);
+						if ($property == 'editable') {
+							if ($value == 'editable' && !$method[$property]) {
+								$add_method = FALSE;
+							}
+							elseif ($value == 'fixed' && $method[$property]) {
+								$add_method = FALSE;
+							}
+						}
+						elseif (strpos(strtolower($method[$property]), $value) === FALSE) {
+							$add_method = FALSE;
+						}
+					}
+				}
+
+				if ($add_method) {
+					$pages[] = $method;
+				}
 			}
 		}
 

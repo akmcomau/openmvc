@@ -24,18 +24,38 @@ class Pages extends Controller {
 
 	public function index() {
 		$this->language->loadLanguageFile('administrator/pages.php');
+		$form_search = $this->getPageSearchForm();
 
 		$pagination = new Pagination($this->request, 'url');
 
+		$params = [];
+		if ($form_search->validate()) {
+			$values = $form_search->getSubmittedValues();
+			foreach ($values as $name => $value) {
+				if (preg_match('/^search_(.*)$/', $name, $matches) && $value != '') {
+					$value = strtolower($value);
+					$params[$matches[1]] = $value;
+				}
+			}
+		}
+
+		// default search values
+		if (!isset($params['editable'])) $params['editable'] = 'editable';
+
 		// get all the pages
 		$page  = new Page($this->config, $this->database);
-		$pages = $page->getPageList($pagination->getOrdering(), $pagination->getLimitOffset());
+		$pages = $page->getPageList($params, $pagination->getOrdering(), $pagination->getLimitOffset());
 		$pagination->setRecordCount(count($page->getPageList()));
 
 		$data = [
 			'pages' => $pages,
 			'pagination' => $pagination,
+			'form' => $form_search,
 		];
+
+		$model = new Model($this->config, $this->database);
+		$page_category = $model->getModel('\core\classes\models\PageCategory');
+		$data['categories'] = $page_category->getAsOptions();
 
 		$template = $this->getTemplate('pages/administrator/pages/list.php', $data);
 		$this->response->setContent($template->render());
@@ -112,6 +132,33 @@ class Pages extends Controller {
 
 		$data['category'] = $form_page->getValue('category');
 		if ((int)$data['category'] == 0) $data['category'] = NULL;
+	}
+
+	protected function getPageSearchForm() {
+		$inputs = [
+			'search_title' => [
+				'type' => 'string',
+				'required' => FALSE,
+				'max_length' => 256,
+				'message' => $this->language->get('error_search_title'),
+			],
+			'search_url' => [
+				'type' => 'string',
+				'required' => FALSE,
+				'max_length' => 256,
+				'message' => $this->language->get('error_search_url'),
+			],
+			'search_category' => [
+				'type' => 'integer',
+				'required' => FALSE,
+			],
+			'search_editable' => [
+				'type' => 'string',
+				'required' => FALSE,
+			],
+		];
+
+		return new FormValidator($this->request, 'form-page-search', $inputs);
 	}
 
 	protected function getPageForm() {

@@ -24,18 +24,36 @@ class Blocks extends Controller {
 
 	public function index() {
 		$this->language->loadLanguageFile('administrator/blocks.php');
+		$form_search = $this->getBlockSearchForm();
 
-		$pagination = new Pagination($this->request, ['tag']);
+		$pagination = new Pagination($this->request, 'tag');
+
+		$params = [];
+		if ($form_search->validate()) {
+			$values = $form_search->getSubmittedValues();
+			foreach ($values as $name => $value) {
+				if (preg_match('/^search_(title|tag)$/', $name, $matches) && $value != '') {
+					$value = strtolower($value);
+					$params[$matches[1]] = ['type'=>'like', 'value'=>'%'.$value.'%'];
+				}
+				elseif ($name == 'search_category' && (int)$value != 0) {
+					$params['block_category_id'] = (int)$value;
+				}
+			}
+		}
 
 		// get all the pages
 		$model  = new Model($this->config, $this->database);
+		$block_category = $model->getModel('\core\classes\models\BlockCategory');
 		$block  = $model->getModel('\\core\\classes\\models\\Block');
-		$blocks = $block->getMulti(NULL, $pagination->getOrdering(), $pagination->getLimitOffset());
+		$blocks = $block->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
 		$pagination->setRecordCount(10);
 
 		$data = [
+			'form' => $form_search,
 			'blocks' => $blocks,
 			'pagination' => $pagination,
+			'categories' => $block_category->getAsOptions(),
 		];
 
 		$template = $this->getTemplate('pages/administrator/blocks/list.php', $data);
@@ -108,6 +126,33 @@ class Blocks extends Controller {
 				$block->setCategory($block_category);
 			}
 		}
+	}
+
+	protected function getBlockSearchForm() {
+		$inputs = [
+			'search_title' => [
+				'type' => 'string',
+				'required' => FALSE,
+				'max_length' => 256,
+				'message' => $this->language->get('error_search_title'),
+			],
+			'search_tag' => [
+				'type' => 'string',
+				'required' => FALSE,
+				'max_length' => 64,
+				'message' => $this->language->get('error_search_title'),
+			],
+			'search_category' => [
+				'type' => 'integer',
+				'required' => FALSE,
+			],
+			'search_type' => [
+				'type' => 'integer',
+				'required' => FALSE,
+			],
+		];
+
+		return new FormValidator($this->request, 'form-block-search', $inputs);
 	}
 
 	protected function getBlockForm() {

@@ -1,3 +1,4 @@
+.htaccess
 core/config/log4php.json
 core/config/config.php
 composer/composer.lock

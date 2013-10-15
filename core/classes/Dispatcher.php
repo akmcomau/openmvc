@@ -112,12 +112,12 @@ class Dispatcher {
 		}
 
 		if (($is_admin_required || $is_admin_method) && !$this->config->siteConfig()->enable_admin) {
-			$this->logger->debug("Admin is disabled");
+			$this->logger->info("Admin is disabled");
 			return $this->error_404($request);
 		}
 
 		if (!($is_admin_required || $is_admin_method) && !$this->config->siteConfig()->enable_public && !preg_match('/^error_/', $method_name)) {
-			$this->logger->debug("Public is disabled");
+			$this->logger->info("Public is disabled");
 			return $this->error_404($request);
 		}
 

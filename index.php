@@ -2,6 +2,7 @@
 
 session_start();
 
+use core\classes\exceptions\DomainRedirectException;
 use core\classes\exceptions\RedirectException;
 use core\classes\AutoLoader;
 use core\classes\Config;
@@ -9,6 +10,7 @@ use core\classes\Database;
 use core\classes\Dispatcher;
 use core\classes\Logger;
 use core\classes\Request;
+use core\classes\URL;
 
 $display_errors = TRUE;
 $script_start = microtime(TRUE);
@@ -79,6 +81,17 @@ try {
 catch (RedirectException $ex) {
 	$logger->info($ex->getMessage());
 	header("Location: {$ex->getURL()}");
+}
+catch (DomainRedirectException $ex) {
+	$config->setSiteDomain($ex->getDomain());
+	$url = new URL($config);
+	$params = [];
+	if (!empty($_GET['params'])) {
+		$params = explode('/', $_GET['params']);
+	}
+	$controller = isset($_GET['controller']) ?  $_GET['controller'] : NULL;
+	$method = isset($_GET['method']) ?  $_GET['method'] : NULL;
+	header('Location: http://'.$ex->getDomain().$url->getURL($controller, $method, $params));
 }
 catch (Exception $ex) {
 	log_display_exception($display_errors, $logger, $ex);

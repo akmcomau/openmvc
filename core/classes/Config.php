@@ -2,7 +2,7 @@
 
 namespace core\classes;
 
-use core\classes\exceptions\RedirectException;
+use core\classes\exceptions\DomainRedirectException;
 use ErrorException;
 
 class Config {
@@ -103,9 +103,7 @@ class Config {
 		$sites = $this->sites;
 		foreach ($sites as $domain => $site) {
 			if ($domain == $host) {
-				$this->site_domain = $domain;
-				header('Location: '.$this->getSiteURL());
-				exit;
+				throw new DomainRedirectException('www.'.$domain);
 			}
 			elseif ('www.'.$domain == $host) {
 				$this->site_domain = $domain;

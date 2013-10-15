@@ -20,6 +20,7 @@ class Model {
 	protected $indexes        = [];
 	protected $foreign_keys   = [];
 	protected $uniques        = [];
+	protected $relationships  = [];
 
 	protected $available_models = [
 		'Administrator',
@@ -171,10 +172,12 @@ class Model {
 
 	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
 		$table = $this->table;
-		$sql   = "SELECT * FROM $table";
+		$sql   = "SELECT * FROM ".$this->generateFromClause($params);
 		if ($params) {
 			$where = $this->generateWhereClause($params);
-			$sql  .= " WHERE $where";
+			if ($where) {
+				$sql .= " WHERE $where";
+			}
 		}
 		if ($ordering && count($ordering)) {
 			$ordering_sql = [];
@@ -204,10 +207,12 @@ class Model {
 
 	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL) {
 		$table = $this->table;
-		$sql   = "SELECT * FROM $table";
+		$sql   = "SELECT * FROM ".$this->generateFromClause($params);
 		if ($params) {
 			$where = $this->generateWhereClause($params);
-			$sql  .= " WHERE $where";
+			if ($where) {
+				$sql .= " WHERE $where";
+			}
 		}
 		$records = $this->database->queryMulti($sql);
 
@@ -219,13 +224,49 @@ class Model {
 		return $models;
 	}
 
+	public function generateFromClause(array $params = NULL) {
+		if (!$params) $params = [];
+		$tables = [ $this->table ];
+		foreach ($params as $column => $value) {
+			foreach ($this->relationships as $table => $data) {
+				if (in_array($column, $data['where_fields'])) {
+					$tables[] = $data['join_clause'];
+				}
+			}
+		}
+		return join(' ', $tables);
+	}
+
 	public function generateWhereClause(array $params) {
 		$where = [];
 		foreach ($params as $column => $value) {
 			if (isset($this->columns[$this->table.'_'.$column])) {
-				$where[] = $this->table.'_'.$column.'='.$this->database->quote($value);
+				$column = $this->table.'_'.$column;
 			}
 			elseif (isset($this->columns[$column])) {
+				$column = $column;
+			}
+			else {
+				$found = FALSE;
+				foreach ($this->relationships as $table => $data) {
+					if (in_array($column, $data['where_fields'])) {
+						$found = TRUE;
+						$column = "$table.$column";
+					}
+				}
+
+				if (!$found) continue;
+			}
+
+			// its not just an equal
+			if (is_array($value)) {
+				switch ($value['type']) {
+					case 'like':
+						$where[] = $column.' LIKE '.$this->database->quote($value['value']);
+						break;
+				}
+			}
+			else {
 				$where[] = $column.'='.$this->database->quote($value);
 			}
 		}
