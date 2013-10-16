@@ -6,5 +6,11 @@ $_URLS = [
 		'index' => [
 			'link_text' => ['en' => 'Customers'],
 		],
+		'add' => [
+			'link_text' => ['en' => 'Add Customer'],
+		],
+		'edit' => [
+			'link_text' => ['en' => 'Edit Customer'],
+		],
 	],
 ];

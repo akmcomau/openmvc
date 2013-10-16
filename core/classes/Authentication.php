@@ -40,14 +40,14 @@ class Authentication {
 
 	public function customerLoggedIn() {
 		if ($this->logged_in && $this->getCustomerID()) {
-			return TRUE;
+			return $this->customer_data;
 		}
 		return FALSE;
 	}
 
 	public function administratorLoggedIn() {
 		if ($this->logged_in && $this->getAdministratorID()) {
-			return TRUE;
+			return $this->administrator_data;
 		}
 		return FALSE;
 	}

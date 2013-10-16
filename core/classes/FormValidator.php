@@ -212,7 +212,7 @@ class FormValidator {
 							break;
 
 						case 'regex':
-							if (!preg_match('/'.$validator['regex'].'/'.$validator['modifiers'], $value)) {
+							if (!empty($value) && !preg_match('/'.$validator['regex'].'/'.$validator['modifiers'], $value)) {
 								$this->form_errors[$name] = $validator['message'];
 								$is_this_valid = FALSE;
 							}

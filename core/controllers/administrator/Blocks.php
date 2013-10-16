@@ -42,8 +42,9 @@ class Blocks extends Controller {
 			}
 		}
 
-		// get all the pages
+		// get all the blocks
 		$model  = new Model($this->config, $this->database);
+		$block_type = $model->getModel('\core\classes\models\BlockType');
 		$block_category = $model->getModel('\core\classes\models\BlockCategory');
 		$block  = $model->getModel('\\core\\classes\\models\\Block');
 		$blocks = $block->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
@@ -54,6 +55,7 @@ class Blocks extends Controller {
 			'blocks' => $blocks,
 			'pagination' => $pagination,
 			'categories' => $block_category->getAsOptions(),
+			'types' => $block_type->getAsOptions(),
 		];
 
 		$template = $this->getTemplate('pages/administrator/blocks/list.php', $data);

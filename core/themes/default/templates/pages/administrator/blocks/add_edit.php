@@ -29,7 +29,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_category; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<select name="category">
+								<select name="category" class="form-control">
 									<option value=""></option>
 									<?php foreach ($categories as $value => $text) { ?>
 										<option value="<?php echo $value; ?>" <?php if ($block->getCategory() && $value == $block->getCategory()->id) echo 'selected="selected"'; ?>><?php echo $text; ?></option>

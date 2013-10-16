@@ -60,12 +60,11 @@
 						<li class="dropdown">
 							<a href="javscript:;" class="dropdown-toggle" data-toggle="dropdown">
 								<i class="icon-user"></i>
-								<?php echo $text_administrator; ?>
+								<?php echo $administrator_logged_in['administrator_first_name'].' '.$administrator_logged_in['administrator_last_name']; ?>
 								<b class="caret"></b>
 							</a>
 							<ul class="dropdown-menu">
-								<li><?php echo $this->url->getLink('', 'Administrator', 'account_details'); ?></li>
-								<li><?php echo $this->url->getLink('', 'Administrator', 'change_password'); ?></li>
+							<li><a href="<?php echo $this->url->getURL('administrator/Administrators', 'edit', [$administrator_logged_in['administrator_id']]); ?>"><?php echo $text_profile; ?></a></li>
 								<li class="divider"></li>
 								<li><?php echo $this->url->getLink('', 'Administrator', 'logout'); ?></li>
 							</ul>
@@ -127,8 +126,20 @@
 									<b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">
-									<li><?php echo $this->url->getLink('', 'administrator/Customers', 'index');?></li>
-									<li><?php echo $this->url->getLink('', 'administrator/Administrators', 'index');?></li>
+									<li class="dropdown-submenu">
+										<a href="<?php echo $this->url->getURL('administrator/Administrators');?>"><?php echo $text_administrators; ?></a>
+										<ul class="dropdown-menu">
+											<li><?php echo $this->url->getLink('', 'administrator/Administrators');?></li>
+											<li><?php echo $this->url->getLink('', 'administrator/Administrators', 'add');?></li>
+										</ul>
+									</li>
+									<li class="dropdown-submenu">
+										<a href="<?php echo $this->url->getURL('administrator/Customers');?>"><?php echo $text_customers; ?></a>
+										<ul class="dropdown-menu">
+											<li><?php echo $this->url->getLink('', 'administrator/Customers');?></li>
+											<li><?php echo $this->url->getLink('', 'administrator/Customers', 'add');?></li>
+										</ul>
+									</li>
 								</ul>
 							</li>
 						</ul>

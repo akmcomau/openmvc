@@ -33,6 +33,7 @@ class Model {
 		'PageCategory',
 		'PageCategoryLink',
 		'BlockCategory',
+		'BlockType',
 		'Block',
 		'BlockCategoryLink',
 	];

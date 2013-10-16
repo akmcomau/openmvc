@@ -46,6 +46,16 @@ class Database extends PDO {
 		return $this->engine;
 	}
 
+	public function quote($value, $parameter_type = NULL) {
+		if (is_bool($value)) {
+			return $value ? 'TRUE' : 'FALSE';
+		}
+		elseif (is_integer($value)) {
+			return (int)$value;
+		}
+		return parent::quote($value, $parameter_type);
+	}
+
 	/**
 	 *
 	 */

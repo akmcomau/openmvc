@@ -1,7 +1,7 @@
 <?php
 
 $_LANGUAGE = [
-	'administrator' => 'Administrator',
+	'profile' => 'Profile',
 	'public_site' => 'Public Site',
 	'toggle_navigation' => 'Toggle navigation',
 	'header_settings' => 'Settings',
@@ -16,4 +16,6 @@ $_LANGUAGE = [
 	'blocks' => 'Blocks',
 	'latex' => 'LaTeX',
 	'users' => 'Users',
+	'administrators' => 'Administrators',
+	'customers' => 'Customers',
 ];

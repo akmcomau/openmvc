@@ -55,7 +55,7 @@ $.extend(FormValidator, {
 		var error = $('#'+form_id+' #'+element_name+'-error');
 		error.html(message);
 		error.show()
-		$("#"+form_id+" input[name='"+element_name+"']").addClass('form-error-input');
+		$("#"+form_id+" *[name='"+element_name+"']").addClass('form-error-input');
 	},
 	registerForm: function (form_id, form, validators) {
 		this._forms[form_id] = form;
@@ -74,7 +74,7 @@ $.extend(FormValidator, {
 			// jquery does not work properly for this next line $('#'+element_name).val();
 			var element_value = '';
 			if (element.type != 'date_segements') {
-				element_value = $('#'+form_id+' input[name="'+element_name+'"]').val();
+				element_value = $('#'+form_id+' *[name="'+element_name+'"]').val();
 			}
 			var element_error = $('#'+form_id+' #'+element_name+'-error');
 
@@ -175,7 +175,7 @@ $.extend(FormValidator, {
 
 						case 'regex':
 							var patt = new RegExp(validator.regex, validator.modifiers);
-							if (!patt.test(element_value)) {
+							if (element_value != '' && !patt.test(element_value)) {
 								is_this_valid = false;
 								validator_error = true;
 								this.displayValidationError(form_id, element_name, validator.message);
@@ -197,7 +197,7 @@ $.extend(FormValidator, {
 				}
 			}
 			else {
-				$("#"+form_id+" input[name='"+element_name+"']").removeClass('form-error-input');
+				$("#"+form_id+" *[name='"+element_name+"']").removeClass('form-error-input');
 			}
 		}
 

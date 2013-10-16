@@ -13,7 +13,7 @@ class Category extends Model {
 	}
 
 	public function getAllByParent() {
-		$categories = $this->getMulti();
+		$categories = $this->getMulti(NULL, ['name' => 'asc']);
 		$categ_data = [];
 		foreach ($categories as $category) {
 			$categ_data[$category->parent_id][] = [
@@ -25,7 +25,7 @@ class Category extends Model {
 	}
 
 	public function getAsOptions() {
-		$categories = $this->getMulti();
+		$categories = $this->getMulti(NULL, ['name' => 'asc']);
 		$by_parent = [];
 		$by_id = [];
 		foreach ($categories as $category) {

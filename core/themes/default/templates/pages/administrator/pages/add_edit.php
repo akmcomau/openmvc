@@ -18,7 +18,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_category; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<select name="category">
+								<select name="category" class="form-control">
 									<option value=""></option>
 									<?php foreach ($categories as $value => $text) { ?>
 										<option value="<?php echo $value; ?>" <?php if ($value == $category) echo 'selected="selected"'; ?>><?php echo $text; ?></option>
@@ -123,14 +123,22 @@
 						<?php } ?>
 						<hr class="separator-2column" />
 						<div class="row">
-							<div class="col-md-12 align-right">
-								<a class="btn btn-primary float-left" href="javascript:togglePreview()"><?php echo $text_preview; ?></a>
-								<button class="btn btn-primary" type="submit" name="form-page-submit"><?php
-									if ($is_add_page) echo $text_add_button;
-									else echo $text_update_button;
-								?></button>
-								<br /><br />
-							</div>
+							<?php if ($misc_page) { ?>
+								<div class="col-md-12 align-right">
+									<a class="btn btn-primary float-left" href="javascript:togglePreview()"><?php echo $text_preview; ?></a>
+									<button class="btn btn-primary" type="submit" name="form-page-submit"><?php
+									  if ($is_add_page) echo $text_add_button;
+									  else echo $text_update_button;
+									?></button>
+								</div>
+							<?php } else { ?>
+								<div class="col-md-12 align-center">
+									<button class="btn btn-primary" type="submit" name="form-page-submit"><?php
+									  if ($is_add_page) echo $text_add_button;
+									  else echo $text_update_button;
+									?></button>
+								</div>
+							<?php } ?>
 						</div>
 						<?php if ($misc_page) { ?>
 							<div id="preview" class="row default-padding">

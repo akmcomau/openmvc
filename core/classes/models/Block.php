@@ -18,6 +18,10 @@ class Block extends Model {
 			'data_type'      => 'int',
 			'null_allowed'   => FALSE,
 		],
+		'block_type_id' => [
+			'data_type'      => 'int',
+			'null_allowed'   => TRUE,
+		],
 		'block_tag' => [
 			'data_type'      => 'text',
 			'data_length'    => 64,
@@ -36,11 +40,16 @@ class Block extends Model {
 
 	protected $indexes = [
 		'site_id',
+		'block_type_id',
 		'block_tag',
 	];
 
 	protected $uniques = [
 		'block_tag',
+	];
+
+	protected $foreign_keys = [
+		'block_type_id' => ['block_type', 'block_type_id'],
 	];
 
 	protected $relationships = [
@@ -52,6 +61,11 @@ class Block extends Model {
 
 	public function setCategory(BlockCategory $category = NULL) {
 		$this->objects['category'] = $category;
+	}
+
+	public function getCategoryName() {
+		$category = $this->getCategory();
+		return $category ? $category->name : NULL;
 	}
 
 	public function getCategory() {

@@ -93,7 +93,7 @@
 						<tr>
 							<td><?php echo $block->title; ?></td>
 							<td><?php echo $block->tag; ?></td>
-							<td><?php echo 'categories'; ?></td>
+							<td><?php echo $block->getCategoryName(); ?></td>
 							<td>
 								<a href="<?php echo $this->url->getURL('administrator/Blocks', 'edit', [$block->tag]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
 							</td>
