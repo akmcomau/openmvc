@@ -95,11 +95,8 @@
 								<li class="dropdown">
 												  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $text_my_account; ?><b class="caret"></b></a>
 									<ul class="dropdown-menu">
-										<li><?php echo $this->url->getLink('menu-item', 'Customer'); ?></li>
 										<li><?php echo $this->url->getLink('menu-item', 'Customer', 'contact_details'); ?></li>
 										<li><?php echo $this->url->getLink('menu-item', 'Customer', 'change_password'); ?></li>
-										<li class="divider"></li>
-										<li><?php echo $this->url->getLink('menu-item', 'customer/Orders'); ?></li>
 									</ul>
 								</li>
 								<li><?php echo $this->url->getLink('menu-item', 'Customer', 'logout'); ?></li>

@@ -66,9 +66,12 @@ class Customers extends Controller {
 		if ($form_customer->validate()) {
 			$this->updateFromRequest($form_customer, $customer);
 			$customer->insert();
+			$form_customer->setNotification('success', $this->language->get('notification_add_success'));
+			$customer = $model->getModel('\core\classes\models\Customer');
 		}
 		elseif ($form_customer->isSubmitted()) {
 			$this->updateFromRequest($form_customer, $customer);
+			$form_customer->setNotification('error', $this->language->get('notification_add_error'));
 		}
 
 		$data = [
@@ -93,9 +96,11 @@ class Customers extends Controller {
 		if ($form_customer->validate()) {
 			$this->updateFromRequest($form_customer, $customer);
 			$customer->update();
+			$form_customer->setNotification('success', $this->language->get('notification_update_success'));
 		}
 		elseif ($form_customer->isSubmitted()) {
 			$this->updateFromRequest($form_customer, $customer);
+			$form_customer->setNotification('error', $this->language->get('notification_update_error'));
 		}
 
 		$data = [

@@ -33,4 +33,8 @@ $_LANGUAGE = [
 	'error_phone' => 'Must be between 1 and 32 characters',
 	'error_password_format' => 'Must be between 6 and 32 characters and include a number',
 	'error_password_mismatch' => 'The passwords do not match',
+	'notification_update_success' => 'Administrator has been updated successfully',
+	'notification_update_error' => 'Updating administrator failed, please check your values below',
+	'notification_add_success' => 'Administrator has been added successfully',
+	'notification_add_error' => 'Adding administrator failed, please check your values below',
 ];

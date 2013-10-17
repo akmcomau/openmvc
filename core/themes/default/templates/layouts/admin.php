@@ -148,8 +148,10 @@
 			</div>
 		</div>
 	<?php } ?>
+	<div id="notifications_area" class="container">
+	</div>
 
-	<div class="main">
+	<div id="main-content">
 		<?php echo $page_content; ?>
 	</div>
 

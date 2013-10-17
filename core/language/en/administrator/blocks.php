@@ -18,4 +18,8 @@ $_LANGUAGE = [
 	'type' => 'Type',
 	'error_search_title' => 'Must not exceed 256 characters',
 	'error_search_tag' => 'Must not exceed 64 characters',
+	'notification_update_success' => 'Block has been updated successfully',
+	'notification_update_error' => 'Updating block failed, please check your values below',
+	'notification_add_success' => 'Block has been added successfully',
+	'notification_add_error' => 'Adding block failed, please check your values below',
 ];

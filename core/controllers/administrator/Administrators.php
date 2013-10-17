@@ -64,9 +64,12 @@ class Administrators extends Controller {
 		if ($form_administrator->validate()) {
 			$this->updateFromRequest($form_administrator, $administrator);
 			$administrator->insert();
+			$form_administrator->setNotification('success', $this->language->get('notification_add_success'));
+			$administrator = $model->getModel('\core\classes\models\Administrator');
 		}
 		elseif ($form_administrator->isSubmitted()) {
 			$this->updateFromRequest($form_administrator, $administrator);
+			$form_administrator->setNotification('error', $this->language->get('notification_add_error'));
 		}
 
 		$data = [
@@ -91,9 +94,11 @@ class Administrators extends Controller {
 		if ($form_administrator->validate()) {
 			$this->updateFromRequest($form_administrator, $administrator);
 			$administrator->update();
+			$form_administrator->setNotification('success', $this->language->get('notification_update_success'));
 		}
 		elseif ($form_administrator->isSubmitted()) {
 			$this->updateFromRequest($form_administrator, $administrator);
+			$form_administrator->setNotification('error', $this->language->get('notification_update_error'));
 		}
 
 		$data = [

@@ -12,6 +12,9 @@ class FormValidator {
 	protected $validators = [];
 	protected $form_errors = [];
 
+	protected $notification_message = NULL;
+	protected $notification_type = NULL;
+
 	public function __construct($request, $name, array $inputs = NULL, array $validators  = NULL) {
 		$this->request = $request;
 		$this->name = $name;
@@ -21,6 +24,11 @@ class FormValidator {
 		if ($validators) {
 			$this->validators = $validators;
 		}
+	}
+
+	public function setNotification($type, $message) {
+		$this->notification_type = $type;
+		$this->notification_message = $message;
 	}
 
 	public function getErrors() {
@@ -61,6 +69,11 @@ class FormValidator {
 
 		// add an onclick event to the submit button
 		$js .= '$(document).ready(function() {$("#'.$this->name.' button[name=\''.$this->name.'-submit\']").click(function(event) {return FormValidator.validateForm("'.$this->name.'", event);});});';
+
+		// check for notification display
+		if ($this->notification_message && $this->notification_type) {
+			$js .= 'FormValidator.displayPageNotification("'.$this->notification_type.'", "'.htmlspecialchars($this->notification_message).'");';
+		}
 
 		return $js;
 	}

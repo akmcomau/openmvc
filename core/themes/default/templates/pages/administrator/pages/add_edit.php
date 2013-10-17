@@ -48,14 +48,14 @@
 						</div>
 						<hr class="separator-2column" />
 						<div class="row">
-							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_method; ?></div>
+							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_method_name; ?></div>
 							<div class="col-md-9 col-sm-9 ">
 								<?php
 								if ($is_add_page && $misc_page) {
 									?>
-									page/ <input type="text" class="form-control" name="page_method" value="<?php echo $method; ?>" style="max-width: 560px; display: inline-block;" />
+									page/ <input type="text" class="form-control" name="method_name" value="<?php echo $method; ?>" style="max-width: 560px; display: inline-block;" />
 									<?php
-									echo $form->getHtmlErrorDiv('method');
+									echo $form->getHtmlErrorDiv('method_name');
 								}
 								elseif ($misc_page) {
 									echo 'page/'.$method;

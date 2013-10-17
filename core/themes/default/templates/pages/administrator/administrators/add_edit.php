@@ -55,7 +55,7 @@
 							<div class="col-md-9 col-sm-9 ">
 								<select class="form-control" name="active">
 									<option value="1" <?php if ($administrator->active) echo 'selected="selected"'; ?>><?php echo $text_active_yes; ?></option>
-									<option value="0" <?php if (!$administrator->active) echo 'selected="selected"'; ?>><?php echo $text_active_no; ?></option>
+									<option value="0" <?php if (!is_null($administrator->active) && !$administrator->active) echo 'selected="selected"'; ?>><?php echo $text_active_no; ?></option>
 								</select>
 								<?php echo $form->getHtmlErrorDiv('active'); ?>
 							</div>

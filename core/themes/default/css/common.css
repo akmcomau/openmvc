@@ -75,6 +75,9 @@ label {
 /* --------------------------------------------------
  * Common styles
  *-------------------------------------------------- */
+#main-content {
+	margin-top: 2em;
+}
 a:hover img {
 	opacity: 0.8;
 	filter: alpha(opacity=80);
@@ -121,6 +124,27 @@ ul.inline li {
 		margin-top: 5px;
 		text-align: left;
 	}
+}
+/* --------------------------------------------------
+ * Notifications
+ *-------------------------------------------------- */
+#notifications_area div {
+	text-align: left;
+	font-size: 1.1em;
+	font-weight: bold;
+	padding: 10px;
+	margin-top: 10px;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+}
+#notifications_area div.success {
+	background-color: lightgreen;
+}
+#notifications_area div.error {
+	background-color: pink;
+}
+#notifications_area div.info {
+	background-color: lightblue;
 }
 /* --------------------------------------------------
  * Pagination

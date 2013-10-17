@@ -33,3 +33,6 @@
 		<?php } ?>
 	</form>
 </div>
+<script type="text/javascript">
+	<?php echo $form->getJavascriptValidation(); ?>
+</script>

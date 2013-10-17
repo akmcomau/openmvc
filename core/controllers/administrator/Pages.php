@@ -63,22 +63,27 @@ class Pages extends Controller {
 
 	public function add() {
 		$this->language->loadLanguageFile('administrator/pages.php');
-		$form_page = $this->getPageForm();
+		$form_page = $this->getPageForm(TRUE);
 
 		$page  = new Page($this->config, $this->database);
 		$data = $page->getPage();
 
-		$model = new Model($this->config, $this->database);
-		$page_category = $model->getModel('\core\classes\models\PageCategory');
-		$data['categories'] = $page_category->getAsOptions();
-
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
 			$page->update($data, FALSE);
+			$form_page->setNotification('success', $this->language->get('notification_add_success'));
+
+			// create an empty page for the next page to add
+			$data = $page->getPage();
 		}
 		elseif ($form_page->isSubmitted()) {
 			$this->updateFromRequest($form_page, $data);
+			$form_page->setNotification('error', $this->language->get('notification_add_error'));
 		}
+
+		$model = new Model($this->config, $this->database);
+		$page_category = $model->getModel('\core\classes\models\PageCategory');
+		$data['categories'] = $page_category->getAsOptions();
 
 		$data['is_add_page'] = TRUE;
 		$data['form'] = $form_page;
@@ -88,7 +93,7 @@ class Pages extends Controller {
 
 	public function edit($controller, $method, $sub_page = NULL) {
 		$this->language->loadLanguageFile('administrator/pages.php');
-		$form_page = $this->getPageForm();
+		$form_page = $this->getPageForm(FALSE);
 
 		if ($sub_page) $method .= '/'.$sub_page;
 
@@ -102,9 +107,11 @@ class Pages extends Controller {
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
 			$page->update($data, TRUE);
+			$form_page->setNotification('success', $this->language->get('notification_update_success'));
 		}
 		elseif ($form_page->isSubmitted()) {
 			$this->updateFromRequest($form_page, $data);
+			$form_page->setNotification('error', $this->language->get('notification_update_error'));
 		}
 
 		if ($data['misc_page']) {
@@ -123,8 +130,8 @@ class Pages extends Controller {
 		$data['meta_tags']['description'] = $form_page->getValue('meta_description');
 		$data['meta_tags']['keywords'] = $form_page->getValue('meta_keywords');
 		$data['controller_alias'] = $form_page->getValue('controller_alias');
-		if ($form_page->getValue('page_method')) {
-			$data['method'] = $form_page->getValue('page_method');
+		if ($form_page->getValue('method_name')) {
+			$data['method'] = $form_page->getValue('method_name');
 		}
 		$data['method_alias'] = $form_page->getValue('method_alias');
 		$data['content'] = $form_page->getValue('content');
@@ -161,7 +168,7 @@ class Pages extends Controller {
 		return new FormValidator($this->request, 'form-page-search', $inputs);
 	}
 
-	protected function getPageForm() {
+	protected function getPageForm($is_add_page) {
 		$inputs = [
 			'meta_title' => [
 				'type' => 'string',
@@ -179,9 +186,10 @@ class Pages extends Controller {
 				'type' => 'url-fragment',
 				'message' => 'This is required, only A-Z, a-Z, 0-9, dash(-), underscore(_)',
 			],
-			'method' => [
+			'method_name' => [
 				'type' => 'url-fragment',
 				'message' => 'This is required, only A-Z, a-Z, 0-9, dash(-), underscore(_)',
+				'required' => $is_add_page,
 			],
 			'method_alias' => [
 				'type' => 'url-fragment',

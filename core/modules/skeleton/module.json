@@ -1,4 +1,5 @@
 {
+	"hidden": true,
 	"name": "skeleton",
 	"description": "Skeleton Module",
 	"namespace": "\\core\\modules\\skeleton",

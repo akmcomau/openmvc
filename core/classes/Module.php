@@ -32,7 +32,9 @@ class Module {
 				throw new ErrorException("Could not decode: $filename");
 			}
 
-			$this->modules[$json['name']] = $json;
+			if (!(isset($json['hidden']) && $json['hidden'])) {
+				$this->modules[$json['name']] = $json;
+			}
 		}
 		foreach (glob($site_glob) as $filename) {
 			$contents = file_get_contents($filename);
@@ -41,7 +43,9 @@ class Module {
 				throw new ErrorException("Could not decode: $filename");
 			}
 
-			$this->modules[$json['name']] = $json;
+			if (!(isset($json['hidden']) && $json['hidden'])) {
+				$this->modules[$json['name']] = $json;
+			}
 		}
 
 		// check if the module is installed into the site

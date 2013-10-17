@@ -75,9 +75,12 @@ class Blocks extends Controller {
 		if ($form_block->validate()) {
 			$this->updateFromRequest($form_block, $block);
 			$block->insert();
+			$form_block->setNotification('success', $this->language->get('notification_add_success'));
+			$block = $model->getModel('\core\classes\models\Block');
 		}
 		elseif ($form_block->isSubmitted()) {
 			$this->updateFromRequest($form_block, $block);
+			$form_block->setNotification('error', $this->language->get('notification_add_error'));
 		}
 
 		$data['is_add_page'] = TRUE;
@@ -102,9 +105,11 @@ class Blocks extends Controller {
 		if ($form_block->validate()) {
 			$this->updateFromRequest($form_block, $block);
 			$block->update();
+			$form_block->setNotification('success', $this->language->get('notification_update_success'));
 		}
 		elseif ($form_block->isSubmitted()) {
 			$this->updateFromRequest($form_block, $block);
+			$form_block->setNotification('error', $this->language->get('notification_update_error'));
 		}
 
 		$data['is_add_page'] = FALSE;

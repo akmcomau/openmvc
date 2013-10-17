@@ -59,9 +59,11 @@ class LanguageEditor extends Controller {
 			foreach ($language_files as $file => $strings) {
 				$this->language->updateFile($file, $strings);
 			}
+			$form->setNotification('success', $this->language->get('notification_update_success'));
 		}
 		elseif ($form->isSubmitted()) {
 			$this->updateFromRequest($form, $language_files);
+			$form->setNotification('error', $this->language->get('notification_update_error'));
 		}
 
 		$data = [

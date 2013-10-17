@@ -15,7 +15,7 @@ $_LANGUAGE = [
 	'update_button' => 'Update Page',
 	'controller' => 'Controller',
 	'controller_alias' => 'Controller Alias',
-	'method' => 'Method',
+	'method_name' => 'Method',
 	'method_alias' => 'Method Alias',
 	'link_text' => 'Link Text',
 	'content' => 'Content',
@@ -28,4 +28,8 @@ $_LANGUAGE = [
 	'editable_no' => 'Fixed',
 	'error_search_title' => 'Must not exceed 256 characters',
 	'error_search_url' => 'Must not exceed 256 characters',
+	'notification_update_success' => 'Page has been updated successfully',
+	'notification_update_error' => 'Updating page failed, please check your values below',
+	'notification_add_success' => 'Page has been added successfully',
+	'notification_add_error' => 'Adding page failed, please check your values below',
 ];

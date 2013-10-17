@@ -51,6 +51,20 @@ $.extend(FormValidator, {
 		}
 		return false;
 	},
+	displayPageNotification: function (type, message, no_scroll) {
+		var notification = $('<div class="'+type+'">'+message+'</div>');
+		$('#notifications_area').html(notification);
+		if (typeof no_scroll == 'undefined') {
+			scroll = $("#notifications_area").position().top-80;
+			$(document).scrollTop(scroll);
+		}
+		setTimeout(function(){
+			notification.fadeOut(1000);
+		}, 5000);
+	},
+	clearPageNotification: function (message) {
+		$('#notifications_area').html('');
+	},
 	displayValidationError: function (form_id, element_name, message) {
 		var error = $('#'+form_id+' #'+element_name+'-error');
 		error.html(message);
@@ -191,9 +205,11 @@ $.extend(FormValidator, {
 				}
 				is_valid = false;
 
-				scroll = $("#"+form_id+" *[name='"+element_name+"']").offset().top-80;
-				if (scroll < scroll_position) {
-					scroll_position = scroll;
+				if ($("#"+form_id+" *[name='"+element_name+"']")) {
+					scroll = $("#"+form_id+" *[name='"+element_name+"']").offset().top-80;
+					if (scroll < scroll_position) {
+						scroll_position = scroll;
+					}
 				}
 			}
 			else {
