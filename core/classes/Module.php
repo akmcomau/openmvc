@@ -15,6 +15,9 @@ class Module {
 	}
 
 	public function getModules() {
+		if (isset($_GLOBALS['cache']['modules'])) {
+			$this->modules = $_GLOBALS['cache']['modules'];
+		}
 		if ($this->modules) return $this->modules;
 
 		// get the paths
@@ -63,6 +66,8 @@ class Module {
 				$module['enabled'] = FALSE;
 			}
 		}
+
+		$_GLOBALS['cache']['modules'] = $this->modules;
 
 		return $this->modules;
 	}

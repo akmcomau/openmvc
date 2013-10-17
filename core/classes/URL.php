@@ -6,7 +6,7 @@ use ErrorException;
 
 class URL {
 	protected $url;
-	protected $url_map;
+	protected $url_map = NULL;
 
 	public function __construct(Config $config) {
 		$this->config = $config;
@@ -18,6 +18,11 @@ class URL {
 	}
 
 	protected function generateUrlMap() {
+		if (isset($_GLOBALS['cache']['url_map'])) {
+			$this->url_map = $_GLOBALS['cache']['url_map'];
+		}
+		if ($this->url_map) return $this->url_map;
+
 		$controllers = $this->listAllControllers();
 		$language    = $this->config->siteConfig()->language;
 
@@ -90,6 +95,8 @@ class URL {
 		}
 
 		$this->url_map['controllers'] = $controllers;
+
+		$_GLOBALS['cache']['url_map'] = $this->url_map;
 	}
 
 	public function listAllControllers() {
