@@ -121,7 +121,7 @@
 							</li>
 							<li class="dropdown">
 								<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-									<i class="icon-th-list"></i>
+									<i class="icon-user"></i>
 									<span><?php echo $text_users; ?></span>
 									<b class="caret"></b>
 								</a>

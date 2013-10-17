@@ -9,6 +9,7 @@ use core\classes\Template;
 use core\classes\FormValidator;
 use core\classes\renderable\Controller;
 use core\classes\Model;
+use core\classes\Pagination;
 
 class LanguageEditor extends Controller {
 
@@ -19,7 +20,98 @@ class LanguageEditor extends Controller {
 	];
 
 	public function index() {
-		$template = $this->getTemplate('pages/not_implemented.php');
+		$this->language->loadLanguageFile('administrator/language_editor.php');
+
+		$params = [];
+		if ($this->request->requestParam('search_file')) {
+			$params['file'] = $this->request->requestParam('search_file');
+		}
+
+		$pagination = new Pagination($this->request, 'file');
+		$pagination->setRecordCount(count($this->language->getLanguageFiles($params)));
+
+		$language_files = $this->language->getLanguageFiles($params, $pagination->getOrdering(), $pagination->getLimitOffset());
+		$form_search = $this->getLanguageSearchForm();
+
+		$data = [
+			'files' => $language_files,
+			'form' => $form_search,
+			'pagination' => $pagination,
+		];
+
+		$template = $this->getTemplate('pages/administrator/language_editor/list.php', $data);
 		$this->response->setContent($template->render());
+	}
+
+	public function edit() {
+		$this->language->loadLanguageFile('administrator/language_editor.php');
+
+		$file_list = func_get_args();
+		$language_files = [];
+		for ($i=0; $i<count($file_list); $i++) {
+			$file = $file_list[$i];
+			$language_files[$file] = $this->language->getFile($file);
+		}
+		$form = $this->getLanguageForm($language_files);
+
+		if ($form->validate()) {
+			$this->updateFromRequest($form, $language_files);
+			foreach ($language_files as $file => $strings) {
+				$this->language->updateFile($file, $strings);
+			}
+		}
+		elseif ($form->isSubmitted()) {
+			$this->updateFromRequest($form, $language_files);
+		}
+
+		$data = [
+			'files' => $language_files,
+			'form' => $form,
+		];
+
+		$template = $this->getTemplate('pages/administrator/language_editor/edit.php', $data);
+		$this->response->setContent($template->render());
+	}
+
+	protected function updateFromRequest(FormValidator $form, array &$language_files) {
+		$files = [];
+		foreach ($language_files as $file => $strings) {
+			$files[] = $file;
+		}
+
+		foreach ($form->getSubmittedValues() as $param => $value) {
+			if (preg_match('/^(\d+)_(.*)$/', $param, $matches)) {
+				$language_files[$files[$matches[1]]][$matches[2]] = $value;
+			}
+		}
+	}
+
+	protected function getLanguageSearchForm() {
+		$inputs = [
+			'search_file' => [
+				'type' => 'string',
+				'required' => FALSE,
+				'max_length' => 256,
+				'message' => $this->language->get('error_search_file'),
+			],
+		];
+
+		return new FormValidator($this->request, 'form-language-search', $inputs);
+	}
+
+	protected function getLanguageForm($language_files) {
+		$inputs = [];
+		$counter = 0;
+		foreach ($language_files as $file => $strings) {
+			foreach ($strings as $tag => $string) {
+				$inputs[$counter.'_'.$tag] = [
+					'type' => 'string',
+					'required' => FALSE,
+				];
+			}
+			$counter++;
+		}
+
+		return new FormValidator($this->request, 'form-language', $inputs);
 	}
 }

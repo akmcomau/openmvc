@@ -58,6 +58,7 @@ class Layout extends Renderable {
 			'logged_in'               => $this->authentication->loggedIn(),
 			'customer_logged_in'      => $this->authentication->customerLoggedIn(),
 			'administrator_logged_in' => $this->authentication->administratorLoggedIn(),
+			'language_files'          => $this->language->getLoadedFiles(),
 		];
 		$template = new Template($this->config, $this->language, $this->template, $data);
 		$this->response->setContent($template->render());

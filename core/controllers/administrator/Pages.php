@@ -45,7 +45,7 @@ class Pages extends Controller {
 		// get all the pages
 		$page  = new Page($this->config, $this->database);
 		$pages = $page->getPageList($params, $pagination->getOrdering(), $pagination->getLimitOffset());
-		$pagination->setRecordCount(count($page->getPageList()));
+		$pagination->setRecordCount(count($page->getPageList($params)));
 
 		$data = [
 			'pages' => $pages,
