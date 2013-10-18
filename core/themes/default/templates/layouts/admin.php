@@ -7,31 +7,26 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/bootstrap.min.css" rel="stylesheet" media="screen" />
-
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font_awesome.min.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/font_awesome_ie7.min.css" rel="stylesheet" media="screen" />
-
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin.css" rel="stylesheet" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin_responsive.css" rel="stylesheet" />
-    <link href="<?php echo $static_prefix; ?>/core/themes/default/css/jquery_ui.css" rel="stylesheet">
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome.min.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome-ie7.min.css" rel="stylesheet" media="screen" />
 
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/common.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin.css" rel="stylesheet" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin_responsive.css" rel="stylesheet" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin_theme.css" rel="stylesheet" media="screen" />
+
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery/jquery.min.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/ckeditor/ckeditor.js"></script>
+
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
+
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
-
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/bootstrap.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.flot.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.flot.pie.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/jquery.flot.resize.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/ckeditor/ckeditor.js"></script>
-	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/mathjax/MathJax.js?config=TeX-AMS_HTML-full"></script>
 
 	<link rel="shortcut icon" href="/core/themes/default/images/favicon.ico" />
 	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/core/themes/default/images/icon_logo_114.gif" />
@@ -166,8 +161,10 @@
 	</div>
 </body>
 <script type="text/javascript">
-	MathJax.Hub.Config({
-		tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
-	});
+	<?php if ($this->config->siteConfig()->enable_latex) { ?>
+		MathJax.Hub.Config({
+			tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+		});
+	<?php } ?>
 </script>
 </html>

@@ -170,8 +170,11 @@
 
 	function updatePreview(content) {
 		$('#content-preview').html(content);
-		MathJax.Hub.Queue(["Typeset", MathJax.Hub, 'content-preview']);
+		<?php if ($this->config->siteConfig()->enable_latex) { ?>
+			MathJax.Hub.Queue(["Typeset", MathJax.Hub, 'content-preview']);
+		<?php } ?>
 	}
+
 	CKEDITOR.on('instanceCreated', function (e) {
 		var editor = e.editor;
 		editor.on('change', function (ev) {

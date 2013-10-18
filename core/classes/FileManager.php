@@ -43,7 +43,7 @@ class Filemanager {
 			$this->setup($extraConfig);
 		}
 
-		$this->root = dirname(dirname(dirname(__FILE__))).DS.'core'.DS.'themes'.DS.'default'.DS;
+		$this->root = dirname(dirname(dirname(__FILE__))).DS.'core'.DS.'themes'.DS.'default'.DS.'packages'.DS.'file_manager'.DS;
 		$this->properties = array(
 				'Date Created'=>null,
 				'Date Modified'=>null,
@@ -835,18 +835,18 @@ private function loadLanguageFile() {
 	$lang = $this->config['options']['culture'];
 	if(isset($this->params['langCode']) && in_array($this->params['langCode'], $this->languages)) $lang = $this->params['langCode'];
 
-	if(file_exists($this->root. 'js/file_manager/languages/'.$lang.'.js')) {
-		$stream =file_get_contents($this->root. 'js/file_manager/languages/'.$lang.'.js');
+	if(file_exists($this->root. 'languages/'.$lang.'.js')) {
+		$stream =file_get_contents($this->root. 'languages/'.$lang.'.js');
 		$this->language = json_decode($stream, true);
 	} else {
-		$stream =file_get_contents($this->root. 'js/file_manager/languages/'.$lang.'.js');
+		$stream =file_get_contents($this->root. 'languages/'.$lang.'.js');
 		$this->language = json_decode($stream, true);
 	}
 }
 
 private function availableLanguages() {
 
-	if ($handle = opendir($this->root.'js/file_manager/languages/')) {
+	if ($handle = opendir($this->root.'languages/')) {
 		while (false !== ($file = readdir($handle))) {
 			if ($file != "." && $file != "..") {
 				array_push($this->languages, pathinfo($file, PATHINFO_FILENAME));

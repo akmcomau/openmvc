@@ -1,5 +1,4 @@
 {
-	"minimum-stability": "dev",
 	"repositories": [
 		{
 			"type":"package",
@@ -50,12 +49,96 @@
 		{
 			"type":"package",
 			"package": {
-				"name": "mathjax/MathJax",
-				"version":"v2.2",
+				"name": "twbs/bootstrap",
+				"version": "v3.0.0",
 				"source": {
-					"url": "https://github.com/mathjax/MathJax.git",
+					"url": "https://github.com/twbs/bootstrap.git",
 					"type": "git",
-					"reference":"master"
+					"reference":"v3.0.0"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "FortAwesome/Font-Awesome",
+				"version": "v3.2.1",
+				"source": {
+					"url": "https://github.com/FortAwesome/Font-Awesome.git",
+					"type": "git",
+					"reference":"v3.2.1"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "jquery/jquery",
+				"version": "2.0.3",
+				"source": {
+					"url": "https://github.com/jquery/jquery.git",
+					"type": "git",
+					"reference":"2.0.3"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "jquery/jquery-ui",
+				"version": "1.10.3",
+				"source": {
+					"url": "https://github.com/jquery/jquery-ui.git",
+					"type": "git",
+					"reference":"1.10.3"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "malsup/form",
+				"version": "3.25.0",
+				"source": {
+					"url": "https://github.com/malsup/form.git",
+					"type": "git",
+					"reference":"3.25.0-2013.01.18"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "arnklint/jquery-contextMenu",
+				"version": "1.0.4",
+				"source": {
+					"url": "https://github.com/arnklint/jquery-contextMenu.git",
+					"type": "git",
+					"reference":"1.0.4"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "trentrichardson/jQuery-Impromptu",
+				"version": "v5.0",
+				"source": {
+					"url": "https://github.com/trentrichardson/jQuery-Impromptu.git",
+					"type": "git",
+					"reference":"v5.0"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "Mottie/tablesorter",
+				"version": "v2.11.1",
+				"source": {
+					"url": "https://github.com/Mottie/tablesorter.git",
+					"type": "git",
+					"reference":"v2.11.1"
 				}
 			}
 		}
@@ -66,6 +149,13 @@
 		"spekkionu/wideimage": "11.02.19",
 		"ckeditor/ckeditor": "4.2.1",
 		"ckeditor/onchange": "1.8",
-		"mathjax/MathJax": "v2.2"
+		"twbs/bootstrap": "v3.0.0",
+		"FortAwesome/Font-Awesome": "v3.2.1",
+		"jquery/jquery": "2.0.3",
+		"jquery/jquery-ui": "1.10.3",
+		"malsup/form": "3.25.0",
+		"arnklint/jquery-contextMenu": "1.0.4",
+		"trentrichardson/jQuery-Impromptu": "v5.0",
+		"Mottie/tablesorter": "v2.11.1"
 	}
 }

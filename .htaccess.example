@@ -18,8 +18,8 @@ DirectoryIndex index.php
 	# For the file manager
 	RewriteRule ^/?admin/scripts/filemanager.config.js$ /index.php?controller=admin\%5Cfile-manager&method=config [QSA,L]
 	RewriteRule ^/?admin/connectors/php/filemanager.php$ /index.php?controller=admin\%5Cfile-manager&method=rpc [QSA,L]
-	RewriteRule ^/?admin/scripts/filemanager.liveSearch.min.js$ /core/themes/default/js/file_manager/filemanager.liveSearch.min.js [QSA,L]
-	RewriteRule ^/?admin/scripts/languages/en.js$ /core/themes/default/js/file_manager/languages/en.js [QSA,L]
+	RewriteRule ^/?admin/scripts/filemanager.liveSearch.min.js$ /core/themes/default/packages/file_manager/filemanager.liveSearch.min.js [QSA,L]
+	RewriteRule ^/?admin/scripts/languages/en.js$ /core/themes/default/packages/file_manager/languages/en.js [QSA,L]
 
 	# For ckeditor
 	RewriteRule ^/?(static-\d+/)?core/themes/default/ckeditor/config.js$ /core/themes/default/js/ckeditor_config.js [QSA,L]
