@@ -47,7 +47,9 @@ class Authentication {
 
 	public function administratorLoggedIn() {
 		if ($this->logged_in && $this->getAdministratorID()) {
-			return $this->administrator_data;
+			$data = $this->administrator_data;
+			$data['administrator_name'] = $data['administrator_first_name'].' '.$data['administrator_last_name'];
+			return $data;
 		}
 		return FALSE;
 	}

@@ -46,12 +46,7 @@
 				<a class="navbar-brand" href="<?php echo $this->url->getURL('Administrator');?>"><?php echo $text_administrator_panel; ?></a>
 			</div>
 			<div class="collapse navbar-collapse navbar-ex1-collapse">
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="<?php echo $this->url->getURL('Administrator');?>"><i class="icon-cog"></i> <?php echo $text_admin_site; ?></a></li>
-					<li><a href="<?php echo $this->url->getURL('administrator/LanguageEditor', 'edit', $language_files);?>"><i class="icon-copy"></i> <?php echo $text_admin_language; ?></a></li>
-					<li><a href="<?php echo $this->url->getURL('administrator/Pages', 'edit', $method);?>"><i class="icon-anchor"></i> <?php echo $text_admin_edit_page; ?></a></li>
-					<li><a href="<?php echo $this->url->getURL('Administrator', 'logout');?>"><i class="icon-user"></i> <?php echo $text_admin_logout; ?></a></li>
-				</ul>
+				<?php $admin_panel->echoBootstrapMenu(); ?>
 			</div>
 		</div>
 	</nav>

@@ -15,6 +15,7 @@ use core\classes\Template;
 use core\classes\Language;
 use core\classes\Renderable;
 use core\classes\renderable\Layout;
+use core\classes\Menu;
 
 class Controller extends Renderable {
 
@@ -45,8 +46,9 @@ class Controller extends Renderable {
 		$this->language       = new Language($config);
 		$this->authentication = new Authentication($config, $database, $request);
 
+		$menu = NULL;
 		if ($this->show_admin_layout) {
-			$layout_class    = $config->siteConfig()->admin_layout_class;
+			$layout_class = $config->siteConfig()->admin_layout_class;
 			if ($this->config->siteConfig()->enable_admin) {
 				$layout_template = $config->siteConfig()->admin_layout_template;
 			}
@@ -55,7 +57,7 @@ class Controller extends Renderable {
 			}
 		}
 		else {
-			$layout_class    = $config->siteConfig()->default_layout_class;
+			$layout_class = $config->siteConfig()->default_layout_class;
 			if ($this->config->siteConfig()->enable_public) {
 				$layout_template = $config->siteConfig()->default_layout_template;
 			}
@@ -107,7 +109,42 @@ class Controller extends Renderable {
 	}
 
 	public function render() {
-		// Nothing needed here
+		if ($this->show_admin_layout) {
+			$filename = __DIR__.DS.'..'.DS.'..'.DS.'config'.DS.'menu_admin_main.php';
+			$main_menu = new Menu($this->config, $this->language, 'menus/admin_main.php', 'mainnav');
+			require($filename);
+			$main_menu->setData($_MENU);
+
+			$filename = __DIR__.DS.'..'.DS.'..'.DS.'config'.DS.'menu_admin_user.php';
+			$user_menu = new Menu($this->config, $this->language, 'menus/admin_user.php', 'nav navbar-nav navbar-right');
+			require($filename);
+			$user_menu->setData($_MENU);
+
+			if ($this->layout) {
+				$this->layout->setTemplateData([
+					'main_menu' => $main_menu,
+					'user_menu' => $user_menu,
+				]);
+			}
+		}
+		else {
+			$filename = __DIR__.DS.'..'.DS.'..'.DS.'config'.DS.'menu_admin_panel.php';
+			$admin_panel = new Menu($this->config, $this->language, 'menus/admin_panel.php', 'nav navbar-nav navbar-right');
+			require($filename);
+			if (isset($_MENU['language'])) {
+				$_MENU['language']['params'] = $this->language->getLoadedFiles();
+			}
+			if (isset($_MENU['edit_page'])) {
+				$_MENU['edit_page']['params'] = [$this->request->getControllerName(), $this->request->getMethodName()];
+			}
+			$admin_panel->setData($_MENU);
+
+			if ($this->layout) {
+				$this->layout->setTemplateData([
+					'admin_panel' => $admin_panel,
+				]);
+			}
+		}
 	}
 
 	public function getAllMethods() {

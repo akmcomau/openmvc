@@ -50,21 +50,7 @@
 			</div>
 			<?php if ($logged_in) { ?>
 				<div class="collapse navbar-collapse navbar-ex1-collapse">
-					<ul class="nav navbar-nav navbar-right">
-						<li><a href="<?php echo $this->url->getURL();?>"><i class="icon-home"></i> <?php echo $text_public_site; ?></a></li>
-						<li class="dropdown">
-							<a href="javscript:;" class="dropdown-toggle" data-toggle="dropdown">
-								<i class="icon-user"></i>
-								<?php echo $administrator_logged_in['administrator_first_name'].' '.$administrator_logged_in['administrator_last_name']; ?>
-								<b class="caret"></b>
-							</a>
-							<ul class="dropdown-menu">
-							<li><a href="<?php echo $this->url->getURL('administrator/Administrators', 'edit', [$administrator_logged_in['administrator_id']]); ?>"><?php echo $text_profile; ?></a></li>
-								<li class="divider"></li>
-								<li><?php echo $this->url->getLink('', 'Administrator', 'logout'); ?></li>
-							</ul>
-						</li>
-					</ul>
+					<?php $user_menu->echoBootstrapMenu(); ?>
 				</div>
 			<?php } ?>
 		</div>
@@ -79,65 +65,7 @@
 						<i class="icon-reorder"></i>
 					</a>
 					<div class="collapse subnav-collapse">
-						<ul class="mainnav">
-							<li class="active">
-								<a href="<?php echo $this->url->getURL('Administrator');?>">
-									<i class="icon-home"></i>
-									<span><?php echo $text_home; ?></span>
-								</a>
-							</li>
-							<li class="dropdown">
-								<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-									<i class="icon-copy"></i>
-									<span><?php echo $text_content; ?></span>
-									<b class="caret"></b>
-								</a>
-								<ul class="dropdown-menu">
-									<li class="dropdown-submenu">
-										<a href="<?php echo $this->url->getURL('administrator/Pages');?>"><?php echo $text_pages; ?></a>
-										<ul class="dropdown-menu">
-											<li><?php echo $this->url->getLink('', 'administrator/Pages');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/Pages', 'add');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'page');?></li>
-										</ul>
-									</li>
-									<li class="dropdown-submenu">
-										<a href="<?php echo $this->url->getURL('administrator/Blocks');?>"><?php echo $text_blocks; ?></a>
-										<ul class="dropdown-menu">
-											<li><?php echo $this->url->getLink('', 'administrator/Blocks');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/Blocks', 'add');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/CategoryManager', 'block');?></li>
-										</ul>
-									</li>
-									<li><?php echo $this->url->getLink('', 'administrator/Modules');?></li>
-									<li><?php echo $this->url->getLink('', 'administrator/LanguageEditor');?></li>
-									<li><?php echo $this->url->getLink('', 'administrator/FileManager');?></li>
-								</ul>
-							</li>
-							<li class="dropdown">
-								<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-									<i class="icon-user"></i>
-									<span><?php echo $text_users; ?></span>
-									<b class="caret"></b>
-								</a>
-								<ul class="dropdown-menu">
-									<li class="dropdown-submenu">
-										<a href="<?php echo $this->url->getURL('administrator/Administrators');?>"><?php echo $text_administrators; ?></a>
-										<ul class="dropdown-menu">
-											<li><?php echo $this->url->getLink('', 'administrator/Administrators');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/Administrators', 'add');?></li>
-										</ul>
-									</li>
-									<li class="dropdown-submenu">
-										<a href="<?php echo $this->url->getURL('administrator/Customers');?>"><?php echo $text_customers; ?></a>
-										<ul class="dropdown-menu">
-											<li><?php echo $this->url->getLink('', 'administrator/Customers');?></li>
-											<li><?php echo $this->url->getLink('', 'administrator/Customers', 'add');?></li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-						</ul>
+						<?php $main_menu->echoBootstrapMenu(); ?>
 					</div>
 				</div>
 			</div>

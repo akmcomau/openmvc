@@ -11,6 +11,7 @@ use core\classes\Request;
 use core\classes\Language;
 use core\classes\Template;
 use core\classes\URL;
+use core\classes\Menu;
 
 class Layout extends Renderable {
 
@@ -24,6 +25,7 @@ class Layout extends Renderable {
 	protected $controller;
 	protected $method;
 	protected $sub_page;
+	protected $template_data = [];
 
 	public function __construct(Config $config, Database $database, Request $request, Response $response, Authentication $auth, Language $language, $template) {
 		parent::__construct($config, $database);
@@ -33,6 +35,10 @@ class Layout extends Renderable {
 		$this->template = $template;
 		$this->url      = new URL($config);
 		$this->authentication = $auth;
+	}
+
+	public function setTemplateData(array $data) {
+		$this->template_data = $data;
 	}
 
 	public function setControllerMethod($controller, $method, $sub_page = NULL) {
@@ -51,6 +57,7 @@ class Layout extends Renderable {
 		if ($this->sub_page) {
 			$method[] = $this->sub_page;
 		}
+
 		$data = [
 			'method'                  => $method,
 			'meta_tags'               => $this->meta_tags,
@@ -60,6 +67,7 @@ class Layout extends Renderable {
 			'administrator_logged_in' => $this->authentication->administratorLoggedIn(),
 			'language_files'          => $this->language->getLoadedFiles(),
 		];
+		$data = array_merge($data, $this->template_data);
 		$template = new Template($this->config, $this->language, $this->template, $data);
 		$this->response->setContent($template->render());
 	}
