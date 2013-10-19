@@ -15,7 +15,7 @@
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/colour_blue.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/theme.css" rel="stylesheet" media="screen" />
 
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery/js/jquery.min.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery/jquery.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
 
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
@@ -83,28 +83,8 @@
 						</button>
 					</div>
 					<div class="collapse navbar-collapse navbar-ex1-collapse">
-						<ul class="nav navbar-nav main-menu">
-							<li><?php echo $this->url->getLink('menu-item'); ?></li>
-							<li><?php echo $this->url->getLink('menu-item', 'Root', 'page/about_us'); ?></li>
-							<li><?php echo $this->url->getLink('menu-item', 'Root', 'contactUs'); ?></li>
-						</ul>
-						<?php if ($customer_logged_in) { ?>
-							<ul class="nav navbar-nav navbar-right main-menu">
-								<li class="dropdown">
-												  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $text_my_account; ?><b class="caret"></b></a>
-									<ul class="dropdown-menu">
-										<li><?php echo $this->url->getLink('menu-item', 'Customer', 'contact_details'); ?></li>
-										<li><?php echo $this->url->getLink('menu-item', 'Customer', 'change_password'); ?></li>
-									</ul>
-								</li>
-								<li><?php echo $this->url->getLink('menu-item', 'Customer', 'logout'); ?></li>
-							</ul>
-						<?php } else { ?>
-							<ul class="nav navbar-nav navbar-right main-menu">
-								<li><?php echo $this->url->getLink('menu-item', 'Customer', 'register'); ?></li>
-								<li><?php echo $this->url->getLink('menu-item', 'Customer', 'login'); ?></li>
-							</ul>
-						<?php } ?>
+						<?php $main_menu->echoBootstrapMenu(); ?>
+						<?php $user_menu->echoBootstrapMenu(); ?>
 					</div>
 				</nav>
 			</div>

@@ -24,7 +24,7 @@ class Customer extends Controller {
 	}
 
 	public function logout() {
-		$this->authentication->logout();
+		$this->authentication->logoutCustomer();
 		throw new RedirectException($this->url->getURL());
 	}
 

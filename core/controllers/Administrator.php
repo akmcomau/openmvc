@@ -22,7 +22,7 @@ class Administrator extends Controller {
 	}
 
 	public function logout() {
-		$this->authentication->logout();
+		$this->authentication->logoutAdministrator();
 		throw new RedirectException($this->url->getURL());
 	}
 

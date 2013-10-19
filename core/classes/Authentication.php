@@ -107,12 +107,14 @@ class Authentication {
 
 	public function logoutCustomer() {
 		$auth = $this->request->session->delete(['authentication', 'customer']);
+		unset($_SESSION['authentication']['customer']);  // HACK above line not working
 		$this->logged_in = $this->administratorLoggedIn();
 		$this->customer_data  = NULL;
 	}
 
 	public function logoutAdministrator() {
 		$auth = $this->request->session->delete(['authentication', 'administrator']);
+		unset($_SESSION['authentication']['customer']);  // HACK above line not working
 		$this->logged_in = $this->administratorLoggedIn();
 		$this->customer_data  = NULL;
 	}

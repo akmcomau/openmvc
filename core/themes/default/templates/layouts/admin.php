@@ -48,7 +48,7 @@
 				</button>
 				<a class="navbar-brand" href="<?php echo $this->url->getURL('Administrator');?>"><?php echo $this->config->siteConfig()->name; ?></a>
 			</div>
-			<?php if ($logged_in) { ?>
+			<?php if ($administrator_logged_in) { ?>
 				<div class="collapse navbar-collapse navbar-ex1-collapse">
 					<?php $user_menu->echoBootstrapMenu(); ?>
 				</div>

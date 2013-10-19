@@ -109,38 +109,46 @@ class Controller extends Renderable {
 	}
 
 	public function render() {
-		if ($this->show_admin_layout) {
-			$filename = __DIR__.DS.'..'.DS.'..'.DS.'config'.DS.'menu_admin_main.php';
-			$main_menu = new Menu($this->config, $this->language, 'menus/admin_main.php', 'mainnav');
-			require($filename);
-			$main_menu->setData($_MENU);
+		if ($this->layout) {
+			if ($this->show_admin_layout) {
+				$main_menu = new Menu($this->config, $this->language, $this->authentication);
+				$main_menu->loadMenu('menu_admin_main.php');
 
-			$filename = __DIR__.DS.'..'.DS.'..'.DS.'config'.DS.'menu_admin_user.php';
-			$user_menu = new Menu($this->config, $this->language, 'menus/admin_user.php', 'nav navbar-nav navbar-right');
-			require($filename);
-			$user_menu->setData($_MENU);
+				$user_menu = new Menu($this->config, $this->language, $this->authentication);
+				$user_menu->loadMenu('menu_admin_user.php');
 
-			if ($this->layout) {
 				$this->layout->setTemplateData([
 					'main_menu' => $main_menu,
 					'user_menu' => $user_menu,
 				]);
 			}
-		}
-		else {
-			$filename = __DIR__.DS.'..'.DS.'..'.DS.'config'.DS.'menu_admin_panel.php';
-			$admin_panel = new Menu($this->config, $this->language, 'menus/admin_panel.php', 'nav navbar-nav navbar-right');
-			require($filename);
-			if (isset($_MENU['language'])) {
-				$_MENU['language']['params'] = $this->language->getLoadedFiles();
-			}
-			if (isset($_MENU['edit_page'])) {
-				$_MENU['edit_page']['params'] = [$this->request->getControllerName(), $this->request->getMethodName()];
-			}
-			$admin_panel->setData($_MENU);
+			else {
+				$public_main = new Menu($this->config, $this->language, $this->authentication);
+				$public_main->loadMenu('menu_public_main.php');
 
-			if ($this->layout) {
+				if ($this->authentication->customerLoggedIn()) {
+					$public_user = new Menu($this->config, $this->language, $this->authentication);
+					$public_user->loadMenu('menu_public_user.php');
+				}
+				else {
+					$public_user = new Menu($this->config, $this->language, $this->authentication);
+					$public_user->loadMenu('menu_public_login.php');
+				}
+
+				$admin_panel = new Menu($this->config, $this->language, $this->authentication);
+				$admin_panel->loadMenu('menu_admin_panel.php');
+				$menu_data = $admin_panel->getMenuData();
+
+				if (isset($menu_data['language'])) {
+					$admin_panel->addMenuData(['language', 'params'], $this->language->getLoadedFiles());
+				}
+				if (isset($menu_data['edit_page'])) {
+					$admin_panel->addMenuData(['edit_page', 'params'], [$this->request->getControllerName(), $this->request->getMethodName()]);
+				}
+
 				$this->layout->setTemplateData([
+					'main_menu' => $public_main,
+					'user_menu' => $public_user,
 					'admin_panel' => $admin_panel,
 				]);
 			}
