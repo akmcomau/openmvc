@@ -26,6 +26,10 @@ $_MENU = [
 						'content_pages_add' => [
 							'controller' => 'administrator/Pages',
 							'method' => 'add',
+						],
+						'content_pages_categories' => [
+							'controller' => 'administrator/CategoryManager',
+							'method' => 'page',
 						]
 					],
 				],
@@ -33,13 +37,17 @@ $_MENU = [
 					'controller' => 'administrator/Blocks',
 					'method' => 'index',
 					'children' => [
-						'content_pages_list' => [
+						'content_blocks_list' => [
 							'controller' => 'administrator/Blocks',
 							'method' => 'index',
 						],
-						'content_pages_add' => [
+						'content_blocks_add' => [
 							'controller' => 'administrator/Blocks',
 							'method' => 'add',
+						],
+						'content_blocks_categories' => [
+							'controller' => 'administrator/CategoryManager',
+							'method' => 'block',
 						]
 					],
 				],

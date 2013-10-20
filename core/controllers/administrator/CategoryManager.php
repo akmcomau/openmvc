@@ -44,11 +44,12 @@ class CategoryManager extends Controller {
 	protected function category_manager($model_class) {
 		$this->language->loadLanguageFile('administrator/category_manager.php');
 
-		$form_category = $this->getAddEditForm();
 		$model = new Model($this->config, $this->database);
 		$page_category = $model->getModel($model_class);
 
-		$this->addCategory($page_category, $form_category);
+		$this->addEditCategory($page_category);
+
+		$this->deleteCategories($page_category);
 
 		$category_id = NULL;
 		if ((int)$this->request->requestParam('category')) {
@@ -56,45 +57,86 @@ class CategoryManager extends Controller {
 		}
 		$categ_data = $page_category->getAllByParent();
 
+		$categs_by_id = [];
 		foreach ($categ_data as $parent_id => &$categories) {
 			foreach ($categories as &$category) {
-				$category['children'] = 0;
-				if (isset($categ_data[$category['id']])) {
-					$category['children'] = count($categ_data[$category['id']]);
+				$categs_by_id[$category['id']] = $category;
+
+				// if this category is a parent
+				if (!is_null($category['id']) && isset($categ_data[$category['id']])) {
+					$category['num_subcategories'] = count($categ_data[$category['id']]);
+					$category['subcategories'] = &$categ_data[$category['id']];
 				}
 			}
 		}
 
+		// $category is a reference, delete it to avoid altering the last assigned value
+		unset($category);
+
+		// re-open the category
+		$open_categories = [];
+		if ((int)$this->request->requestParam('category')) {
+			$category = $categs_by_id[(int)$this->request->requestParam('category')];
+			while (!is_null($category)) {
+				$open_categories[] = $category['id'];
+				$parent = $category['parent'];
+				$category = $parent ? $categs_by_id[$parent] : NULL;
+			}
+		}
+
 		$data = [
-			'categories' => isset($categ_data[$category_id]) ? $categ_data[$category_id] : [],
-			'form' => $form_category,
+			'categories' => isset($categ_data[NULL]) ? $categ_data[NULL] : [],
+			'open_categories' => array_reverse($open_categories),
 		];
 
 		$template = $this->getTemplate('pages/administrator/category_manager.php', $data);
 		$this->response->setContent($template->render());
 	}
 
-	protected function addCategory(Model $model, FormValidator $form) {
-		if ($form->validate()) {
-			if ((int)$this->request->requestParam('category')) {
-				$model->parent_id = (int)$this->request->requestParam('category');
-			}
+	protected function addEditCategory(Model $model) {
+		$model->site_id = $this->config->siteConfig()->site_id;
 
-			$model->site_id = $this->config->siteConfig()->site_id;
-			$model->name = $form->getValue('name');
+		if ((int)$this->request->requestParam('add_category')) {
+			$model->name = $this->request->requestParam('name');
+			$model->insert();
+		}
+		elseif ((int)$this->request->requestParam('edit_category')) {
+			$model = $model->get(['id' => (int)$this->request->requestParam('category')]);
+			$model->name = $this->request->requestParam('name');
+			$model->update();
+		}
+		elseif ((int)$this->request->requestParam('add_subcategory')) {
+			$model->name = $this->request->requestParam('name');
+			$model->parent_id = (int)$this->request->requestParam('category');
 			$model->insert();
 		}
 	}
 
-	protected function getAddEditForm() {
-		$inputs = [
-			'name' => [
-				'type' => 'string',
-				'min_length' => 1,
-				'required' => true,
-				'message' => $this->language->get('error_category'),
-			],
-		];
-		return new FormValidator($this->request, 'form-category', $inputs);
+	protected function deleteCategories(Model $model) {
+		if ($this->request->requestParam('selected')) {
+			$by_parent = $model->getAllByParent();
+
+			foreach ($this->request->requestParam('selected') as $id) {
+				if (isset($by_parent[$id])) {
+					foreach ($by_parent[$id] as $sub_category) {
+						$this->deleteSubcategories($model, $sub_category, $by_parent);
+					}
+				}
+
+				$category = $model->get(['id' => (int)$id]);
+				$category->delete();
+			}
+		}
+	}
+
+	protected function deleteSubcategories(Model $model, $category, array $by_parent) {
+		if (isset($by_parent[$category['id']])) {
+			foreach ($by_parent[$category['id']] as $sub_category) {
+				$this->deleteSubcategories($model, $sub_category, $by_parent);
+			}
+		}
+
+		$category = $model->get(['id' => (int)$category['id']]);
+		$category->delete();
 	}
 }

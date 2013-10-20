@@ -215,3 +215,33 @@ ul.inline li {
 	margin-top: 0px;
 	margin-bottom: 0px;
 }
+/* --------------------------------------------------
+ * Tables
+ *-------------------------------------------------- */
+.table .table .table {
+	background-color: #ddd;
+}
+.table .table .table .table {
+	background-color: #fff;
+}
+.table .table .table .table .table {
+	background-color: #ddd;
+}
+.table .table .table .table .table .table {
+	background-color: #fff;
+}
+.table .table .table .table .table .table .table {
+	background-color: #ddd;
+}
+.table .table .table .table .table .table .table .table {
+	background-color: #fff;
+}
+.table .table .table .table .table .table .table .table .table {
+	background-color: #ddd;
+}
+.table .table .table .table .table .table .table .table .table .table {
+	background-color: #fff;
+}
+.table .table .table .table .table .table .table .table .table .table .table {
+	background-color: #ddd;
+}

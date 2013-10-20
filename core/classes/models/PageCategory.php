@@ -33,4 +33,8 @@ class PageCategory extends Category {
 		'site_id',
 		'page_category_parent_id',
 	];
+
+	protected $foreign_keys = [
+		'page_category_parent_id' => ['page_category', 'page_category_id'],
+	];
 }

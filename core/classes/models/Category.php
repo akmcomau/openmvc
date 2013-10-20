@@ -17,11 +17,20 @@ class Category extends Model {
 		$categ_data = [];
 		foreach ($categories as $category) {
 			$categ_data[$category->parent_id][] = [
-				'id'   => $category->id,
-				'name' => $category->name,
+				'id'     => $category->id,
+				'name'   => $category->name,
+				'parent' => $category->parent_id,
 			];
 		}
 		return $categ_data;
+	}
+
+	public function delete() {
+		// remove all link records
+		$sql = "DELETE FROM ".$this->table."_link WHERE ".$this->primary_key."=".$this->id;
+		$this->database->executeQuery($sql);
+
+		parent::delete();
 	}
 
 	public function getAsOptions() {

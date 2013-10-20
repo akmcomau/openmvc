@@ -33,4 +33,8 @@ class BlockCategory extends Category {
 		'site_id',
 		'block_category_parent_id',
 	];
+
+	protected $foreign_keys = [
+		'block_category_parent_id' => ['block_category', 'block_category_id'],
+	];
 }

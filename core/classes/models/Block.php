@@ -94,6 +94,19 @@ class Block extends Model {
 		return $this->objects['category'];
 	}
 
+	public function insert() {
+		// update the block
+		parent::insert();
+
+		if ($this->objects['category']) {
+			// insert the category
+			$link = $this->getModel('\\core\\classes\\models\\BlockCategoryLink');
+			$link->block_id = $this->id;
+			$link->block_category_id = $this->objects['category']->id;
+			$link->insert();
+		}
+	}
+
 	public function update() {
 		// update the block
 		parent::update();
