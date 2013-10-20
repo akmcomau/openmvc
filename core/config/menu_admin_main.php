@@ -73,10 +73,30 @@ $_MENU = [
 				'administrators' => [
 					'controller' => 'administrator/Administrators',
 					'method' => 'index',
+					'children' => [
+						'administrators_list' => [
+							'controller' => 'administrator/Administrators',
+							'method' => 'index',
+						],
+						'administrators_add' => [
+							'controller' => 'administrator/Administrators',
+							'method' => 'add',
+						],
+					],
 				],
 				'customers' => [
 					'controller' => 'administrator/Customers',
 					'method' => 'index',
+					'children' => [
+						'customers_list' => [
+							'controller' => 'administrator/Customers',
+							'method' => 'index',
+						],
+						'customers_add' => [
+							'controller' => 'administrator/Customers',
+							'method' => 'add',
+						],
+					],
 				],
 			],
 		]

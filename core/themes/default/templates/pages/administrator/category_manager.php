@@ -45,41 +45,39 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form class="admin-search-form" method="get" id="form-page-search">
-				<div class="widget">
-					<div class="widget-header">
-						<h3><?php echo $title; ?></h3>
-					</div>
-					<div class="widget-content">
-						<div class="align-right">
-							<?php if (!$readonly) { ?>
-							<form action="" method="post" id="form-category">
-								<input type="hidden" name="add_category" value="1" />
-								<input type="hidden" name="category" value="" />
-								<input type="text" name="name" value="" />
-								<button type="submit" class="btn btn-primary" name="form-category-submit"><?php echo $text_add_category; ?></button>
-								<br /><br />
-							</form>
-							<?php } ?>
-						</div>
-						<form action="" method="post" id="form-category-list">
-							<table class="table category-manager">
-								<tr>
-									<?php if (!$readonly) { ?>
-									<th>&nbsp;</th>
-									<?php } ?>
-									<th><?php echo $text_name; ?></th>
-									<?php if ($allow_subcategories) { ?>
-									<th><?php echo $text_num_subcategories; ?></th>
-									<?php } ?>
-								</tr>
-								<?php foreach ($categories as $category) {
-								  echoCategory($readonly, $allow_subcategories, $text_add_subcategory, $category);
-								} ?>
-							</table>
-							<button type="submit" class="btn btn-primary" name="form-category-list-submit" onclick="return deleteSelected();"><?php echo $text_delete_selected; ?></button>
+			<div class="widget">
+				<div class="widget-header">
+					<h3><?php echo $title; ?></h3>
+				</div>
+				<div class="widget-content">
+					<div class="align-right">
+						<?php if (!$readonly) { ?>
+						<form action="" method="post" id="form-category">
+							<input type="hidden" name="add_category" value="1" />
+							<input type="hidden" name="category" value="" />
+							<input type="text" name="name" value="" />
+							<button type="submit" class="btn btn-primary" name="form-category-submit"><?php echo $text_add_category; ?></button>
+							<br /><br />
 						</form>
+						<?php } ?>
 					</div>
+					<form action="<?php echo $this->url->getURL($controller_name, $method_name); ?>" method="post" id="form-category-list">
+						<table class="table category-manager">
+							<tr>
+								<?php if (!$readonly) { ?>
+								<th>&nbsp;</th>
+								<?php } ?>
+								<th><?php echo $text_name; ?></th>
+								<?php if ($allow_subcategories) { ?>
+								<th><?php echo $text_num_subcategories; ?></th>
+								<?php } ?>
+							</tr>
+							<?php foreach ($categories as $category) {
+							  echoCategory($readonly, $allow_subcategories, $text_add_subcategory, $category);
+							} ?>
+						</table>
+						<button type="submit" class="btn btn-primary" name="form-category-list-submit" onclick="return deleteSelected();"><?php echo $text_delete_selected; ?></button>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -97,6 +95,8 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 </form>
 <br />
 <script type="text/javascript">
+	<?php echo $message_js; ?>
+
 	function toggleSubcategory(id) {
 		$('#subcategories-'+id).removeClass('subcategory');
 		if ($('#subcategory-'+id).is(':visible')) {

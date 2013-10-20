@@ -20,6 +20,8 @@ $_LANGUAGE = [
 	'update_button' => 'Update Customer',
 	'search' => 'Search',
 	'search_results' => 'Customers',
+	'delete_selected' => 'Delete Selected',
+	'confirm_delete' => 'Are you sure you want to delete the selected customers?',
 	'error_search_email' => 'Must not exceed 256 characters',
 	'error_search_login' => 'Must not exceed 64 characters',
 	'error_email' => 'Must not exceed 256 characters',
@@ -37,4 +39,6 @@ $_LANGUAGE = [
 	'notification_update_error' => 'Updating customer failed, please check your values below',
 	'notification_add_success' => 'Customer has been added successfully',
 	'notification_add_error' => 'Adding customer failed, please check your values below',
+	'notification_delete_success' => 'Customers have been deleted successfully',
+	'notification_delete_error' => 'Delete customers failed',
 ];

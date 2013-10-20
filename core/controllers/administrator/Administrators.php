@@ -22,7 +22,7 @@ class Administrators extends Controller {
 		'edit' => ['administrator'],
 	];
 
-	public function index() {
+	public function index($message = NULL) {
 		$this->language->loadLanguageFile('administrator/administrators.php');
 		$form_search = $this->getAdministratorSearchForm();
 
@@ -44,10 +44,26 @@ class Administrators extends Controller {
 		$administrator  = $model->getModel('\core\classes\models\Administrator');
 		$administrators = $administrator->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
 
+		$message_js = NULL;
+		switch($message) {
+			case 'delete-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_delete_success')).'");';
+				break;
+
+			case 'add-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_add_success')).'");';
+				break;
+
+			case 'update-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_update_success')).'");';
+				break;
+		}
+
 		$data = [
 			'pagination' => $pagination,
 			'form' => $form_search,
 			'administrators' => $administrators,
+			'message_js' => $message_js,
 		];
 
 		$template = $this->getTemplate('pages/administrator/administrators/list.php', $data);
@@ -65,7 +81,7 @@ class Administrators extends Controller {
 			$this->updateFromRequest($form_administrator, $administrator);
 			$administrator->insert();
 			$form_administrator->setNotification('success', $this->language->get('notification_add_success'));
-			$administrator = $model->getModel('\core\classes\models\Administrator');
+			throw new RedirectException($this->url->getURL('administrator/Administrators', 'index', ['add-success']));
 		}
 		elseif ($form_administrator->isSubmitted()) {
 			$this->updateFromRequest($form_administrator, $administrator);
@@ -94,7 +110,7 @@ class Administrators extends Controller {
 		if ($form_administrator->validate()) {
 			$this->updateFromRequest($form_administrator, $administrator);
 			$administrator->update();
-			$form_administrator->setNotification('success', $this->language->get('notification_update_success'));
+			throw new RedirectException($this->url->getURL('administrator/Administrators', 'index', ['update-success']));
 		}
 		elseif ($form_administrator->isSubmitted()) {
 			$this->updateFromRequest($form_administrator, $administrator);
@@ -109,6 +125,19 @@ class Administrators extends Controller {
 
 		$template = $this->getTemplate('pages/administrator/administrators/add_edit.php', $data);
 		$this->response->setContent($template->render());
+	}
+
+	public function delete() {
+		if ($this->request->requestParam('selected')) {
+			$model = new Model($this->config, $this->database);
+			$block_admin = $model->getModel('\core\classes\models\Administrator');
+			foreach ($this->request->requestParam('selected') as $id) {
+				$block = $block_admin->get(['id' => $id]);
+				$block->delete();
+			}
+
+			throw new RedirectException($this->url->getURL('administrator/Administrators', 'index', ['delete-success']));
+		}
 	}
 
 	protected function updateFromRequest(FormValidator $form, Administrator $administrator) {

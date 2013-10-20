@@ -20,9 +20,10 @@ class Pages extends Controller {
 		'index' => ['administrator'],
 		'add' => ['administrator'],
 		'edit' => ['administrator'],
+		'delete' => ['administrator'],
 	];
 
-	public function index() {
+	public function index($message = NULL) {
 		$this->language->loadLanguageFile('administrator/pages.php');
 		$form_search = $this->getPageSearchForm();
 
@@ -47,10 +48,26 @@ class Pages extends Controller {
 		$pages = $page->getPageList($params, $pagination->getOrdering(), $pagination->getLimitOffset());
 		$pagination->setRecordCount(count($page->getPageList($params)));
 
+		$message_js = NULL;
+		switch($message) {
+			case 'delete-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_delete_success')).'");';
+				break;
+
+			case 'add-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_add_success')).'");';
+				break;
+
+			case 'update-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_update_success')).'");';
+				break;
+		}
+
 		$data = [
 			'pages' => $pages,
 			'pagination' => $pagination,
 			'form' => $form_search,
+			'message_js' => $message_js,
 		];
 
 		$model = new Model($this->config, $this->database);
@@ -71,10 +88,7 @@ class Pages extends Controller {
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
 			$page->update($data, FALSE);
-			$form_page->setNotification('success', $this->language->get('notification_add_success'));
-
-			// create an empty page for the next page to add
-			$data = $page->getPage();
+			throw new RedirectException($this->url->getURL('administrator/Pages', 'index', ['add-success']));
 		}
 		elseif ($form_page->isSubmitted()) {
 			$this->updateFromRequest($form_page, $data);
@@ -107,7 +121,7 @@ class Pages extends Controller {
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
 			$page->update($data, TRUE);
-			$form_page->setNotification('success', $this->language->get('notification_update_success'));
+			throw new RedirectException($this->url->getURL('administrator/Pages', 'index', ['update-success']));
 		}
 		elseif ($form_page->isSubmitted()) {
 			$this->updateFromRequest($form_page, $data);
@@ -123,6 +137,18 @@ class Pages extends Controller {
 		$data['form'] = $form_page;
 		$template = $this->getTemplate('pages/administrator/pages/add_edit.php', $data);
 		$this->response->setContent($template->render());
+	}
+
+	public function delete() {
+		if ($this->request->requestParam('selected')) {
+			$page = new Page($this->config, $this->database);
+			foreach ($this->request->requestParam('selected') as $data) {
+				list($controller, $method, $sub_method) = explode('-', $data);
+				$page->delete($controller, $method, $sub_method);
+			}
+
+			throw new RedirectException($this->url->getURL('administrator/Pages', 'index', ['delete-success']));
+		}
 	}
 
 	protected function updateFromRequest(FormValidator $form_page, &$data) {

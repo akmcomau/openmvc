@@ -50,28 +50,33 @@
 					<div class="pagination">
 						<?php echo $pagination->getPageLinks(); ?>
 					</div>
-					<table class="table">
-						<tr>
-							<th><?php echo $text_login; ?> <?php echo $pagination->getSortUrls('login'); ?></th>
-							<th><?php echo $text_email; ?> <?php echo $pagination->getSortUrls('email'); ?></th>
-							<th><?php echo $text_first_name; ?> <?php echo $pagination->getSortUrls('first_name'); ?></th>
-							<th><?php echo $text_last_name; ?> <?php echo $pagination->getSortUrls('last_name'); ?></th>
-							<th><?php echo $text_active; ?> <?php echo $pagination->getSortUrls('active'); ?></th>
-							<th></th>
-						</tr>
-						<?php foreach ($customers as $customer) { ?>
-						<tr>
-							<td><?php echo $customer->login; ?></td>
-							<td><?php echo $customer->email; ?></td>
-							<td><?php echo $customer->first_name; ?></td>
-							<td><?php echo $customer->last_name; ?></td>
-							<td><?php echo $customer->active ? $text_active : $text_not_active; ?></td>
-							<td>
-								<a href="<?php echo $this->url->getURL('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
-							</td>
-						</tr>
-						<?php } ?>
-					</table>
+					<form action="<?php echo $this->url->getURL('administrator/Customers', 'delete'); ?>" method="post">
+						<table class="table">
+							<tr>
+								<th></th>
+								<th><?php echo $text_login; ?> <?php echo $pagination->getSortUrls('login'); ?></th>
+								<th><?php echo $text_email; ?> <?php echo $pagination->getSortUrls('email'); ?></th>
+								<th><?php echo $text_first_name; ?> <?php echo $pagination->getSortUrls('first_name'); ?></th>
+								<th><?php echo $text_last_name; ?> <?php echo $pagination->getSortUrls('last_name'); ?></th>
+								<th><?php echo $text_active; ?> <?php echo $pagination->getSortUrls('active'); ?></th>
+								<th></th>
+							</tr>
+							<?php foreach ($customers as $customer) { ?>
+							<tr>
+								<td class="select"><input type="checkbox" name="selected[]" value="<?php echo $customer->id; ?>"" /></td>
+								<td><?php echo $customer->login; ?></td>
+								<td><?php echo $customer->email; ?></td>
+								<td><?php echo $customer->first_name; ?></td>
+								<td><?php echo $customer->last_name; ?></td>
+								<td><?php echo $customer->active ? $text_active : $text_not_active; ?></td>
+								<td>
+									<a href="<?php echo $this->url->getURL('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+								</td>
+							</tr>
+							<?php } ?>
+						</table>
+						<button type="submit" class="btn btn-primary" name="form-customer-list-submit" onclick="return deleteSelected();"><?php echo $text_delete_selected; ?></button>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -79,4 +84,9 @@
 </div>
 <script type="text/javascript">
 	<?php echo $form->getJavascriptValidation(); ?>
+	<?php echo $message_js; ?>
+
+	function deleteSelected() {
+		return confirm('<?php echo $text_confirm_delete; ?>');
+	}
 </script>

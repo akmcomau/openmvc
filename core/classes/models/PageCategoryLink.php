@@ -62,4 +62,13 @@ class PageCategoryLink extends Model {
 
 		return $categories;
 	}
+
+	public function deletePage($controller, $method) {
+		$sql = "
+			DELETE FROM page_category_link
+			WHERE
+				page_controller = ".$this->database->quote($controller)."
+				AND page_method = ".$this->database->quote($method);
+		return $this->database->executeQuery($sql);
+	}
 }

@@ -135,4 +135,10 @@ class Block extends Model {
 			$link->delete();
 		}
 	}
+
+	public function delete() {
+		// delete all block_category_link
+
+		parent::delete();
+	}
 }

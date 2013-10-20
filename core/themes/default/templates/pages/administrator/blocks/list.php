@@ -82,24 +82,29 @@
 					<div class="pagination">
 						<?php echo $pagination->getPageLinks(); ?>
 					</div>
-					<table class="table">
-						<tr>
-							<th><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
-							<th><?php echo $text_tag; ?> <?php echo $pagination->getSortUrls('tag'); ?></th>
-							<th><?php echo $text_category; ?> <?php echo $pagination->getSortUrls('category_name'); ?></th>
-							<th></th>
-						</tr>
-						<?php foreach ($blocks as $block) { ?>
-						<tr>
-							<td><?php echo $block->title; ?></td>
-							<td><?php echo $block->tag; ?></td>
-							<td><?php echo $block->getCategoryName(); ?></td>
-							<td>
-								<a href="<?php echo $this->url->getURL('administrator/Blocks', 'edit', [$block->tag]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
-							</td>
-						</tr>
-						<?php } ?>
-					</table>
+					<form action="<?php echo $this->url->getURL('administrator/Blocks', 'delete'); ?>" method="post">
+						<table class="table">
+							<tr>
+								<th></th>
+								<th><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
+								<th><?php echo $text_tag; ?> <?php echo $pagination->getSortUrls('tag'); ?></th>
+								<th><?php echo $text_category; ?> <?php echo $pagination->getSortUrls('category_name'); ?></th>
+								<th></th>
+							</tr>
+							<?php foreach ($blocks as $block) { ?>
+							<tr>
+								<td class="select"><input type="checkbox" name="selected[]" value="<?php echo $block->id; ?>" /></td>
+								<td><?php echo $block->title; ?></td>
+								<td><?php echo $block->tag; ?></td>
+								<td><?php echo $block->getCategoryName(); ?></td>
+								<td>
+									<a href="<?php echo $this->url->getURL('administrator/Blocks', 'edit', [$block->tag]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+								</td>
+							</tr>
+							<?php } ?>
+						</table>
+						<button type="submit" class="btn btn-primary" name="form-blocks-list-submit" onclick="return deleteSelected();"><?php echo $text_delete_selected; ?></button>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -107,4 +112,9 @@
 </div>
 <script type="text/javascript">
 	<?php echo $form->getJavascriptValidation(); ?>
+	<?php echo $message_js; ?>
+
+	function deleteSelected() {
+		return confirm('<?php echo $text_confirm_delete; ?>');
+	}
 </script>

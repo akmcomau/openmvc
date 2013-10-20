@@ -20,9 +20,10 @@ class Blocks extends Controller {
 		'index' => ['administrator'],
 		'add' => ['administrator'],
 		'edit' => ['administrator'],
+		'delete' => ['administrator'],
 	];
 
-	public function index() {
+	public function index($message = NULL) {
 		$this->language->loadLanguageFile('administrator/blocks.php');
 		$form_search = $this->getBlockSearchForm();
 
@@ -50,13 +51,30 @@ class Blocks extends Controller {
 		$blocks = $block->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
 		$pagination->setRecordCount(10);
 
+		$message_js = NULL;
+		switch($message) {
+			case 'delete-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_delete_success')).'");';
+				break;
+
+			case 'add-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_add_success')).'");';
+				break;
+
+			case 'update-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_update_success')).'");';
+				break;
+		}
+
 		$data = [
 			'form' => $form_search,
 			'blocks' => $blocks,
 			'pagination' => $pagination,
 			'categories' => $block_category->getAsOptions(),
 			'types' => $block_type->getAsOptions(),
+			'message_js' => $message_js,
 		];
+
 
 		$template = $this->getTemplate('pages/administrator/blocks/list.php', $data);
 		$this->response->setContent($template->render());
@@ -75,8 +93,7 @@ class Blocks extends Controller {
 		if ($form_block->validate()) {
 			$this->updateFromRequest($form_block, $block);
 			$block->insert();
-			$form_block->setNotification('success', $this->language->get('notification_add_success'));
-			$block = $model->getModel('\core\classes\models\Block');
+			throw new RedirectException($this->url->getURL('administrator/Blocks', 'index', ['add-success']));
 		}
 		elseif ($form_block->isSubmitted()) {
 			$this->updateFromRequest($form_block, $block);
@@ -105,7 +122,7 @@ class Blocks extends Controller {
 		if ($form_block->validate()) {
 			$this->updateFromRequest($form_block, $block);
 			$block->update();
-			$form_block->setNotification('success', $this->language->get('notification_update_success'));
+			throw new RedirectException($this->url->getURL('administrator/Blocks', 'index', ['update-success']));
 		}
 		elseif ($form_block->isSubmitted()) {
 			$this->updateFromRequest($form_block, $block);
@@ -117,6 +134,19 @@ class Blocks extends Controller {
 		$data['block'] = $block;
 		$template = $this->getTemplate('pages/administrator/blocks/add_edit.php', $data);
 		$this->response->setContent($template->render());
+	}
+
+	public function delete() {
+		if ($this->request->requestParam('selected')) {
+			$model = new Model($this->config, $this->database);
+			$block_model = $model->getModel('\core\classes\models\Block');
+			foreach ($this->request->requestParam('selected') as $id) {
+				$block = $block_model->get(['id' => $id]);
+				$block->delete();
+			}
+
+			throw new RedirectException($this->url->getURL('administrator/Blocks', 'index', ['delete-success']));
+		}
 	}
 
 	protected function updateFromRequest(FormValidator $form_block, $block) {

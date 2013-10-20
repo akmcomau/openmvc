@@ -159,6 +159,39 @@ class Page {
 		];
 	}
 
+	public function delete($controller, $method, $sub_method) {
+		// update the url map
+		$site = $this->config->siteConfig();
+		$language = $site->language;
+		$theme = $site->theme;
+		$url_map = $this->url->getUrlMap();
+		$controller_map = $url_map['forward'][$controller];
+		unset($controller_map['methods'][$method.'/'.$sub_method]);
+
+		// Update meta
+		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS.$language.DS;
+		$site_file = $site_path.$controller.'.php';
+
+		if (!is_dir($site_path)) {
+			mkdir($site_path, 0775, TRUE);
+		}
+		file_put_contents($site_file, '<?php $_URLS = '.var_export($controller_map, TRUE).';');
+
+		// remove the template file
+		$theme_path = $root_path.'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS.'pages'.DS.'misc'.DS;
+		$theme_file = $theme_path.$sub_method.'.php';
+
+		if (file_exists($theme_file)) {
+			unlink($theme_file);
+		}
+
+		// delete all page_category_links
+		$model = new Model($this->config, $this->database);
+		$link = $model->getModel('\core\classes\models\PageCategoryLink');
+		$link->deletePage($controller, $method.'/'.$sub_method);
+	}
+
 	public function update(array $data, $overwrite) {
 		$site       = $this->config->siteConfig();
 		$language   = $site->language;

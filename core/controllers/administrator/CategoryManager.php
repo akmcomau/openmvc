@@ -15,33 +15,19 @@ class CategoryManager extends Controller {
 	protected $show_admin_layout = TRUE;
 
 	protected $permissions = [
-		'index' => ['administrator'],
 		'block' => ['administrator'],
 		'page' => ['administrator'],
 	];
 
-	public function index($type) {
-		switch ($type) {
-			case 'product':
-				$this->product();
-				break;
-
-			default:
-				$template = $this->getTemplate('pages/not_implemented.php');
-				$this->response->setContent($template->render());
-				break;
-		}
+	public function page($message = NULL) {
+		$this->category_manager($message, '\core\classes\models\PageCategory');
 	}
 
-	public function page() {
-		$this->category_manager('\core\classes\models\PageCategory');
+	public function block($message = NULL) {
+		$this->category_manager($message, '\core\classes\models\BlockCategory');
 	}
 
-	public function block() {
-		$this->category_manager('\core\classes\models\BlockCategory');
-	}
-
-	protected function category_manager($model_class, $allow_subcategories = TRUE, $readonly = FALSE) {
+	protected function category_manager($message, $model_class, $allow_subcategories = TRUE, $readonly = FALSE) {
 		$this->language->loadLanguageFile('administrator/category_manager.php');
 
 		$model = new Model($this->config, $this->database);
@@ -88,12 +74,30 @@ class CategoryManager extends Controller {
 		$method     = $this->request->getMethodName();
 		$title      = $this->url->getLinkText($controller, $method);
 
+		$message_js = NULL;
+		switch($message) {
+			case 'delete-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_delete_success')).'");';
+				break;
+
+			case 'add-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_add_success')).'");';
+				break;
+
+			case 'update-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_update_success')).'");';
+				break;
+		}
+
 		$data = [
 			'categories' => isset($categ_data[NULL]) ? $categ_data[NULL] : [],
 			'open_categories' => array_reverse($open_categories),
 			'allow_subcategories' => $allow_subcategories,
 			'readonly' => $readonly,
 			'title' => $title,
+			'message_js' => $message_js,
+			'controller_name' => $controller,
+			'method_name' => $method,
 		];
 
 		$template = $this->getTemplate('pages/administrator/category_manager.php', $data);
@@ -106,16 +110,22 @@ class CategoryManager extends Controller {
 		if ((int)$this->request->requestParam('add_category')) {
 			$model->name = $this->request->requestParam('name');
 			$model->insert();
+
+			throw new RedirectException($this->url->getURL('administrator/CategoryManager', $this->request->getMethodName(), ['add-success']));
 		}
 		elseif ((int)$this->request->requestParam('edit_category')) {
 			$model = $model->get(['id' => (int)$this->request->requestParam('category')]);
 			$model->name = $this->request->requestParam('name');
 			$model->update();
+
+			throw new RedirectException($this->url->getURL('administrator/CategoryManager', $this->request->getMethodName(), ['update-success']));
 		}
 		elseif ((int)$this->request->requestParam('add_subcategory')) {
 			$model->name = $this->request->requestParam('name');
 			$model->parent_id = (int)$this->request->requestParam('category');
 			$model->insert();
+
+			throw new RedirectException($this->url->getURL('administrator/CategoryManager', $this->request->getMethodName(), ['add-success']));
 		}
 	}
 
@@ -133,6 +143,8 @@ class CategoryManager extends Controller {
 				$category = $model->get(['id' => (int)$id]);
 				$category->delete();
 			}
+
+			throw new RedirectException($this->url->getURL('administrator/CategoryManager', $this->request->getMethodName(), ['delete-success']));
 		}
 	}
 

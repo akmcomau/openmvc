@@ -20,9 +20,10 @@ class Customers extends Controller {
 		'index' => ['administrator'],
 		'add' => ['administrator'],
 		'edit' => ['administrator'],
+		'delete' => ['administrator'],
 	];
 
-	public function index() {
+	public function index($message = NULL) {
 		$this->language->loadLanguageFile('administrator/customers.php');
 		$form_search = $this->getCustomerSearchForm();
 
@@ -44,10 +45,26 @@ class Customers extends Controller {
 		$customer  = $model->getModel('\core\classes\models\Customer');
 		$customers = $customer->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
 
+		$message_js = NULL;
+		switch($message) {
+			case 'delete-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_delete_success')).'");';
+				break;
+
+			case 'add-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_add_success')).'");';
+				break;
+
+			case 'update-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_update_success')).'");';
+				break;
+		}
+
 		$data = [
 			'pagination' => $pagination,
 			'form' => $form_search,
 			'customers' => $customers,
+			'message_js' => $message_js,
 		];
 
 		$template = $this->getTemplate('pages/administrator/customers/list.php', $data);
@@ -67,7 +84,7 @@ class Customers extends Controller {
 			$this->updateFromRequest($form_customer, $customer);
 			$customer->insert();
 			$form_customer->setNotification('success', $this->language->get('notification_add_success'));
-			$customer = $model->getModel('\core\classes\models\Customer');
+			throw new RedirectException($this->url->getURL('administrator/Customers', 'index', ['add-success']));
 		}
 		elseif ($form_customer->isSubmitted()) {
 			$this->updateFromRequest($form_customer, $customer);
@@ -96,7 +113,7 @@ class Customers extends Controller {
 		if ($form_customer->validate()) {
 			$this->updateFromRequest($form_customer, $customer);
 			$customer->update();
-			$form_customer->setNotification('success', $this->language->get('notification_update_success'));
+			throw new RedirectException($this->url->getURL('administrator/Customers', 'index', ['update-success']));
 		}
 		elseif ($form_customer->isSubmitted()) {
 			$this->updateFromRequest($form_customer, $customer);
@@ -111,6 +128,19 @@ class Customers extends Controller {
 
 		$template = $this->getTemplate('pages/administrator/customers/add_edit.php', $data);
 		$this->response->setContent($template->render());
+	}
+
+	public function delete() {
+		if ($this->request->requestParam('selected')) {
+			$model = new Model($this->config, $this->database);
+			$block_admin = $model->getModel('\core\classes\models\Customer');
+			foreach ($this->request->requestParam('selected') as $id) {
+				$block = $block_admin->get(['id' => $id]);
+				$block->delete();
+			}
+
+			throw new RedirectException($this->url->getURL('administrator/Customers', 'index', ['delete-success']));
+		}
 	}
 
 	protected function updateFromRequest(FormValidator $form, Customer $customer) {
