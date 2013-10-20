@@ -41,7 +41,7 @@ class CategoryManager extends Controller {
 		$this->category_manager('\core\classes\models\BlockCategory');
 	}
 
-	protected function category_manager($model_class) {
+	protected function category_manager($model_class, $allow_subcategories = TRUE, $readonly = FALSE) {
 		$this->language->loadLanguageFile('administrator/category_manager.php');
 
 		$model = new Model($this->config, $this->database);
@@ -84,9 +84,16 @@ class CategoryManager extends Controller {
 			}
 		}
 
+		$controller = $this->request->getControllerName();
+		$method     = $this->request->getMethodName();
+		$title      = $this->url->getLinkText($controller, $method);
+
 		$data = [
 			'categories' => isset($categ_data[NULL]) ? $categ_data[NULL] : [],
 			'open_categories' => array_reverse($open_categories),
+			'allow_subcategories' => $allow_subcategories,
+			'readonly' => $readonly,
+			'title' => $title,
 		];
 
 		$template = $this->getTemplate('pages/administrator/category_manager.php', $data);

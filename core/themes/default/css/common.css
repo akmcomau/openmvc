@@ -218,6 +218,12 @@ ul.inline li {
 /* --------------------------------------------------
  * Tables
  *-------------------------------------------------- */
+.table {
+	background-color: #ddd;
+}
+.table .table {
+	background-color: #fff;
+}
 .table .table .table {
 	background-color: #ddd;
 }
