@@ -13,21 +13,29 @@
 				<td><?php echo $module['description']; ?></td>
 				<td class="align-center">
 					<?php if ($module['installed']) { ?>
-						<i class="icon-thumbs-up"></i>
+						<?php if ($module['enabled_anywhere']) { ?>
+							<i class="icon-thumbs-up"></i>
+						<?php } else { ?>
+							<a href="<?php echo $module['uninstall_url']; ?>" title="<?php echo $text_install_module; ?>" onclick="return confirm('<?php echo htmlspecialchars($text_confirm_uninstall); ?>')"><i class="icon-thumbs-up"></i></a>
+						<?php } ?>
 					<?php } else { ?>
-						<a href="<?php echo $module['install_url']; ?>" title="<?php echo $text_install_module; ?>"><i class="icon-thumbs-down"></i></a>
+						<a href="<?php echo $module['install_url']; ?>" title="<?php echo $text_uninstall_module; ?>" onclick="return confirm('<?php echo htmlspecialchars($text_confirm_install); ?>')"><i class="icon-thumbs-down"></i></a>
 					<?php } ?>
 				</td>
 				<td class="align-center">
-					<?php if ($module['enabled']) { ?>
-						<a href="<?php echo $module['disable_url']; ?>" title="<?php echo $text_disable_module; ?>"><i class="icon-thumbs-up"></i></a>
+					<?php if ($module['installed']) { ?>
+						<?php if ($module['enabled']) { ?>
+							<a href="<?php echo $module['disable_url']; ?>" title="<?php echo $text_disable_module; ?>" onclick="return confirm('<?php echo htmlspecialchars($text_confirm_disable); ?>')"><i class="icon-thumbs-up"></i></a>
+						<?php } else { ?>
+							<a href="<?php echo $module['enable_url']; ?>" title="<?php echo $text_enable_module; ?>" onclick="return confirm('<?php echo htmlspecialchars($text_confirm_enable); ?>')"><i class="icon-thumbs-down"></i></a>
+						<?php } ?>
 					<?php } else { ?>
-						<a href="<?php echo $module['enable_url']; ?>" title="<?php echo $text_enable_module; ?>"><i class="icon-thumbs-down"></i></a>
+						<i class="icon-thumbs-down"></i>
 					<?php } ?>
 				</td>
 				<td>
 					<?php if ($module['enabled']) { ?>
-						<a href="<?php echo $this->url->getURL($module['config_controller']); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+						<a href="<?php echo $this->url->getURL($module['config_controller'], 'config'); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
 					<?php } ?>
 				</td>
 			</tr>

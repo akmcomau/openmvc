@@ -100,8 +100,8 @@ class Controller extends Renderable {
 		return $this->layout;
 	}
 
-	public function getTemplate($filename, array $data = NULL) {
-		return new Template($this->config, $this->language, $filename, $data);
+	public function getTemplate($filename, array $data = NULL, $path = NULL) {
+		return new Template($this->config, $this->language, $filename, $data, $path);
 	}
 
 	public function setLayout(Layout $layout = NULL) {
@@ -111,7 +111,7 @@ class Controller extends Renderable {
 	public function render() {
 		if ($this->layout) {
 			if ($this->show_admin_layout) {
-				$main_menu = new Menu($this->config, $this->language, $this->authentication);
+				$main_menu = new Menu($this->config, $this->language);
 				$main_menu->loadMenu('menu_admin_main.php');
 
 				$user_menu = new Menu($this->config, $this->language, $this->authentication);
@@ -123,19 +123,19 @@ class Controller extends Renderable {
 				]);
 			}
 			else {
-				$public_main = new Menu($this->config, $this->language, $this->authentication);
+				$public_main = new Menu($this->config, $this->language);
 				$public_main->loadMenu('menu_public_main.php');
 
 				if ($this->authentication->customerLoggedIn()) {
-					$public_user = new Menu($this->config, $this->language, $this->authentication);
+					$public_user = new Menu($this->config, $this->language);
 					$public_user->loadMenu('menu_public_user.php');
 				}
 				else {
-					$public_user = new Menu($this->config, $this->language, $this->authentication);
+					$public_user = new Menu($this->config, $this->language);
 					$public_user->loadMenu('menu_public_login.php');
 				}
 
-				$admin_panel = new Menu($this->config, $this->language, $this->authentication);
+				$admin_panel = new Menu($this->config, $this->language);
 				$admin_panel->loadMenu('menu_admin_panel.php');
 				$menu_data = $admin_panel->getMenuData();
 

@@ -14,8 +14,9 @@ class Menu {
 	protected $ul_class;
 	protected $a_class;
 	protected $menu_data = [];
+	protected $filename = [];
 
-	public function __construct(Config $config, Language $language, Authentication $authentication) {
+	public function __construct(Config $config, Language $language, Authentication $authentication = NULL) {
 		$this->config = $config;
 		$this->language = $language;
 		$this->authentication = $authentication;
@@ -23,6 +24,7 @@ class Menu {
 	}
 
 	public function loadMenu($filename) {
+		$this->filename = $filename;
 		$site = $this->config->siteConfig();
 		$core_file = __DIR__.DS.'..'.DS.'config'.DS.$filename;
 		$site_file = __DIR__.DS.'..'.DS.'..'.DS.'sites'.DS.$site->namespace.DS.'config'.DS.$filename;
@@ -45,8 +47,62 @@ class Menu {
 		}
 	}
 
+	public function insert_menu($after, $key, $data) {
+		$array = &$this->menu_data;
+		if (is_array($after)) {
+			$counter = 0;
+			foreach ($after as $element) {
+				$counter++;
+				if ($counter == count($after)) {
+					$after = $element;
+					break;
+				}
+				if (!isset($array[$element]['children'])) {
+					throw new ErrorException('Menu item does not exist');
+				}
+				$array = &$array[$element]['children'];
+			}
+		}
+
+		$copy = $array;
+		$array = [];
+
+		if (is_null($after)) {
+			$array[$key] = $data;
+		}
+
+		foreach ($copy as $menu_name => $menu_data) {
+			$array[$menu_name] = $menu_data;
+			if ($menu_name == $after) {
+				$array[$key] = $data;
+			}
+		}
+	}
+
+	public function update() {
+		$site = $this->config->siteConfig();
+		$site_path = __DIR__.DS.'..'.DS.'..'.DS.'sites'.DS.$site->namespace.DS.'config'.DS;
+		$site_file = $site_path.$this->filename;
+
+		$menu = [
+			'template' => $this->template->getFilename(),
+			'ul_class' => $this->ul_class,
+			'a_class' => $this->a_class,
+			'menu' => $this->menu_data,
+		];
+
+		if (!is_dir($site_path)) {
+			mkdir($site_path, 0775, TRUE);
+		}
+		file_put_contents($site_file, '<?php $_MENU = '.var_export($menu, TRUE).';');
+	}
+
 	public function getMenuData() {
 		return $this->menu_data;
+	}
+
+	public function setMenuData($menu_data) {
+		$this->menu_data = $menu_data;
 	}
 
 	public function addMenuData($name, $value) {

@@ -20,6 +20,16 @@ class Module {
 		}
 		if ($this->modules) return $this->modules;
 
+		$modules_enabled = [];
+		foreach ($this->config->sites as $domain => $data) {
+
+			if (property_exists($data, 'modules')) {
+				foreach ($data->modules as $module => $module_data) {
+					$modules_enabled[$module] = 1;
+				}
+			}
+		}
+
 		// get the paths
 		$site = $this->config->siteConfig();
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
@@ -65,6 +75,7 @@ class Module {
 			else {
 				$module['enabled'] = FALSE;
 			}
+			$module['enabled_anywhere'] = isset($modules_enabled[$module['name']]);
 		}
 
 		$_GLOBALS['cache']['modules'] = $this->modules;
@@ -83,6 +94,19 @@ class Module {
 		$installer->install();
 
 		$this->config->installModule($module);
+	}
+
+	public function uninstall($module_name, Database $database) {
+		if (!isset($this->getModules()[$module_name])) {
+			throw new ErrorException("No module named $module_name");
+		}
+		$module = $this->getModules()[$module_name];
+
+		$installer_class = $module['namespace'].'\\Installer';
+		$installer = new $installer_class($this->config, $database);
+		$installer->uninstall();
+
+		$this->config->uninstallModule($module);
 	}
 
 	public function enable($module_name, Database $database) {

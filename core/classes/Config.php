@@ -57,6 +57,20 @@ class Config {
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
 	}
 
+	public function uninstallModule($module) {
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		require($filename);
+
+		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
+
+		if (in_array($module['name'], $_CONFIG['modules'])) {
+			$index = array_search($module['name'], $_CONFIG['modules']);
+			array_splice($_CONFIG['modules'], $index, 1);
+		}
+
+		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+	}
+
 	public function enableModule($module) {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
 		require($filename);

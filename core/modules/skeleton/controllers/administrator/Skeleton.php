@@ -14,5 +14,13 @@ class Skeleton extends Controller {
 
 	public function index() {
 		$this->language->loadLanguageFile('administrator/skeleton.php', 'core'.DS.'modules'.DS.'skeleton');
+		$template = $this->getTemplate('pages/administrator/skeleton.php', [], 'core'.DS.'modules'.DS.'skeleton');
+		$this->response->setContent($template->render());
+	}
+
+	public function config() {
+		$this->language->loadLanguageFile('administrator/skeleton.php', 'core'.DS.'modules'.DS.'skeleton');
+		$template = $this->getTemplate('pages/administrator/skeleton.php', [], 'core'.DS.'modules'.DS.'skeleton');
+		$this->response->setContent($template->render());
 	}
 }

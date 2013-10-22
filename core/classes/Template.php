@@ -15,13 +15,15 @@ class Template {
 	protected $filename = NULL;
 	protected $data = NULL;
 	protected $url;
+	protected $path;
 	protected $language;
 
-	public function __construct(Config $config, Language $language, $filename, $data = NULL) {
+	public function __construct(Config $config, Language $language, $filename, $data = NULL, $path = NULL) {
 		$this->config = $config;
 		$this->language = $language;
 		$this->filename = $filename;
 		$this->data = $data;
+		$this->path = $path;
 		$this->logger = Logger::getLogger(__CLASS__);
 		$this->url    = new URL($this->config);
 	}
@@ -79,11 +81,18 @@ class Template {
 		$default_file = $root_path.$default_path.$this->filename;
 		$theme_path = 'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS;
 		$theme_file = $root_path.$theme_path.$this->filename;
+		if ($this->path) {
+			$path_path = $this->path.DS.'templates'.DS;
+			$path_file = $root_path.$path_path.$this->filename;
+		}
 		if (file_exists($theme_file)) {
 			return $theme_file;
 		}
 		if (file_exists($default_file)) {
 			return $default_file;
+		}
+		if ($this->path && file_exists($path_file)) {
+			return $path_file;
 		}
 		else {
 			throw new TemplateException("Could not find template file: {$this->filename}");
