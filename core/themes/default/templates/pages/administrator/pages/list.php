@@ -58,13 +58,13 @@
 									<div class="spacer-2column visible-sm"></div>
 									<div class="col-md-3 col-sm-3 ">
 										<label>
-											<input type="radio" name="search_editable" value="all" <?php if ($form->getValue('search_editable') == 'all') echo 'checked="checked"'; ?> />
+											<input type="radio" name="search_editable" value="all" <?php if (is_null($form->getValue('search_editable')) || $form->getValue('search_editable') == 'all') echo 'checked="checked"'; ?> />
 											<?php echo $text_editable_all; ?>
 										</label>
 									</div>
 									<div class="col-md-5 col-sm-5 ">
 										<label>
-											<input type="radio" name="search_editable" value="editable" <?php if (is_null($form->getValue('search_editable')) || $form->getValue('search_editable') == 'editable') echo 'checked="checked"'; ?> />
+											<input type="radio" name="search_editable" value="editable" <?php if ($form->getValue('search_editable') == 'editable') echo 'checked="checked"'; ?> />
 											<?php echo $text_editable_yes; ?>
 										</label>
 									</div>

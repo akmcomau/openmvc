@@ -64,9 +64,6 @@ class URL {
 					$url_config[$controller] = $_URLS;
 				}
 			}
-			else {
-				print $controller_class.'<br />';
-			}
 
 			if (!isset($url_config[$controller])) {
 				$url_config[$controller] = ['aliases' => [], 'methods' => []];
@@ -202,19 +199,15 @@ class URL {
 
 		if (!isset($meta_tags['title'])) {
 			$postfix = '';
-			if ($postfix_site) $postfix = ' :: '.$this->config->siteConfig()->name;
 			if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
 				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language].$postfix;
 			}
 			else {
-				if ($postfix_site) {
-					$meta_tags['title'] = $this->config->siteConfig()->name;
-				}
-				else {
-					$meta_tags['title'] = '';
-				}
+				$meta_tags['title'] = $this->config->siteConfig()->name;
 			}
 		}
+
+		if ($postfix_site) $meta_tags['title'] .= ' :: '.$this->config->siteConfig()->name;
 
 		return $meta_tags;
 	}

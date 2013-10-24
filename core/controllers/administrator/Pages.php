@@ -41,7 +41,7 @@ class Pages extends Controller {
 		}
 
 		// default search values
-		if (!isset($params['editable'])) $params['editable'] = 'editable';
+		if (!isset($params['editable'])) $params['editable'] = 'all';
 
 		// get all the pages
 		$page  = new Page($this->config, $this->database);

@@ -114,7 +114,7 @@ class Authentication {
 
 	public function logoutAdministrator() {
 		$auth = $this->request->session->delete(['authentication', 'administrator']);
-		unset($_SESSION['authentication']['customer']);  // HACK above line not working
+		unset($_SESSION['authentication']['administrator']);  // HACK above line not working
 		$this->logged_in = $this->administratorLoggedIn();
 		$this->customer_data  = NULL;
 	}
