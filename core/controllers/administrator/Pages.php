@@ -72,7 +72,7 @@ class Pages extends Controller {
 
 		$model = new Model($this->config, $this->database);
 		$page_category = $model->getModel('\core\classes\models\PageCategory');
-		$data['categories'] = $page_category->getAsOptions();
+		$data['categories'] = $page_category->getAsOptions($this->allowedSiteIDs());
 
 		$template = $this->getTemplate('pages/administrator/pages/list.php', $data);
 		$this->response->setContent($template->render());
@@ -97,7 +97,7 @@ class Pages extends Controller {
 
 		$model = new Model($this->config, $this->database);
 		$page_category = $model->getModel('\core\classes\models\PageCategory');
-		$data['categories'] = $page_category->getAsOptions();
+		$data['categories'] = $page_category->getAsOptions($this->allowedSiteIDs());
 
 		$data['is_add_page'] = TRUE;
 		$data['form'] = $form_page;
@@ -116,7 +116,7 @@ class Pages extends Controller {
 
 		$model = new Model($this->config, $this->database);
 		$page_category = $model->getModel('\core\classes\models\PageCategory');
-		$data['categories'] = $page_category->getAsOptions();
+		$data['categories'] = $page_category->getAsOptions($this->allowedSiteIDs());
 
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);

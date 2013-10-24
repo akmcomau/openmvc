@@ -234,7 +234,7 @@ button#browse {
 button#browse span {
 	margin:0;
 	padding:0;
-	background: url(../images/file_manager/plus.png) no-repeat center center;
+	background: url(images/plus.png) no-repeat center center;
 	display: block;
 	color:#666;
 	text-shadow: none;
@@ -263,7 +263,7 @@ button#browse span {
 	display: inline-table;
 	width: 20px;
 	height: 20px;
-	background: url(../images/file_manager/reset.png) no-repeat center center;
+	background: url(images/reset.png) no-repeat center center;
 	position: relative;
 	opacity:0.5;
 	left: -30px;
@@ -357,7 +357,7 @@ div.clip {
 	display: block;
 	width: 100%;
 	padding-right: 20px;
-	background-image: url(../images/file_manager/bullet_arrow_up.png);
+	background-image: url(images/bullet_arrow_up.png);
 	background-repeat: no-repeat;
 	background-position: right center;
 }
@@ -366,7 +366,7 @@ div.clip {
 	display: block;
 	width: 100%;
 	padding-right: 20px;
-	background-image: url(../images/file_manager/bullet_arrow_down.png);
+	background-image: url(images/bullet_arrow_down.png);
 	background-repeat: no-repeat;
 	background-position: right center;
 }
@@ -408,15 +408,15 @@ div.clip {
 }
 
 /* these apply to the contextual menus as well as the buttons */
-#select span, .contextMenu li.select a { background-image: url(../images/file_manager/accept.png); }
-#download span, .contextMenu li.download a { background-image: url(../images/file_manager/download.png); }
-#rename span, .contextMenu li.rename a { background-image: url(../images/file_manager/pencil.png); }
-#delete span, .contextMenu li.delete a { background-image: url(../images/file_manager/bin_closed.png); }
-#upload span { background-image: url(../images/file_manager/upload.png); }
-#upload span.loading { background-image: url(../images/file_manager/ajax-loader.gif);color:#555555;font-size:0.9em; }
-#parentfolder span { background-image: url(../images/file_manager/parentfolder.png); }
-#newfolder span { background-image: url(../images/file_manager/folder_add.png); }
-#home span { background-image: url(../images/file_manager/house.png); }
+#select span, .contextMenu li.select a { background-image: url(images/accept.png); }
+#download span, .contextMenu li.download a { background-image: url(images/download.png); }
+#rename span, .contextMenu li.rename a { background-image: url(images/pencil.png); }
+#delete span, .contextMenu li.delete a { background-image: url(images/bin_closed.png); }
+#upload span { background-image: url(images/upload.png); }
+#upload span.loading { background-image: url(images/ajax-loader.gif);color:#555555;font-size:0.9em; }
+#parentfolder span { background-image: url(images/parentfolder.png); }
+#newfolder span { background-image: url(images/folder_add.png); }
+#home span { background-image: url(images/house.png); }
 
 /* div.jqi button { background-image: url(../images/circular/yes.png); } */
 
@@ -472,18 +472,18 @@ button.ON {
 }
 
 #grid span {
-	background-image: url(../images/file_manager/application_view_icons.png);
+	background-image: url(images/application_view_icons.png);
 }
 
 #list span {
-	background-image: url(../images/file_manager/application_view_list.png);
+	background-image: url(images/application_view_list.png);
 }
 
 #list {
 	margin-left: 0;
 }
 #progressbar {
-	background:transparent url(../images/file_manager/ajax-loader.gif) no-repeat 0 0;
+	background:transparent url(images/ajax-loader.gif) no-repeat 0 0;
 	display:inline-table;
 	width:30px;
 	height:30px;

@@ -265,6 +265,15 @@ class Model {
 					case 'like':
 						$where[] = $column.' LIKE '.$this->database->quote($value['value']);
 						break;
+
+					case 'in':
+						if ($value['value']) {
+							foreach ($value['value'] as &$val) {
+								$val = $this->database->quote($val);
+							}
+							$where[] = $column.' IN ('.join(',', $value['value']).')';
+						}
+						break;
 				}
 			}
 			else {

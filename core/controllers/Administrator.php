@@ -63,6 +63,22 @@ class Administrator extends Controller {
 		$this->response->setContent($template->render());
 	}
 
+	public function error_401() {
+		$this->show_admin_layout = TRUE;
+		$this->language->loadLanguageFile('error.php');
+		header("HTTP/1.1 401 Permission Denied");
+		$template = $this->getTemplate('pages/error_401.php');
+		$this->response->setContent($template->render());
+	}
+
+	public function error_404() {
+		$this->show_admin_layout = TRUE;
+		$this->language->loadLanguageFile('error.php');
+		header("HTTP/1.1 404 Not Found");
+		$template = $this->getTemplate('pages/error_404.php');
+		$this->response->setContent($template->render());
+	}
+
 	protected function getLoginForm() {
 		$inputs = [
 			'username' => [

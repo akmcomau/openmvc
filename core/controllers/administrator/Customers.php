@@ -29,7 +29,7 @@ class Customers extends Controller {
 
 		$pagination = new Pagination($this->request, 'username');
 
-		$params = [];
+		$params = ['site_id' => ['type'=>'in', 'value'=>$this->allowedSiteIDs()]];
 		if ($form_search->validate()) {
 			$values = $form_search->getSubmittedValues();
 			foreach ($values as $name => $value) {
@@ -108,8 +108,9 @@ class Customers extends Controller {
 		$customer = $model->getModel('\core\classes\models\Customer')->get([
 			'id' => (int)$customer_id,
 		]);
-		$form_customer = $this->getCustomerForm(FALSE, $customer);
+		$this->siteProtection($customer);
 
+		$form_customer = $this->getCustomerForm(FALSE, $customer);
 		if ($form_customer->validate()) {
 			$this->updateFromRequest($form_customer, $customer);
 			$customer->update();
@@ -133,10 +134,11 @@ class Customers extends Controller {
 	public function delete() {
 		if ($this->request->requestParam('selected')) {
 			$model = new Model($this->config, $this->database);
-			$block_admin = $model->getModel('\core\classes\models\Customer');
+			$customer_model = $model->getModel('\core\classes\models\Customer');
 			foreach ($this->request->requestParam('selected') as $id) {
-				$block = $block_admin->get(['id' => $id]);
-				$block->delete();
+				$customer = $customer_model->get(['id' => $id]);
+				$this->siteProtection($customer);
+				$customer->delete();
 			}
 
 			throw new RedirectException($this->url->getURL('administrator/Customers', 'index', ['delete-success']));

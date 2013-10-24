@@ -22,7 +22,7 @@ DirectoryIndex index.php
 	RewriteRule ^/?admin/scripts/languages/en.js$ /core/themes/default/packages/file_manager/languages/en.js [QSA,L]
 
 	# For ckeditor
-	RewriteRule ^/?(static-\d+/)?core/themes/default/ckeditor/config.js$ /core/themes/default/js/ckeditor_config.js [QSA,L]
+	RewriteRule ^/?(static-\d+/)?core/themes/default/packages/ckeditor/config.js$ /core/themes/default/js/ckeditor_config.js [QSA,L]
 
 	# Allow access to static content
 	RewriteCond %{DOCUMENT_ROOT}/$1/themes/$2 -f

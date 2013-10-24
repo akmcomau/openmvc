@@ -37,11 +37,14 @@ class CategoryManager extends Controller {
 
 		$this->deleteCategories($page_category);
 
+		// Limit to particular site
+		$site_id = $this->allowedSiteIDs();
+
 		$category_id = NULL;
 		if ((int)$this->request->requestParam('category')) {
 			$category_id = (int)$this->request->requestParam('category');
 		}
-		$categ_data = $page_category->getAllByParent();
+		$categ_data = $page_category->getAllByParent($site_id);
 
 		$categs_by_id = [];
 		foreach ($categ_data as $parent_id => &$categories) {

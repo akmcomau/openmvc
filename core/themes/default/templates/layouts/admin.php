@@ -18,9 +18,17 @@
 
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery/jquery.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/ckeditor/ckeditor.js"></script>
-
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
+
+	<?php if ($this->config->siteConfig()->enable_latex) { ?>
+		<script src="<?php echo $this->config->siteConfig()->enable_latex; ?>"></script>
+		<script type="text/javascript">
+			MathJax.Hub.Config({
+				tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+			});
+		</script>
+	<?php } ?>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/ckeditor/ckeditor.js"></script>
 
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
@@ -87,11 +95,4 @@
 		</div>
 	</div>
 </body>
-<script type="text/javascript">
-	<?php if ($this->config->siteConfig()->enable_latex) { ?>
-		MathJax.Hub.Config({
-			tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
-		});
-	<?php } ?>
-</script>
 </html>

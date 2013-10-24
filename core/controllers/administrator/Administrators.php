@@ -28,7 +28,7 @@ class Administrators extends Controller {
 
 		$pagination = new Pagination($this->request, 'username');
 
-		$params = [];
+		$params = ['site_id' => ['type'=>'in', 'value'=>$this->allowedSiteIDs()]];
 		if ($form_search->validate()) {
 			$values = $form_search->getSubmittedValues();
 			foreach ($values as $name => $value) {
@@ -105,6 +105,7 @@ class Administrators extends Controller {
 		$administrator = $model->getModel('\core\classes\models\Administrator')->get([
 			'id' => (int)$administrator_id,
 		]);
+		$this->siteProtection($administrator);
 		$form_administrator = $this->getAdministratorForm(FALSE, $administrator);
 
 		if ($form_administrator->validate()) {
@@ -130,10 +131,11 @@ class Administrators extends Controller {
 	public function delete() {
 		if ($this->request->requestParam('selected')) {
 			$model = new Model($this->config, $this->database);
-			$block_admin = $model->getModel('\core\classes\models\Administrator');
+			$administrator_model = $model->getModel('\core\classes\models\Administrator');
 			foreach ($this->request->requestParam('selected') as $id) {
-				$block = $block_admin->get(['id' => $id]);
-				$block->delete();
+				$administrator = $administrator_model->get(['id' => $id]);
+				$this->siteProtection($administrator);
+				$administrator->delete();
 			}
 
 			throw new RedirectException($this->url->getURL('administrator/Administrators', 'index', ['delete-success']));

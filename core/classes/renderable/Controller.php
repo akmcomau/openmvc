@@ -4,6 +4,7 @@ namespace core\classes\renderable;
 
 use ReflectionClass;
 use ReflectionMethod;
+use core\classes\exceptions\SoftRedirectException;
 use core\classes\Authentication;
 use core\classes\Config;
 use core\classes\Database;
@@ -16,6 +17,7 @@ use core\classes\Language;
 use core\classes\Renderable;
 use core\classes\renderable\Layout;
 use core\classes\Menu;
+use core\classes\Model;
 
 class Controller extends Renderable {
 
@@ -175,5 +177,32 @@ class Controller extends Renderable {
 		}
 
 		return $controller_methods;
+	}
+
+	protected function allowedSiteIDs() {
+		if ($this->request->session->get('admin_site_id')) {
+			return [$this->request->session->get('admin_site_id')];
+		}
+		elseif ($this->config->siteConfig()->site_id) {
+			return [$this->config->siteConfig()->site_id];
+		}
+
+		return NULL;
+	}
+
+	protected function siteProtection(Model $model = NULL) {
+		if (is_null($model)) {
+				throw new SoftRedirectException('\\core\\controllers\\Administrator', 'error_404');
+		}
+		elseif ($this->request->session->get('admin_site_id')) {
+			if ($this->request->session->get('admin_site_id') != $model->site_id) {
+				throw new SoftRedirectException('\\core\\controllers\\Administrator', 'error_401');
+			}
+		}
+		elseif ($this->config->siteConfig()->site_id) {
+			if ($this->config->siteConfig()->site_id != $model->site_id) {
+				throw new SoftRedirectException('\\core\\controllers\\Administrator', 'error_401');
+			}
+		}
 	}
 }

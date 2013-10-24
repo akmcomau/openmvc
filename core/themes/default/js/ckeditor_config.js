@@ -16,8 +16,14 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'about' },
 	];
 
+	if (typeof(MathJax) == 'undefined') {
+		config.extraPlugins = 'onchange';
+	}
+	else {
+		config.extraPlugins = 'onchange,mathjax';
+	}
+
 	config.extraAllowedContent = '*(*)';
-	config.extraPlugins = 'onchange';
 	config.protectedSource.push(/<\?[\s\S]*?\?>/g);
 	config.removeButtons = 'Underline,Subscript,Superscript';
 	config.format_tags = 'p;h1;h2;h3;pre';

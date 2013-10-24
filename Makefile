@@ -12,6 +12,14 @@ update-depends:
 	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ../../../../../core/themes/default/packages/ck_mathjax ./mathjax
 	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ../../../../../composer/vendor/ckeditor/onchange ./onchange
 
+# update composer
+site-update-composer:
+	cd sites/${SITE}/composer && curl -sS https://getcomposer.org/installer | php && php composer.phar install;
+
+# update dependancies
+site-update-depends:
+	cd sites/${SITE}/composer && php composer.phar update;
+
 # build dependancies
 build-depends:
 	cd composer/vendor/jquery/jquery && npm install && grunt

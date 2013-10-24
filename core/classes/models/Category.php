@@ -12,8 +12,10 @@ class Category extends Model {
 		$this->children[] = $category;
 	}
 
-	public function getAllByParent() {
-		$categories = $this->getMulti(NULL, ['name' => 'asc']);
+	public function getAllByParent($site_id = NULL) {
+		$params = NULL;
+		if ($site_id) $params = ['site_id' => ['type'=>'in', 'value'=>$site_id]];
+		$categories = $this->getMulti($params, ['name' => 'asc']);
 		$categ_data = [];
 		foreach ($categories as $category) {
 			$categ_data[$category->parent_id][] = [
@@ -33,8 +35,10 @@ class Category extends Model {
 		parent::delete();
 	}
 
-	public function getAsOptions() {
-		$categories = $this->getMulti(NULL, ['name' => 'asc']);
+	public function getAsOptions($site_id = NULL) {
+		$params = NULL;
+		if ($site_id) $params = ['site_id' => ['type'=>'in', 'value'=>$site_id]];
+		$categories = $this->getMulti($params, ['name' => 'asc']);
 		$by_parent = [];
 		$by_id = [];
 		foreach ($categories as $category) {

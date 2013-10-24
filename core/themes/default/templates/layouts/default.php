@@ -17,8 +17,16 @@
 
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery/jquery.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
-
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
+	<?php if ($this->config->siteConfig()->enable_latex) { ?>
+		<script src="<?php echo $this->config->siteConfig()->enable_latex; ?>"></script>
+		<script type="text/javascript">
+			MathJax.Hub.Config({
+				tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+			});
+		</script>
+	<?php } ?>
+</body>
 
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
@@ -141,22 +149,27 @@
 	</div>
 
 	<script type="text/javascript">
-	  $('.show-hide').each(function() {
-		  $(this).click(function() {
-			  var state = 'open';
-			  var target = $(this).attr('data-target');
-			  var targetState = $(this).attr('data-target-state');
-			  if (typeof targetState !== 'undefined' && targetState !== false) {
-				  state = targetState;
-			  }
-			  if (state === 'undefined') {
-				  state = 'open';
-			  }
+		$('.show-hide').each(function() {
+			$(this).click(function() {
+				var state = 'open';
+				var target = $(this).attr('data-target');
+				var targetState = $(this).attr('data-target-state');
+				if (typeof targetState !== 'undefined' && targetState !== false) {
+					state = targetState;
+				}
+				if (state === 'undefined') {
+					state = 'open';
+				}
 
-			  $(target).toggleClass('show-hide-'+ state);
-			  $(this).toggleClass(state);
-		  });
-	  });
+				$(target).toggleClass('show-hide-'+ state);
+				$(this).toggleClass(state);
+			});
+		});
+
+		<?php if ($this->config->siteConfig()->enable_latex) { ?>
+			MathJax.Hub.Config({
+				tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+			});
+		<?php } ?>
 	</script>
-</body>
 </html>

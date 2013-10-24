@@ -186,4 +186,3 @@
 	});
 	updatePreview($('textarea[name="content"]').val());
 </script>
-

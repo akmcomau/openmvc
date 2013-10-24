@@ -9,6 +9,7 @@ use core\classes\Template;
 use core\classes\FormValidator;
 use core\classes\renderable\Controller;
 use core\classes\Model;
+use core\classes\models\Block;
 use core\classes\Page;
 use core\classes\Pagination;
 
@@ -29,7 +30,7 @@ class Blocks extends Controller {
 
 		$pagination = new Pagination($this->request, 'tag');
 
-		$params = [];
+		$params = ['site_id' => ['type'=>'in', 'value'=>$this->allowedSiteIDs()]];
 		if ($form_search->validate()) {
 			$values = $form_search->getSubmittedValues();
 			foreach ($values as $name => $value) {
@@ -70,7 +71,7 @@ class Blocks extends Controller {
 			'form' => $form_search,
 			'blocks' => $blocks,
 			'pagination' => $pagination,
-			'categories' => $block_category->getAsOptions(),
+			'categories' => $block_category->getAsOptions($this->allowedSiteIDs()),
 			'types' => $block_type->getAsOptions(),
 			'message_js' => $message_js,
 		];
@@ -88,7 +89,7 @@ class Blocks extends Controller {
 		$block = $model->getModel('\core\classes\models\Block');
 		$block->site_id = $this->config->siteConfig()->site_id;
 		$block_category = $model->getModel('\core\classes\models\BlockCategory');
-		$data['categories'] = $block_category->getAsOptions();
+		$data['categories'] = $block_category->getAsOptions($this->allowedSiteIDs());
 
 		if ($form_block->validate()) {
 			$this->updateFromRequest($form_block, $block);
@@ -113,11 +114,12 @@ class Blocks extends Controller {
 
 		$model = new Model($this->config, $this->database);
 		$block_category = $model->getModel('\core\classes\models\BlockCategory');
-		$data['categories'] = $block_category->getAsOptions();
+		$data['categories'] = $block_category->getAsOptions($this->allowedSiteIDs());
 
 		$block = $model->getModel('\core\classes\models\Block')->get([
 			'tag' => $tag,
 		]);
+		$this->siteProtection($block);
 
 		if ($form_block->validate()) {
 			$this->updateFromRequest($form_block, $block);
@@ -142,6 +144,7 @@ class Blocks extends Controller {
 			$block_model = $model->getModel('\core\classes\models\Block');
 			foreach ($this->request->requestParam('selected') as $id) {
 				$block = $block_model->get(['id' => $id]);
+				$this->siteProtection($block);
 				$block->delete();
 			}
 
