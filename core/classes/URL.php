@@ -18,8 +18,8 @@ class URL {
 	}
 
 	protected function generateUrlMap() {
-		if (isset($_GLOBALS['cache']['url_map'])) {
-			$this->url_map = $_GLOBALS['cache']['url_map'];
+		if (isset($GLOBALS['cache']['url_map'])) {
+			$this->url_map = $GLOBALS['cache']['url_map'];
 		}
 		if ($this->url_map) return $this->url_map;
 
@@ -93,7 +93,7 @@ class URL {
 
 		$this->url_map['controllers'] = $controllers;
 
-		$_GLOBALS['cache']['url_map'] = $this->url_map;
+		$GLOBALS['cache']['url_map'] = $this->url_map;
 	}
 
 	public function listAllControllers() {

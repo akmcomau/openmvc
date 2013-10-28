@@ -33,7 +33,8 @@ CKEDITOR.dialog.add( 'mathjaxDialog', function( editor ) {
 			EqEditor.clearText();
 
 			if ($.trim(selectedText.focusNode.data) != '') {
-				var regex = /^\s*\$\$(.*)\$\$\s*$/;
+				console.log(selectedText.focusNode.data)
+				var regex = /^\s*\$(.*)\$\s*$/;
 				var match = regex.exec(selectedText.focusNode.data);
 				if (match){
 					selectedText = match[1];
@@ -54,7 +55,7 @@ CKEDITOR.dialog.add( 'mathjaxDialog', function( editor ) {
 			// this element is our mathjax-source container
 			var content = editor.document.createElement('p');
 			content.setAttribute('class', 'math-area');
-			content.setText('$$ '+mathjaxInput+' $$');
+			content.setText('$ '+mathjaxInput+' $');
 			editor.insertElement(content);
 
 		}, onHide: function() {

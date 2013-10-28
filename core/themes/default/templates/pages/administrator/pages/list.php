@@ -102,11 +102,11 @@
 						<table class="table">
 							<tr>
 								<th></th>
-								<th><?php echo $text_url; ?> <?php echo $pagination->getSortUrls('url'); ?></th>
-								<th><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
-								<th><?php echo $text_permissions; ?> <?php echo $pagination->getSortUrls('permissions'); ?></th>
-								<th class="align-center"><?php echo $text_description; ?> <?php echo $pagination->getSortUrls('description'); ?></th>
-								<th class="align-center"><?php echo $text_keywords; ?> <?php echo $pagination->getSortUrls('keywords'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_url; ?> <?php echo $pagination->getSortUrls('url'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_permissions; ?> <?php echo $pagination->getSortUrls('permissions'); ?></th>
+								<th class="align-center" nowrap="nowrap"><?php echo $text_description; ?> <?php echo $pagination->getSortUrls('description'); ?></th>
+								<th class="align-center" nowrap="nowrap"><?php echo $text_keywords; ?> <?php echo $pagination->getSortUrls('keywords'); ?></th>
 								<th></th>
 							</tr>
 							<?php foreach ($pages as $controller => $method) { ?>

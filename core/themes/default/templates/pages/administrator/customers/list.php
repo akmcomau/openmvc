@@ -54,11 +54,11 @@
 						<table class="table">
 							<tr>
 								<th></th>
-								<th><?php echo $text_login; ?> <?php echo $pagination->getSortUrls('login'); ?></th>
-								<th><?php echo $text_email; ?> <?php echo $pagination->getSortUrls('email'); ?></th>
-								<th><?php echo $text_first_name; ?> <?php echo $pagination->getSortUrls('first_name'); ?></th>
-								<th><?php echo $text_last_name; ?> <?php echo $pagination->getSortUrls('last_name'); ?></th>
-								<th><?php echo $text_active; ?> <?php echo $pagination->getSortUrls('active'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_login; ?> <?php echo $pagination->getSortUrls('login'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_email; ?> <?php echo $pagination->getSortUrls('email'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_first_name; ?> <?php echo $pagination->getSortUrls('first_name'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_last_name; ?> <?php echo $pagination->getSortUrls('last_name'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_active; ?> <?php echo $pagination->getSortUrls('active'); ?></th>
 								<th></th>
 							</tr>
 							<?php foreach ($customers as $customer) { ?>

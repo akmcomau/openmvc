@@ -14,11 +14,15 @@ update-depends:
 
 # update composer
 site-update-composer:
-	cd sites/${SITE}/composer && curl -sS https://getcomposer.org/installer | php && php composer.phar install;
+	cd sites/${SITE} && make update-composer;
 
 # update dependancies
 site-update-depends:
-	cd sites/${SITE}/composer && php composer.phar update;
+	cd sites/${SITE} && make update-depends;
+
+# update dependancies
+site-build-depends:
+	cd sites/${SITE} && make build-depends;
 
 # build dependancies
 build-depends:

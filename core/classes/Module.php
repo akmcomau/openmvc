@@ -15,8 +15,8 @@ class Module {
 	}
 
 	public function getModules() {
-		if (isset($_GLOBALS['cache']['modules'])) {
-			$this->modules = $_GLOBALS['cache']['modules'];
+		if (isset($GLOBALS['cache']['modules'])) {
+			$this->modules = $GLOBALS['cache']['modules'];
 		}
 		if ($this->modules) return $this->modules;
 
@@ -78,9 +78,21 @@ class Module {
 			$module['enabled_anywhere'] = isset($modules_enabled[$module['name']]);
 		}
 
-		$_GLOBALS['cache']['modules'] = $this->modules;
+		$GLOBALS['cache']['modules'] = $this->modules;
 
 		return $this->modules;
+	}
+
+	public function getEnabledModules() {
+		$enabled = [];
+		$modules = $this->getModules();
+		foreach ($modules as $module) {
+			if ($module['enabled']) {
+				$enabled[] = $module;
+			}
+		}
+
+		return $enabled;
 	}
 
 	public function install($module_name, Database $database) {

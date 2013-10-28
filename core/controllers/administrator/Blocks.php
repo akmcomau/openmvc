@@ -12,6 +12,7 @@ use core\classes\Model;
 use core\classes\models\Block;
 use core\classes\Page;
 use core\classes\Pagination;
+use core\classes\Module;
 
 class Blocks extends Controller {
 
@@ -50,7 +51,7 @@ class Blocks extends Controller {
 		$block_category = $model->getModel('\core\classes\models\BlockCategory');
 		$block  = $model->getModel('\\core\\classes\\models\\Block');
 		$blocks = $block->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
-		$pagination->setRecordCount(10);
+		$pagination->setRecordCount($block->getCount($params));
 
 		$message_js = NULL;
 		switch($message) {
@@ -90,10 +91,13 @@ class Blocks extends Controller {
 		$block->site_id = $this->config->siteConfig()->site_id;
 		$block_category = $model->getModel('\core\classes\models\BlockCategory');
 		$data['categories'] = $block_category->getAsOptions($this->allowedSiteIDs());
+		$block_type = $model->getModel('\core\classes\models\BlockType');
+		$data['types'] = $block_type->getAsOptions();
 
 		if ($form_block->validate()) {
 			$this->updateFromRequest($form_block, $block);
 			$block->insert();
+			$this->callHook('block_add', [$block]);
 			throw new RedirectException($this->url->getURL('administrator/Blocks', 'index', ['add-success']));
 		}
 		elseif ($form_block->isSubmitted()) {
@@ -115,6 +119,8 @@ class Blocks extends Controller {
 		$model = new Model($this->config, $this->database);
 		$block_category = $model->getModel('\core\classes\models\BlockCategory');
 		$data['categories'] = $block_category->getAsOptions($this->allowedSiteIDs());
+		$block_type = $model->getModel('\core\classes\models\BlockType');
+		$data['types'] = $block_type->getAsOptions();
 
 		$block = $model->getModel('\core\classes\models\Block')->get([
 			'tag' => $tag,
@@ -124,6 +130,7 @@ class Blocks extends Controller {
 		if ($form_block->validate()) {
 			$this->updateFromRequest($form_block, $block);
 			$block->update();
+			$this->callHook('block_update', [$block]);
 			throw new RedirectException($this->url->getURL('administrator/Blocks', 'index', ['update-success']));
 		}
 		elseif ($form_block->isSubmitted()) {
@@ -156,6 +163,7 @@ class Blocks extends Controller {
 		$block->title = $form_block->getValue('title');
 		$block->tag = $form_block->getValue('tag');
 		$block->content = $form_block->getValue('content');
+		$block->block_type_id = $form_block->getValue('type');
 
 		$block->setCategory(NULL);
 		if ((int)$form_block->getValue('category')) {

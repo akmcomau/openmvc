@@ -22,7 +22,7 @@ class Model {
 	protected $uniques        = [];
 	protected $relationships  = [];
 
-	protected $available_models = [
+	protected $core_models = [
 		'Administrator',
 		'Customer',
 		'City',
@@ -45,7 +45,7 @@ class Model {
 	}
 
 	public function getRecord() {
-		return $this->record;
+ 		return $this->record;
 	}
 
 	public function setRecord($record) {
@@ -96,6 +96,19 @@ class Model {
 		return NULL;
 	}
 
+
+	protected function callHook($name) {
+		$name = $this->table.'_'.$name;
+		$modules = (new Module($this->config))->getEnabledModules();
+		foreach ($modules as $module) {
+			if (isset($module['hooks']['models'][$name])) {
+				$class = $module['namespace'].'\\'.$module['hooks']['models'][$name];
+				$class = new $class($this->config, $this->database, NULL);
+				call_user_func_array(array($class, $name), [$this]);
+			}
+		}
+	}
+
 	public function insert() {
 		$table       = $this->table;
 		$primary_key = $this->primary_key;
@@ -124,6 +137,9 @@ class Model {
 			$this->record[$primary_key] = $this->lastInsertId();
 		}
 		$this->logger->info("Inserted record in $table => ".$this->record[$primary_key]);
+
+		$this->callHook('insert');
+
 		return $this->record[$primary_key];
 	}
 
@@ -144,6 +160,8 @@ class Model {
 
 		$sql = "UPDATE $table SET ".join(',', $values)." WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
 		$this->database->executeQuery($sql);
+
+		$this->callHook('update');
 	}
 
 	public function delete() {
@@ -156,6 +174,8 @@ class Model {
 
 		$sql = "DELETE FROM $table WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
 		$this->database->executeQuery($sql);
+
+		$this->callHook('delete');
 	}
 
 	public function get(array $params) {
@@ -169,6 +189,18 @@ class Model {
 		else {
 			return NULL;
 		}
+	}
+
+	public function getCount(array $params = NULL) {
+		$table = $this->table;
+		$sql   = "SELECT COUNT(*) as cnt FROM ".$this->generateFromClause($params);
+		if ($params) {
+			$where = $this->generateWhereClause($params);
+			if ($where) {
+				$sql .= " WHERE $where";
+			}
+		}
+		return $this->database->queryValue($sql);
 	}
 
 	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
@@ -293,22 +325,27 @@ class Model {
 
 	public function createDatabase() {
 		// Create the tables
-		foreach ($this->available_models as $table) {
+		foreach ($this->core_models as $table) {
 			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createTable();
 		}
 
 		// Create the indexes
-		foreach ($this->available_models as $table) {
+		foreach ($this->core_models as $table) {
 			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createIndexes();
 		}
 
 		// Create the foreign keys
-		foreach ($this->available_models as $table) {
+		foreach ($this->core_models as $table) {
 			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createForeignKeys();
 		}
+	}
+
+	public function dropTable() {
+		$sql = 'DROP TABLE '.$this->table;
+		return $this->database->executeQuery($sql);
 	}
 
 	public function createTable() {

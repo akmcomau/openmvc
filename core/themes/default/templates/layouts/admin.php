@@ -23,9 +23,11 @@
 	<?php if ($this->config->siteConfig()->enable_latex) { ?>
 		<script src="<?php echo $this->config->siteConfig()->enable_latex; ?>"></script>
 		<script type="text/javascript">
-			MathJax.Hub.Config({
-				tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
-			});
+		  MathJax.Hub.Config({
+			  tex2jax: {
+				  inlineMath: [["$","$"],["\\(","\\)"]]
+			  }
+		  });
 		</script>
 	<?php } ?>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/ckeditor/ckeditor.js"></script>

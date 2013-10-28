@@ -17,6 +17,7 @@ use core\classes\Language;
 use core\classes\Renderable;
 use core\classes\renderable\Layout;
 use core\classes\Menu;
+use core\classes\Module;
 use core\classes\Model;
 
 class Controller extends Renderable {
@@ -202,6 +203,17 @@ class Controller extends Renderable {
 		elseif ($this->config->siteConfig()->site_id) {
 			if ($this->config->siteConfig()->site_id != $model->site_id) {
 				throw new SoftRedirectException('\\core\\controllers\\Administrator', 'error_401');
+			}
+		}
+	}
+
+	protected function callHook($name, array $params) {
+		$modules = (new Module($this->config))->getEnabledModules();
+		foreach ($modules as $module) {
+			if (isset($module['hooks']['controllers'][$name])) {
+				$class = $module['namespace'].'\\'.$module['hooks']['controllers'][$name];
+				$class = new $class($this->config, $this->database, $this->request);
+				call_user_func_array(array($class, $name), $params);
 			}
 		}
 	}

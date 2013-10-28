@@ -86,9 +86,9 @@
 						<table class="table">
 							<tr>
 								<th></th>
-								<th><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
-								<th><?php echo $text_tag; ?> <?php echo $pagination->getSortUrls('tag'); ?></th>
-								<th><?php echo $text_category; ?> <?php echo $pagination->getSortUrls('category_name'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_tag; ?> <?php echo $pagination->getSortUrls('tag'); ?></th>
+								<th nowrap="nowrap"><?php echo $text_category; ?> <?php echo $pagination->getSortUrls('category_name'); ?></th>
 								<th></th>
 							</tr>
 							<?php foreach ($blocks as $block) { ?>

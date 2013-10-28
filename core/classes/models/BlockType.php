@@ -21,14 +21,15 @@ class BlockType extends Model {
 		],
 	];
 
+	protected $uniques = [
+		['block_type_name'],
+	];
+
 	public function getAsOptions() {
 		$options = [];
 		$types = $this->getMulti(NULL, ['name' => 'asc']);
 		foreach ($types as $type) {
-			$options[] = [
-				'id'     => $type->id,
-				'name'   => $type->name,
-			];
+			$options[$type->id] = $type->name;
 		}
 		return $options;
 	}

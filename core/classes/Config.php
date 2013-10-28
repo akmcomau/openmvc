@@ -86,6 +86,15 @@ class Config {
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
 	}
 
+	public function moduleConfig($module) {
+		try {
+			return $this->sites->{$this->site_domain}->modules->$module;
+		}
+		catch (\Exception $ex) {
+			throw new ErrorException("Module config not found for $module: ".$ex->getMessage());
+		}
+	}
+
 	public function disableModule($module) {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
 		require($filename);

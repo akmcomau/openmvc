@@ -20,7 +20,7 @@ class Block extends Model {
 		],
 		'block_type_id' => [
 			'data_type'      => 'int',
-			'null_allowed'   => TRUE,
+			'null_allowed'   => FALSE,
 		],
 		'block_tag' => [
 			'data_type'      => 'text',
@@ -98,7 +98,7 @@ class Block extends Model {
 		// update the block
 		parent::insert();
 
-		if ($this->objects['category']) {
+		if (isset($this->objects['category']) && $this->objects['category']) {
 			// insert the category
 			$link = $this->getModel('\\core\\classes\\models\\BlockCategoryLink');
 			$link->block_id = $this->id;
