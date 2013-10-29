@@ -170,7 +170,7 @@ class Page {
 
 		// Update meta
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
-		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS.$language.DS;
+		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS;
 		$site_file = $site_path.$controller.'.php';
 
 		if (!is_dir($site_path)) {
@@ -265,7 +265,7 @@ class Page {
 
 		// Update meta
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
-		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS.$language.DS;
+		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS;
 		$site_file = $site_path.$controller.'.php';
 
 		if (!is_dir($site_path)) {

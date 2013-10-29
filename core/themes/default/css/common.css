@@ -76,7 +76,7 @@ label {
  * Common styles
  *-------------------------------------------------- */
 #main-content {
-	margin-top: 2em;
+	margin-top: 0em;
 	margin-bottom: 2em;
 }
 a:hover img {

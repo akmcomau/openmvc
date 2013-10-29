@@ -168,9 +168,9 @@ class URL {
 
 		$filename = $controller.'.php';
 		$root_path = __DIR__.DS.'..'.DS.'..';
-		$default_path = 'core'.DS.'meta'.DS.$language.DS;
+		$default_path = 'core'.DS.'meta'.DS;
 		$default_file = $root_path.DS.$default_path.$filename;
-		$site_path = 'sites'.DS.$site->namespace.DS.'meta'.DS.$language.DS;
+		$site_path = 'sites'.DS.$site->namespace.DS.'meta'.DS;
 		$site_file = $root_path.DS.$site_path.$filename;
 
 		if (file_exists($site_file)) {
@@ -180,7 +180,7 @@ class URL {
 			return $default_file;
 		}
 
-		$module_path = $root_path.str_replace('\\', DS, str_replace('\\controllers\\', '\\meta\\'.$language.'\\', $class)).'.php';
+		$module_path = $root_path.str_replace('\\', DS, str_replace('\\controllers\\', '\\meta\\', $class)).'.php';
 		if (file_exists($module_path)) {
 			return $module_path;
 		}
