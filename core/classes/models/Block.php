@@ -3,6 +3,7 @@
 namespace core\classes\models;
 
 use core\classes\Model;
+use core\classes\Module;
 
 class Block extends Model {
 
@@ -58,6 +59,19 @@ class Block extends Model {
 			'join_clause'   => 'LEFT JOIN block_category_link USING (block_id) LEFT JOIN block_category USING (block_category_id)',
 		],
 	];
+
+	public function render() {
+		$modules = (new Module($this->config))->getEnabledModules();
+		foreach ($modules as $module) {
+			if (isset($module['hooks']['models']['block_render'])) {
+				$class = $module['namespace'].'\\'.$module['hooks']['models']['block_render'];
+				$class = new $class($this->config, $this->database, NULL);
+				return call_user_func_array(array($class, 'block_render'), [$this]);
+			}
+		}
+
+		return $this->content;
+	}
 
 	public function setCategory(BlockCategory $category = NULL) {
 		$this->objects['category'] = $category;
@@ -138,6 +152,8 @@ class Block extends Model {
 
 	public function delete() {
 		// delete all block_category_link
+		$sql = "DELETE FROM block_category_link WHERE block_id=".$this->database->quote($this->id);
+		$this->database->executeQuery($sql);
 
 		parent::delete();
 	}

@@ -57,8 +57,12 @@
 								<div class="col-md-9 col-sm-9 ">
 									<div class="spacer-2column visible-sm"></div>
 									<select class="form-control" name="search_type">
-									<?php echo $form->getHtmlErrorDiv('search_type'); ?>
+										<option value=""></option>
+										<?php foreach ($types as $value => $text) { ?>
+											<option value="<?php echo $value; ?>" <?php if ($form->getValue('search_type') == $value) echo 'selected="selected"'; ?>><?php echo $text; ?></option>
+										<?php } ?>
 									</select>
+									<?php echo $form->getHtmlErrorDiv('search_type'); ?>
 								</div>
 							</div>
 						</div>

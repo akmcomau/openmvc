@@ -42,6 +42,9 @@ class Blocks extends Controller {
 				elseif ($name == 'search_category' && (int)$value != 0) {
 					$params['block_category_id'] = (int)$value;
 				}
+				elseif ($name == 'search_type' && (int)$value != 0) {
+					$params['block_type_id'] = (int)$value;
+				}
 			}
 		}
 

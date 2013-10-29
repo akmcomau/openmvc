@@ -93,6 +93,14 @@ class Model {
 		elseif (isset($this->columns[$name])) {
 			return $name;
 		}
+
+		foreach ($this->relationships as $table => $data) {
+			if ($table == '__common_join__') continue;
+			if (in_array($name, $data['where_fields'])) {
+				return $name;
+			}
+		}
+
 		return NULL;
 	}
 
@@ -104,7 +112,7 @@ class Model {
 			if (isset($module['hooks']['models'][$name])) {
 				$class = $module['namespace'].'\\'.$module['hooks']['models'][$name];
 				$class = new $class($this->config, $this->database, NULL);
-				call_user_func_array(array($class, $name), [$this]);
+				return call_user_func_array(array($class, $name), [$this]);
 			}
 		}
 	}
@@ -181,7 +189,11 @@ class Model {
 	public function get(array $params) {
 		$table  = $this->table;
 		$where  = $this->generateWhereClause($params);
-		$sql    = "SELECT * FROM $table WHERE $where";
+		if (strlen($where)) $where = "WHERE $where";
+		$sql    = "SELECT * FROM $table $where";
+		if (isset($params['get_random_record'])) {
+			$sql .= " ORDER BY RANDOM() LIMIT 1";
+		}
 		$record = $this->database->querySingle($sql);
 		if ($record) {
 			return $this->getModel(get_class($this), $record);
@@ -205,7 +217,7 @@ class Model {
 
 	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
 		$table = $this->table;
-		$sql   = "SELECT * FROM ".$this->generateFromClause($params);
+		$sql   = "SELECT * FROM ".$this->generateFromClause($params, $ordering);
 		if ($params) {
 			$where = $this->generateWhereClause($params);
 			if ($where) {
@@ -240,7 +252,7 @@ class Model {
 
 	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL) {
 		$table = $this->table;
-		$sql   = "SELECT * FROM ".$this->generateFromClause($params);
+		$sql   = "SELECT * FROM ".$this->generateFromClause($params, $ordering);
 		if ($params) {
 			$where = $this->generateWhereClause($params);
 			if ($where) {
@@ -257,13 +269,23 @@ class Model {
 		return $models;
 	}
 
-	public function generateFromClause(array $params = NULL) {
+	public function generateFromClause(array $params = NULL, array $ordering = NULL) {
 		if (!$params) $params = [];
+		if (!$ordering) $ordering = [];
 		$tables = [ $this->table ];
-		foreach ($params as $column => $value) {
+		$in_from = [];
+		foreach (array_merge($params, $ordering) as $column => $value) {
 			foreach ($this->relationships as $table => $data) {
-				if (in_array($column, $data['where_fields'])) {
-					$tables[] = $data['join_clause'];
+				if ($table == '__common_join__') continue;
+				if (!isset($in_from[$table]) && in_array($column, $data['where_fields'])) {
+					if (isset($data['join_clause'])) {
+						$tables[] = $data['join_clause'];
+						$in_from[$table] = 1;
+					}
+					elseif (!isset($in_from['__common_join__'])) {
+						$tables[] = $this->relationships['__common_join__'];
+						$in_from['__common_join__'] = 1;
+					}
 				}
 			}
 		}
@@ -282,6 +304,7 @@ class Model {
 			else {
 				$found = FALSE;
 				foreach ($this->relationships as $table => $data) {
+					if ($table == '__common_join__') continue;
 					if (in_array($column, $data['where_fields'])) {
 						$found = TRUE;
 						$column = "$table.$column";
@@ -295,7 +318,7 @@ class Model {
 			if (is_array($value)) {
 				switch ($value['type']) {
 					case 'like':
-						$where[] = $column.' LIKE '.$this->database->quote($value['value']);
+						$where[] = 'LOWER('.$column.') LIKE '.$this->database->quote(strtolower($value['value']));
 						break;
 
 					case 'in':

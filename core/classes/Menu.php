@@ -2,6 +2,7 @@
 
 namespace core\classes;
 
+use ErrorException;
 use core\classes\exceptions\TemplateException;
 
 class Menu {
@@ -58,7 +59,7 @@ class Menu {
 					break;
 				}
 				if (!isset($array[$element]['children'])) {
-					throw new ErrorException('Menu item does not exist');
+					throw new ErrorException("Menu item does not exist ($element): ".print_r($after, TRUE));
 				}
 				$array = &$array[$element]['children'];
 			}

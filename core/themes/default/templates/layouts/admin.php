@@ -11,12 +11,14 @@
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome.min.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome-ie7.min.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery-ui/jquery-ui.min.css" rel="stylesheet" media="screen" />
 
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/common.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin.css" rel="stylesheet" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin_responsive.css" rel="stylesheet" />
 
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery/jquery.min.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery-ui/jquery-ui.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
 

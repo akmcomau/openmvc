@@ -18,7 +18,6 @@ $_LANGUAGE = [
 	'type' => 'Type',
 	'delete_selected' => 'Delete Selected',
 	'confirm_delete' => 'Are you sure you want to delete the selected blocks?',
-	'update_success' => 'Block has been updated',
 	'error_search_title' => 'Must not exceed 256 characters',
 	'error_search_tag' => 'Must not exceed 64 characters',
 	'notification_update_success' => 'Block has been updated successfully',
