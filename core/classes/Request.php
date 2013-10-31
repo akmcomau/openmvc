@@ -118,4 +118,9 @@ class Request {
 		return $this->url->getURL($controller_class, $this->method_name, $params);
 	}
 
+	public function clearDispatcherParams() {
+		unset($this->get_params['method']);
+		unset($this->get_params['controller']);
+		unset($this->get_params['params']);
+	}
 }

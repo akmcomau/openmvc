@@ -43,17 +43,6 @@ foreach ($sites as $domain => $data) {
 
 // create the data
 foreach ($all_models as $model_class => $data_class) {
-	try {
-		$data_model = $model->getModel($data_class);
-		$records    = $data_model->getRecords();
-
-		foreach ($records as $record) {
-			$object = $model->getModel($model_class);
-			foreach ($record as $property => $value) {
-				$object->$property = $value;
-			}
-			$object->insert();
-		}
-	}
-	catch (AutoLoaderException $ex) {}
+	$object = $model->getModel($model_class);
+	$object->insertInitalData($data_class);
 }

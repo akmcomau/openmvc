@@ -272,7 +272,7 @@ class FormValidator {
 	}
 
 	public function isMoney ($string) {
-		if (preg_match('/^[0-9]+(\.[0-9]{2})?$/', $string)) {
+		if (preg_match('/^[0-9]+(\.[0-9]{2,4})?$/', $string)) {
 			return TRUE;
 		}
 		return FALSE;

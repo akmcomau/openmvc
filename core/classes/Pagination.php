@@ -89,11 +89,11 @@ class Pagination {
 		$pages = '';
 
 		if ($curr_page > 1) {
-			$params = ['ordering' => $this->ordering, 'page' => 1];
+			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => 1]);
 			$url = $this->request->currentURL();
 			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="icon-arrow-left"></i></a>';
 
-			$params = ['ordering' => $this->ordering, 'page' => ($curr_page-1)];
+			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => ($curr_page-1)]);
 			$url = $this->request->currentURL();
 			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="icon-double-angle-left"></i></a>';
 		}
@@ -104,18 +104,18 @@ class Pagination {
 				$class = ' class="current"';
 			}
 
-			$params = ['ordering' => $this->ordering, 'page' => $i];
+			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => $i]);
 			$url = $this->request->currentURL();
 			$pages .= '<a'.$class.' href="'.$url.'?'.http_build_query($params).'">'.$i.'</a>';
 		}
 
 		if ($curr_page < $this->getMaxPage()) {
-			$params = ['ordering' => $this->ordering, 'page' => ($curr_page+1)];
+			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => ($curr_page+1)]);
 			$url = $this->request->currentURL();
 			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="icon-double-angle-right"></i></a>';
 
-			$params = ['ordering' => $this->ordering, 'page' => $this->getMaxPage()];
-			$url = $this->request->currentURL();
+			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => $this->getMaxPage()]);
+$url = $this->request->currentURL();
 			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="icon-arrow-right"></i></a>';
 		}
 
@@ -127,8 +127,8 @@ class Pagination {
 		$method     = $this->request->getMethodName();
 		$params     = $this->request->getMethodParams();
 
-		$params_up   = ['ordering' => $column, 'direction' => 'asc',  'page' => 1];
-		$params_down = ['ordering' => $column, 'direction' => 'desc', 'page' => 1];
+		$params_up   = array_merge($this->request->get_params, ['ordering' => $column, 'direction' => 'asc',  'page' => 1]);
+		$params_down = array_merge($this->request->get_params, ['ordering' => $column, 'direction' => 'desc', 'page' => 1]);
 
 		if ($column == $this->ordering && strtolower($this->direction) == 'asc') {
 			$sort_asc = '<i class="icon-arrow-up"></i> ';

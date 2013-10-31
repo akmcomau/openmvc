@@ -640,6 +640,7 @@ class Model {
 			case 'numeric':
 				$type = 'NUMERIC';
 				if (isset($data['data_length']) && $data['data_length']) {
+					$data['data_length'][0] += $data['data_length'][1];
 					$type.= '('.join(',', $data['data_length']).')';
 				}
 				break;
@@ -701,5 +702,21 @@ class Model {
 		}
 
 		return $models;
+	}
+
+	public function insertInitalData($data_class) {
+		try {
+			$data_model = $this->getModel($data_class);
+			$records    = $data_model->getRecords();
+
+			foreach ($records as $record) {
+				$object = $this->getModel(get_class($this));
+				foreach ($record as $property => $value) {
+					$object->$property = $value;
+				}
+				$object->insert();
+			}
+		}
+		catch (AutoLoaderException $ex) {}
 	}
 }

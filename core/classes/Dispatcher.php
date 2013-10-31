@@ -122,6 +122,7 @@ class Dispatcher {
 		}
 
 		try {
+			$request->clearDispatcherParams();
 			call_user_func_array([$controller, $request->getMethodName()], $request->getMethodParams());
 		}
 		catch (SoftRedirectException $ex) {

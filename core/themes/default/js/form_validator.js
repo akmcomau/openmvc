@@ -16,7 +16,7 @@ $.extend(FormValidator, {
 		return false;
 	},
 	isMoney: function (string) {
-		if (/^[0-9]+(\.[0-9]{2})?$/.test(string)){
+		if (/^[0-9]+(\.[0-9]{2,4})?$/.test(string)){
 			return true;
 		}
 		return false;

@@ -130,6 +130,10 @@ class Config {
 			}
 			elseif ('www.'.$domain == $host) {
 				$this->site_domain = $domain;
+
+				// set locale
+				setlocale(LC_ALL, $this->siteConfig()->locale);
+
 				return;
 			}
 		}
