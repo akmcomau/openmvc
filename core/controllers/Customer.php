@@ -28,7 +28,25 @@ class Customer extends Controller {
 		throw new RedirectException($this->url->getURL());
 	}
 
-	public function login() {
+	public function login_register($controller = NULL, $method = NULL, $params = NULL) {
+		$this->language->loadLanguageFile('customer.php');
+		$form_login    = $this->getLoginForm();
+		$form_register = $this->getRegisterForm();
+
+		$data = [
+			'login' => $form_login,
+			'register' => $form_register,
+			'controller' => $controller,
+			'method' => $method,
+			'params' => $params,
+		];
+
+		$template = $this->getTemplate('pages/customer/login_register.php', $data);
+		$this->response->setContent($template->render());
+
+	}
+
+	public function login($controller = NULL, $method = NULL, $params = NULL) {
 		if ($this->authentication->customerLoggedIn()) {
 			throw new RedirectException($this->url->getURL('Customer'));
 		}
@@ -46,20 +64,31 @@ class Customer extends Controller {
 			]);
 			if ($customer && Encryption::bcrypt_verify($form_login->getValue('password'), $customer->password)) {
 				$this->authentication->loginCustomer($customer);
-				throw new RedirectException($this->url->getURL('Customer'));
+
+				if ($controller) {
+					throw new RedirectException($this->url->getURL($controller, $method, $params));
+				}
+				else {
+					throw new RedirectException($this->url->getURL('Customer'));
+				}
 			}
 			else {
 				$form_login->addError('login-failed', $this->language->get('login_failed'));
 			}
 		}
 
-		$data = ['login' => $form_login];
+		$data = [
+			'login' => $form_login,
+			'controller' => $controller,
+			'method' => $method,
+			'params' => $params,
+		];
 
 		$template = $this->getTemplate('pages/customer/login.php', $data);
 		$this->response->setContent($template->render());
 	}
 
-	public function register() {
+	public function register($controller = NULL, $method = NULL, $params = NULL) {
 		$this->language->loadLanguageFile('customer.php');
 
 		$bcrypt_cost   = $this->config->siteConfig()->bcrypt_cost;
@@ -77,10 +106,21 @@ class Customer extends Controller {
 			$customer->insert();
 
 			$this->authentication->loginCustomer($customer);
-			throw new RedirectException($this->url->getURL('Customer'));
+
+			if ($controller) {
+				throw new RedirectException($this->url->getURL($controller, $method, $params));
+			}
+			else {
+				throw new RedirectException($this->url->getURL('Customer'));
+			}
 		}
 
-		$data = ['register' => $form_register];
+		$data = [
+			'register' => $form_register,
+			'controller' => $controller,
+			'method' => $method,
+			'params' => $params,
+		];
 
 		$template = $this->getTemplate('pages/customer/register.php', $data);
 		$this->response->setContent($template->render());

@@ -46,7 +46,7 @@ class Session {
 				}
 				$data = &$data[$element];
 			}
-			$data;
+			return $data;
 		}
 
 		if (isset($_SESSION[$name])) {

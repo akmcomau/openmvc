@@ -112,6 +112,7 @@ class Model {
 			if (isset($module['hooks']['models'][$name])) {
 				$class = $module['namespace'].'\\'.$module['hooks']['models'][$name];
 				$class = new $class($this->config, $this->database, NULL);
+				$this->logger->debug("Calling Hook: $class::$name");
 				return call_user_func_array(array($class, $name), [$this]);
 			}
 		}
@@ -341,6 +342,9 @@ class Model {
 	public function getModel($class, array $data = NULL) {
 		$model = new $class($this->config, $this->database);
 		if ($data) {
+			if ($this->logger->isDebugEnabled()) {
+				$this->logger->debug("Creating Model: $class => ".json_encode($data));
+			}
 			$model->setRecord($data);
 		}
 		return $model;

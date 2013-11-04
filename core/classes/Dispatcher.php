@@ -91,7 +91,10 @@ class Dispatcher {
 				}
 			}
 			if (!$authenticated) {
-				throw new RedirectException($this->url->getURL($login_controller, 'login'));
+				$request->setMethodParams([ $request->getParam('controller'), $request->getParam('method'), $request->getParam('params') ]);
+				$request->setControllerClass($this->url->getControllerClass($login_controller));
+				$request->setMethodName('login_register');
+				return $this->dispatchRequest($request);
 			}
 		}
 

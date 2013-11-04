@@ -191,7 +191,11 @@ class Controller extends Renderable {
 		return NULL;
 	}
 
-	protected function siteProtection(Model $model = NULL) {
+	protected function siteProtection(Model $model = NULL, $method = NULL) {
+		if (!is_null($model) && !is_null($method)) {
+			$model = $model->$method();
+		}
+
 		if (is_null($model)) {
 				throw new SoftRedirectException('\\core\\controllers\\Administrator', 'error_404');
 		}

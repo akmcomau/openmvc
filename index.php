@@ -70,7 +70,8 @@ try {
 		$config->database->password
 	);
 	$request    = new Request($config, $database);
-	$logger->info('Start Request: '.$config->getSiteDomain().' => '.json_encode($request->get_params));
+	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ':'.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
+	$logger->info('Start Request ['.$ip.']: '.$config->getSiteDomain().' => '.json_encode($request->get_params));
 
 	$dispatcher = new Dispatcher($config, $database);
 	$response = $dispatcher->dispatch($request);

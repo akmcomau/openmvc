@@ -108,6 +108,9 @@ ul.inline li {
 	font-weight: bold;
 	text-align: right;
 }
+input[type="text"].small-text {
+	width: 50px;
+}
 .spacer-2column {
 	height: 10px;
 }

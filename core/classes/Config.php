@@ -8,6 +8,7 @@ use ErrorException;
 class Config {
 
 	protected $site_domain;
+	protected $configuration = [];
 
 	public function __construct() {
 		// get the default config
@@ -22,13 +23,15 @@ class Config {
 		$_CONFIG = json_decode(json_encode($_CONFIG), FALSE);
 		$_DEFAULT_CONFIG = json_decode(json_encode($_DEFAULT_CONFIG), FALSE);
 
+		$this->configuration = [];
+
 		// add the custom config to this object
 		foreach ($_CONFIG as $key => $value) {
-			$this->$key = $value;
+			$this->configuration[$key] = $value;
 		}
 
 		// add the default config to this object
-		foreach ($this->sites as $domain => $site_data) {
+		foreach ($this->configuration['sites'] as $domain => &$site_data) {
 			foreach ($_DEFAULT_CONFIG->default_site as $key => $value) {
 				if (!isset($site_data->$key)) {
 					$site_data->$key = $value;
@@ -38,10 +41,17 @@ class Config {
 		unset($_DEFAULT_CONFIG->default_site);
 
 		foreach ($_DEFAULT_CONFIG as $key => $value) {
-			if (!isset($this->$key)) {
-				$this->$key = $value;
+			if (!isset($this->configuration[$key])) {
+				$this->configuration[$key] = $value;
 			}
 		}
+	}
+
+	public function __get($name) {
+		if (isset($this->configuration[$name])) {
+			return $this->configuration[$name];
+		}
+		throw new ErrorException("Undefined config property: $name");
 	}
 
 	public function installModule($module) {
@@ -112,6 +122,23 @@ class Config {
 
 	public function siteConfig() {
 		return $this->sites->{$this->site_domain};
+	}
+
+	public function getSiteConfig() {
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		require($filename);
+
+		if (!isset($_CONFIG['sites'][$this->site_domain]['modules'])) {
+			$_CONFIG['sites'][$this->site_domain]['modules'] = [];
+		}
+
+		return $_CONFIG;
+	}
+
+	public function setSiteConfig($config) {
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+
+		file_put_contents($filename, '<?php $_CONFIG = '.var_export($config, TRUE).';');
 	}
 
 	public function getSiteDomain() {
