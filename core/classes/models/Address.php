@@ -57,10 +57,6 @@ class Address extends Model {
 			'data_length'    => '10',
 			'null_allowed'   => FALSE,
 		],
-		'suburb_id' => [
-			'data_type'      => 'bigint',
-			'null_allowed'   => FALSE,
-		],
 		'city_id' => [
 			'data_type'      => 'int',
 			'null_allowed'   => FALSE,
@@ -78,14 +74,12 @@ class Address extends Model {
 		'customer_id',
 		'address_active',
 		'address_postcode',
-		'suburb_id',
 		'city_id',
 		'state_id',
 		'country_id',
 	];
 	protected $foreign_keys = [
 		'customer_id'  => ['customer', 'customer_id'],
-		'suburb_id'    => ['suburb',   'suburb_id'],
 		'city_id'      => ['city',     'city_id'],
 		'state_id'     => ['state',    'state_id'],
 		'country_id'   => ['country',  'country_id'],

@@ -4,44 +4,11 @@ namespace core\classes;
 
 class Encryption {
 	public static function encrypt($string, $key) {
-		srand((double) microtime() * 1000000);
-		$key = md5($key);
-
-		/* Open module, and create IV */
-		$td = mcrypt_module_open('rijndael-128', '','cfb', '/usr/lib/');
-		$key = substr($key, 0, mcrypt_enc_get_key_size($td));
-		$iv_size = mcrypt_enc_get_iv_size($td);
-		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-
-		/* Initialize encryption handle */
-		if (mcrypt_generic_init($td, $key, $iv) != -1) {
-			/* Encrypt data */
-			$c_t = mcrypt_generic($td, $string);
-			mcrypt_generic_deinit($td);
-			mcrypt_module_close($td);
-			$c_t = $iv.$c_t;
-			return $c_t;
-		}
+		return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB);
 	}
 
 	public static function decrypt($string, $key) {
-		$key = md5($key);
-
-		/* Open module, and create IV */
-		$td = mcrypt_module_open('rijndael-128', '','cfb', '/usr/lib/');
-		$key = substr($key, 0, mcrypt_enc_get_key_size($td));
-		$iv_size = mcrypt_enc_get_iv_size($td);
-		$iv = substr($string,0,$iv_size);
-		$string = substr($string,$iv_size);
-
-		/* Initialize encryption handle */
-		if (mcrypt_generic_init($td, $key, $iv) != -1) {
-			/* Encrypt data */
-			$c_t = mdecrypt_generic($td, $string);
-			mcrypt_generic_deinit($td);
-			mcrypt_module_close($td);
-			return $c_t;
-		}
+		return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB);
 	}
 
 	public static function bcrypt($string, $cost) {
@@ -60,5 +27,50 @@ class Encryption {
 	public static function hex2Str($string) {
 		$hexstr = @pack("H*", $string);
 		return $hexstr;
+	}
+
+	public static function  str_baseconvert($str, $frombase=10, $tobase=36) {
+		$str = trim($str);
+		if (intval($frombase) != 10) {
+			$len = strlen($str);
+			$q = 0;
+			for ($i=0; $i<$len; $i++) {
+				$r = base_convert($str[$i], $frombase, 10);
+				$q = bcadd(bcmul($q, $frombase), $r);
+			}
+		}
+		else $q = $str;
+
+		if (intval($tobase) != 10) {
+			$s = '';
+			while (bccomp($q, '0', 0) > 0) {
+				$r = intval(bcmod($q, $tobase));
+				$s = base_convert($r, 10, $tobase) . $s;
+				$q = bcdiv($q, $tobase, 0);
+			}
+		}
+		else $s = $q;
+
+		return $s;
+	}
+
+	public static function obfuscate($integer, $key) {
+		$string = mcrypt_encrypt(MCRYPT_3DES, $key, $integer, MCRYPT_MODE_ECB);
+		$string = self::str2Hex($string);
+		$string = self::str_baseconvert($string, 16, 36);
+		$string = chunk_split(strtoupper($string), 4, '-');
+		if (preg_match('/-$/', $string)) {
+			$string = substr($string, 0, -1);
+		}
+		return $string;
+	}
+
+	public static function defuscate($string, $key) {
+		$string = str_replace('-', '', $string);
+		$string = self::str_baseconvert($string, 36, 16);
+		if (strlen($string) % 2) $string = '0'.$string;
+		$string = self::hex2Str($string);
+		$string = mcrypt_decrypt(MCRYPT_3DES, $key, $string, MCRYPT_MODE_ECB);
+		return $string;
 	}
 }

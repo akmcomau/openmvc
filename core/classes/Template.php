@@ -84,6 +84,8 @@ class Template {
 		if ($this->path) {
 			$path_path = $this->path.DS.'templates'.DS;
 			$path_file = $root_path.$path_path.$this->filename;
+
+			$theme_path_file = $root_path.$theme_path.$this->path.DS.$this->filename;
 		}
 		if (file_exists($theme_file)) {
 			return $theme_file;
@@ -91,11 +93,13 @@ class Template {
 		if (file_exists($default_file)) {
 			return $default_file;
 		}
+		if ($this->path && file_exists($theme_path_file)) {
+			return $theme_path_file;
+		}
 		if ($this->path && file_exists($path_file)) {
 			return $path_file;
 		}
-		else {
-			throw new TemplateException("Could not find template file: {$this->filename}");
-		}
+
+		throw new TemplateException("Could not find template file: {$this->filename}");
 	}
 }

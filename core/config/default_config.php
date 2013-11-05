@@ -5,6 +5,7 @@ $_DEFAULT_CONFIG = (object)[
 	'default_site' => [
 		'email_addresses' => [],
 		'modules' => [],
+		'secret' => 'ABCDEFGHIJK123456789',
 		'name' => 'OpenMVC',
 		'namespace' => 'default',
 		'default_layout_class' => '\\core\\classes\\renderable\\Layout',

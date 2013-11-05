@@ -58,7 +58,6 @@ $logger = Logger::getLogger('');
 $config = new Config();
 
 try {
-	$logger->info($_SERVER['HTTP_HOST']);
 	$config->setSiteDomain($_SERVER['HTTP_HOST']);
 	$display_errors = $config->siteConfig()->display_errors;
 

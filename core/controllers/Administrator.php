@@ -26,6 +26,10 @@ class Administrator extends Controller {
 		throw new RedirectException($this->url->getURL());
 	}
 
+	public function login_register() {
+		$this->login();
+	}
+
 	public function login() {
 		$this->language->loadLanguageFile('administrator.php');
 

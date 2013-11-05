@@ -2,6 +2,7 @@
 
 namespace core\classes;
 
+use core\classes\exceptions\AutoloaderException;
 use core\classes\exceptions\ModelException;
 
 class Model {
@@ -25,10 +26,9 @@ class Model {
 	protected $core_models = [
 		'Administrator',
 		'Customer',
-		'City',
 		'Country',
 		'State',
-		'Suburb',
+		'City',
 		'Address',
 		'PageCategory',
 		'PageCategoryLink',
@@ -46,6 +46,10 @@ class Model {
 
 	public function getRecord() {
  		return $this->record;
+	}
+
+	public function getCoreModels() {
+ 		return $this->core_models;
 	}
 
 	public function setRecord($record) {
@@ -353,18 +357,21 @@ class Model {
 	public function createDatabase() {
 		// Create the tables
 		foreach ($this->core_models as $table) {
+			$this->logger->info("Creating table: $table");
 			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createTable();
 		}
 
 		// Create the indexes
 		foreach ($this->core_models as $table) {
+			$this->logger->info("Creating indexes: $table");
 			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createIndexes();
 		}
 
 		// Create the foreign keys
 		foreach ($this->core_models as $table) {
+			$this->logger->info("Creating foreign keys: $table");
 			$model = $this->getModel("core\\classes\\models\\$table");
 			$model->createForeignKeys();
 		}
@@ -712,6 +719,7 @@ class Model {
 		try {
 			$data_model = $this->getModel($data_class);
 			$records    = $data_model->getRecords();
+			$this->logger->info("Inserting records for: $data_class");
 
 			foreach ($records as $record) {
 				$object = $this->getModel(get_class($this));

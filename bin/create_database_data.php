@@ -31,12 +31,11 @@ foreach ($sites as $domain => $data) {
 	$config = new Config();
 	$config->setSiteDomain('www.'.$domain);
 	$model = new Model($config, $database);
-	$models = $model->listAllModels();
+	$models = $model->getCoreModels();
 
 	foreach ($models as $model_class) {
 		if (!isset($all_models[$model_class])) {
-			$data_class = preg_replace('/\\\\([\w]+)$/', '\\\\data\\\\$1', $model_class);
-			$all_models[$model_class] = $data_class;
+			$all_models['\core\classes\models\\'.$model_class] = '\core\classes\models\data\\'.$model_class;
 		}
 	}
 }
