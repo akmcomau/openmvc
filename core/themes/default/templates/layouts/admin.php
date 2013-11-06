@@ -67,7 +67,7 @@
 		</div>
 	</nav>
 
-	<?php if ($logged_in) { ?>
+	<?php if ($administrator_logged_in) { ?>
 		<div class="subnavbar">
 			<div class="subnavbar-inner">
 				<div class="container">

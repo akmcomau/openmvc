@@ -5,15 +5,15 @@ $_MENU = [
 	'ul_class' => 'nav navbar-nav navbar-right main-menu',
 	'a_class' => 'menu-item',
 	'menu' => [
-		'public_site' => [
+		'account' => [
 			'url' => 'javascript:;',
 			'text_tag' => 'my_account',
 			'children' => [
-				'contact_details' => [
+				'account_details' => [
 					'controller' => 'Customer',
 					'method' => 'contact_details',
 				],
-				'change_password' => [
+				'account_password' => [
 					'controller' => 'Customer',
 					'method' => 'change_password',
 				],

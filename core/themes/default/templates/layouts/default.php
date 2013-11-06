@@ -97,6 +97,8 @@
 			</div>
 		</div>
 	</div>
+	<div id="notifications_area" class="container">
+	</div>
 
 	<div id="main-content">
 		<?php echo $page_content; ?>

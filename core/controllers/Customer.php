@@ -9,6 +9,7 @@ use core\classes\Template;
 use core\classes\FormValidator;
 use core\classes\renderable\Controller;
 use core\classes\Model;
+use core\classes\models\Customer as CustomerModel;
 
 class Customer extends Controller {
 
@@ -127,18 +128,96 @@ class Customer extends Controller {
 	}
 
 	public function contact_details() {
+		$this->language->loadLanguageFile('customer.php');
 		$template = $this->getTemplate('pages/not_implemented.php');
 		$this->response->setContent($template->render());
 	}
 
-	public function change_password() {
-		$template = $this->getTemplate('pages/not_implemented.php');
+	public function change_password($status = NULL) {
+		$this->language->loadLanguageFile('customer.php');
+
+		$bcrypt_cost = $this->config->siteConfig()->bcrypt_cost;
+		$model       = new Model($this->config, $this->database);
+		$customer_id = $this->getAuthentication()->getCustomerID();
+		$customer    = $model->getModel('\core\classes\models\Customer')->get(['id' => $customer_id]);
+		$form = $this->getPasswordForm($customer);
+
+		if ($form->validate()) {
+			$customer->password = Encryption::bcrypt($form->getValue('password1'), $bcrypt_cost);
+			$customer->update();
+			throw new RedirectException($this->url->getURL('Customer', 'change_password', ['update-success']));
+		}
+
+		$message_js = NULL;
+		if ($status == 'update-success') {
+			$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('change_password_success')).'");';
+		}
+
+		$data = [
+			'form' => $form,
+			'message_js' => $message_js,
+		];
+
+		$template = $this->getTemplate('pages/customer/change_password.php', $data);
 		$this->response->setContent($template->render());
+	}
+
+	protected function getPasswordForm(CustomerModel $customer) {
+		$inputs = [
+			'current_password' => [
+				'type' => 'string',
+				'min_length' => 6,
+				'max_length' => 32,
+				'message' => $this->language->get('error_password'),
+			],
+			'password1' => [
+				'type' => 'string',
+				'min_length' => 6,
+				'max_length' => 32,
+				'message' => $this->language->get('error_password'),
+			],
+			'password2' => [
+				'type' => 'string',
+				'min_length' => 6,
+				'max_length' => 32,
+				'message' => $this->language->get('error_password'),
+			],
+		];
+
+		$validators = [
+			'current_password' => [
+				[
+					'type'     => 'function',
+					'message'  => $this->language->get('error_current_password'),
+					'function' => function($value) use ($customer) {
+						if (Encryption::bcrypt_verify($value, $customer->password)) {
+							return TRUE;
+						}
+						else {
+							return FALSE;
+						}
+					},
+				],
+			],
+			'password1' => [
+				[
+					'type'    => 'params-equal',
+					'param'   => 'password2',
+					'message' => $this->language->get('error_password_mismatch'),
+				],
+				[
+					'type'      => 'regex',
+					'regex'     => '\d',
+					'modifiers' => '',
+					'message'   => $this->language->get('error_password_number'),
+				],
+			],
+		];
+
+		return new FormValidator($this->request, 'form-change-password', $inputs, $validators);
 	}
 
 	protected function getRegisterForm() {
-		$model = new Model($this->config, $this->database);
-
 		$inputs = [
 			'first-name' => [
 				'type' => 'string',

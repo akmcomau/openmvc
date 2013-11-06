@@ -55,6 +55,7 @@ class Encryption {
 	}
 
 	public static function obfuscate($integer, $key) {
+		$integer = pack('I', $integer);
 		$string = mcrypt_encrypt(MCRYPT_3DES, $key, $integer, MCRYPT_MODE_ECB);
 		$string = self::str2Hex($string);
 		$string = self::str_baseconvert($string, 16, 36);
@@ -71,6 +72,8 @@ class Encryption {
 		if (strlen($string) % 2) $string = '0'.$string;
 		$string = self::hex2Str($string);
 		$string = mcrypt_decrypt(MCRYPT_3DES, $key, $string, MCRYPT_MODE_ECB);
-		return $string;
+		print $string.'<br />';
+		$string = unpack('I', $string);
+		return $string[1];
 	}
 }
