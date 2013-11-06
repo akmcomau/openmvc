@@ -46,7 +46,7 @@ $.extend(FormValidator, {
 		return true;
 	},
 	isEmail: function (string) {
-		if (/^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]/.test(string)){
+		if (/^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$/.test(string)){
 			return true;
 		}
 		return false;

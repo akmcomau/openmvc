@@ -127,9 +127,41 @@ class Customer extends Controller {
 		$this->response->setContent($template->render());
 	}
 
-	public function contact_details() {
+	public function contact_details($status = NULL) {
 		$this->language->loadLanguageFile('customer.php');
-		$template = $this->getTemplate('pages/not_implemented.php');
+
+		$model       = new Model($this->config, $this->database);
+		$customer_id = $this->getAuthentication()->getCustomerID();
+		$customer    = $model->getModel('\core\classes\models\Customer')->get(['id' => $customer_id]);
+		$form = $this->getDetailsForm($customer);
+
+		if ($form->validate()) {
+			$customer->first_name = $form->getValue('first_name');
+			$customer->last_name = $form->getValue('last_name');
+			$customer->email = $form->getValue('email');
+			$customer->phone = $form->getValue('phone');
+			$customer->update();
+			throw new RedirectException($this->url->getURL('Customer', 'contact_details', ['update-success']));
+		}
+		elseif ($form->isSubmitted()) {
+			$customer->first_name = $form->getValue('first_name');
+			$customer->last_name = $form->getValue('last_name');
+			$customer->email = $form->getValue('email');
+			$customer->phone = $form->getValue('phone');
+		}
+
+		$message_js = NULL;
+		if ($status == 'update-success') {
+			$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('update_details_success')).'");';
+		}
+
+		$data = [
+			'form' => $form,
+			'message_js' => $message_js,
+			'customer' => $customer,
+		];
+
+		$template = $this->getTemplate('pages/customer/update_details.php', $data);
 		$this->response->setContent($template->render());
 	}
 
@@ -160,6 +192,66 @@ class Customer extends Controller {
 
 		$template = $this->getTemplate('pages/customer/change_password.php', $data);
 		$this->response->setContent($template->render());
+	}
+
+	protected function getDetailsForm(CustomerModel $customer) {
+		$inputs = [
+			'first_name' => [
+				'type' => 'string',
+				'min_length' => 2,
+				'max_length' => 32,
+				'message' => $this->language->get('error_first_name'),
+			],
+			'last_name' => [
+				'type' => 'string',
+				'min_length' => 2,
+				'max_length' => 32,
+				'message' => $this->language->get('error_last_name'),
+			],
+			'email' => [
+				'type' => 'email',
+				'message' => $this->language->get('error_email')
+			],
+			'phone' => [
+				'type' => 'string',
+				'message' => $this->language->get('error_phone'),
+				'required' => FALSE,
+			],
+		];
+
+		$validators = [
+			'email' => [
+				[
+					'type'     => 'function',
+					'message'  => $this->language->get('error_email_taken'),
+					'function' => function($value) use ($customer) {
+						$check = $customer->get(['email' => $value]);
+						if (!$check || ($check && $check->id == $customer->id)) {
+							return TRUE;
+						}
+						else {
+							return FALSE;
+						}
+					}
+				],
+			],
+			'phone' => [
+				[
+					'type'     => 'function',
+					'message'  => $this->language->get('error_phone'),
+					'function' => function($value) {
+						if (preg_match('/[^0-9+()-]/', $value)) {
+							return FALSE;
+						}
+						else {
+							return TRUE;
+						}
+					}
+				],
+			],
+		];
+
+		return new FormValidator($this->request, 'form-update-details', $inputs, $validators);
 	}
 
 	protected function getPasswordForm(CustomerModel $customer) {
@@ -218,6 +310,8 @@ class Customer extends Controller {
 	}
 
 	protected function getRegisterForm() {
+		$model = new Model($this->config, $this->database);
+
 		$inputs = [
 			'first-name' => [
 				'type' => 'string',

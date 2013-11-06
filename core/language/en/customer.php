@@ -7,6 +7,8 @@ $_LANGUAGE = [
 	'register_button' => 'Register',
 	'change_password_header' => 'Change Password',
 	'change_password_button' => 'Change Password',
+	'update_details_header' => 'Contact Details',
+	'update_details_button' => 'Update Details',
 
 	'username' => 'Username',
 	'password' => 'Password',
@@ -17,12 +19,16 @@ $_LANGUAGE = [
 	'current_password' => 'Current Password',
 	'password1' => 'Password',
 	'password2' => 'Confirm Password',
+	'phone' => 'Phone',
 
 	'change_password_success' => 'Your password has been successfully changed',
+	'update_details_success' => 'Your details have been successfully updated',
+
 	'login_failed' => 'Login Failed',
 	'error_first_name' => 'Between 2-32 characters',
 	'error_last_name' => 'Between 2-32 characters',
 	'error_email' => 'Please enter a valid email address',
+	'error_phone' => 'Please only enter the following characters 0-9 + - ( )',
 	'error_username' => 'Between 6-32 characters',
 	'error_password' => 'Between 6-32 characters<br />With at least one number',
 	'error_email_taken' => 'Email already is already associated with an account',

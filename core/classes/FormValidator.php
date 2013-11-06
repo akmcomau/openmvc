@@ -307,7 +307,7 @@ class FormValidator {
 	}
 
 	public function isEmail ($string) {
-		if (preg_match('/^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]/', $string)) {
+		if (preg_match('/^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$/', $string)) {
 			return TRUE;
 		}
 		return FALSE;
