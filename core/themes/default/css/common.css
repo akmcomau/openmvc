@@ -79,6 +79,15 @@ label {
 	margin-top: 0em;
 	margin-bottom: 2em;
 }
+.page-area {
+	background-color: #EEE;
+}
+.page-area table {
+	border: 1px solid #CCC;
+}
+.page-area table.list th {
+	width: 40%;
+}
 a:hover img {
 	opacity: 0.8;
 	filter: alpha(opacity=80);
@@ -127,6 +136,11 @@ input[type="text"].small-text {
 	.title-2column {
 		margin-top: 5px;
 		text-align: left;
+	}
+}
+@media (max-width: 480px) {
+	.hidden-xxs {
+		display: none;
 	}
 }
 /* --------------------------------------------------

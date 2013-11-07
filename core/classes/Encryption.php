@@ -72,7 +72,6 @@ class Encryption {
 		if (strlen($string) % 2) $string = '0'.$string;
 		$string = self::hex2Str($string);
 		$string = mcrypt_decrypt(MCRYPT_3DES, $key, $string, MCRYPT_MODE_ECB);
-		print $string.'<br />';
 		$string = unpack('I', $string);
 		return $string[1];
 	}

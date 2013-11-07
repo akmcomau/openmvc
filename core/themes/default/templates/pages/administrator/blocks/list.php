@@ -109,6 +109,9 @@
 						</table>
 						<button type="submit" class="btn btn-primary" name="form-blocks-list-submit" onclick="return deleteSelected();"><?php echo $text_delete_selected; ?></button>
 					</form>
+					<div class="pagination">
+						<?php echo $pagination->getPageLinks(); ?>
+					</div>
 				</div>
 			</div>
 		</div>

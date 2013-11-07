@@ -85,4 +85,37 @@ class Address extends Model {
 		'country_id'   => ['country',  'country_id'],
 	];
 
+
+	public function getCountry() {
+		if (isset($this->objects['country'])) {
+			return $this->objects['country'];
+		}
+
+		$this->objects['country'] = $this->getModel('\core\classes\models\Country')->get([
+			'id' => $this->country_id,
+		]);
+		return $this->objects['country'];
+	}
+
+	public function getState() {
+		if (isset($this->objects['state'])) {
+			return $this->objects['state'];
+		}
+
+		$this->objects['state'] = $this->getModel('\core\classes\models\State')->get([
+			'id' => $this->state_id,
+		]);
+		return $this->objects['state'];
+	}
+
+	public function getCity() {
+		if (isset($this->objects['city'])) {
+			return $this->objects['city'];
+		}
+
+		$this->objects['city'] = $this->getModel('\core\classes\models\City')->get([
+			'id' => $this->city_id,
+		]);
+		return $this->objects['city'];
+	}
 }
