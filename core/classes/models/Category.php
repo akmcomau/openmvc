@@ -88,11 +88,10 @@ class Category extends Model {
 		$by_parent = [];
 		$by_id = [];
 		foreach ($categories as $category) {
-			$url_title = str_replace(' ', '-', $category->name);
 			$by_parent[$category->parent_id][] = [
 				'controller' => $controller,
 				'method'     => $method,
-				'params'     => [$category->id, $url_title],
+				'params'     => [$category->id, $category->getCanonicalName()],
 				'text'       => $category->name,
 				'class'      => $li_class,
 			];
@@ -109,5 +108,9 @@ class Category extends Model {
 			return $by_parent[NULL];
 		}
 		return [];
+	}
+
+	public function getCanonicalName() {
+		return str_replace(' ', '-', strtolower($this->name));
 	}
 }

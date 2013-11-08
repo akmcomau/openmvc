@@ -115,8 +115,8 @@ class Model {
 		foreach ($modules as $module) {
 			if (isset($module['hooks']['models'][$name])) {
 				$class = $module['namespace'].'\\'.$module['hooks']['models'][$name];
-				$class = new $class($this->config, $this->database, NULL);
 				$this->logger->debug("Calling Hook: $class::$name");
+				$class = new $class($this->config, $this->database, NULL);
 				return call_user_func_array(array($class, $name), [$this]);
 			}
 		}
@@ -195,7 +195,7 @@ class Model {
 		$table  = $this->generateFromClause($params);
 		$where  = $this->generateWhereClause($params);
 		if (strlen($where)) $where = "WHERE $where";
-		$sql    = "SELECT * FROM $table $where";
+		$sql    = "SELECT $table.* FROM $table $where";
 		if (isset($params['get_random_record'])) {
 			$sql .= " ORDER BY RANDOM() LIMIT 1";
 		}
@@ -222,7 +222,7 @@ class Model {
 
 	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
 		$table = $this->table;
-		$sql   = "SELECT * FROM ".$this->generateFromClause($params, $ordering);
+		$sql   = "SELECT $table.* FROM ".$this->generateFromClause($params, $ordering);
 		if ($params) {
 			$where = $this->generateWhereClause($params);
 			if ($where) {
@@ -257,7 +257,7 @@ class Model {
 
 	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL) {
 		$table = $this->table;
-		$sql   = "SELECT * FROM ".$this->generateFromClause($params, $ordering);
+		$sql   = "SELECT $table.* FROM ".$this->generateFromClause($params, $ordering);
 		if ($params) {
 			$where = $this->generateWhereClause($params);
 			if ($where) {

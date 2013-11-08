@@ -106,7 +106,7 @@ class Administrators extends Controller {
 		$administrator = $model->getModel('\core\classes\models\Administrator')->get([
 			'id' => (int)$administrator_id,
 		]);
-		$this->siteProtection($administrator);
+		//$this->siteProtection($administrator);
 		$form_administrator = $this->getAdministratorForm(FALSE, $administrator);
 
 		if ($form_administrator->validate()) {
@@ -135,7 +135,7 @@ class Administrators extends Controller {
 			$administrator_model = $model->getModel('\core\classes\models\Administrator');
 			foreach ($this->request->requestParam('selected') as $id) {
 				$administrator = $administrator_model->get(['id' => $id]);
-				$this->siteProtection($administrator);
+				//$this->siteProtection($administrator);
 				$administrator->delete();
 			}
 
