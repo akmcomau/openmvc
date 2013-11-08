@@ -44,6 +44,7 @@ class Customers extends Controller {
 		$model     = new Model($this->config, $this->database);
 		$customer  = $model->getModel('\core\classes\models\Customer');
 		$customers = $customer->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
+		$pagination->setRecordCount($customer->getCount($params));
 
 		$message_js = NULL;
 		switch($message) {

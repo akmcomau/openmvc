@@ -192,7 +192,7 @@ class Model {
 	}
 
 	public function get(array $params) {
-		$table  = $this->table;
+		$table  = $this->generateFromClause($params);
 		$where  = $this->generateWhereClause($params);
 		if (strlen($where)) $where = "WHERE $where";
 		$sql    = "SELECT * FROM $table $where";
@@ -301,10 +301,10 @@ class Model {
 		$where = [];
 		foreach ($params as $column => $value) {
 			if (isset($this->columns[$this->table.'_'.$column])) {
-				$column = $this->table.'_'.$column;
+				$column = $this->table.'.'.$this->table.'_'.$column;
 			}
 			elseif (isset($this->columns[$column])) {
-				$column = $column;
+				$column = $this->table.'.'.$column;
 			}
 			else {
 				$found = FALSE;

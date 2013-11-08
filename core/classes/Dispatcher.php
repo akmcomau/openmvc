@@ -183,6 +183,7 @@ class Dispatcher {
 				return $controller;
 			}
 			if (empty($controller)) {
+				$this->logger->debug("Controller not found, using Root: ".join('\\', $controller_parts));
 				$root_class  = $this->url->getControllerClass('Root');
 				$root_method = $this->url->getMethodName($root_class, $request->getParam('controller'));
 				if ($root_method) {

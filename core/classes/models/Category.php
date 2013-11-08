@@ -13,8 +13,10 @@ class Category extends Model {
 	}
 
 	public function getAllByParent($site_id = NULL) {
-		$params = NULL;
-		if ($site_id) $params = ['site_id' => ['type'=>'in', 'value'=>$site_id]];
+		if (!$site_id) $site_id = $this->config->siteConfig()->site_id;
+		if (is_array($site_id)) $site_id = ['type'=>'in', 'value'=>$site_id];
+		$params = ['site_id' => $site_id];
+
 		$categories = $this->getMulti($params, ['name' => 'asc']);
 		$categ_data = [];
 		foreach ($categories as $category) {
@@ -36,8 +38,9 @@ class Category extends Model {
 	}
 
 	public function getAsOptions($site_id = NULL) {
-		$params = NULL;
-		if ($site_id) $params = ['site_id' => ['type'=>'in', 'value'=>$site_id]];
+		if (!$site_id) $site_id = $this->config->siteConfig()->site_id;
+		if (is_array($site_id)) $site_id = ['type'=>'in', 'value'=>$site_id];
+		$params = ['site_id' => $site_id];
 		$categories = $this->getMulti($params, ['name' => 'asc']);
 		$by_parent = [];
 		$by_id = [];
@@ -75,5 +78,36 @@ class Category extends Model {
 				}
 			}
 		}
+	}
+
+	public function getAsMenuArray($controller, $method, $li_class = '', $site_id = NULL) {
+		if (!$site_id) $site_id = $this->config->siteConfig()->site_id;
+		if (is_array($site_id)) $site_id = ['type'=>'in', 'value'=>$site_id];
+		$params = ['site_id' => $site_id];
+		$categories = $this->getMulti($params, ['name' => 'asc']);
+		$by_parent = [];
+		$by_id = [];
+		foreach ($categories as $category) {
+			$url_title = str_replace(' ', '-', $category->name);
+			$by_parent[$category->parent_id][] = [
+				'controller' => $controller,
+				'method'     => $method,
+				'params'     => [$category->id, $url_title],
+				'text'       => $category->name,
+				'class'      => $li_class,
+			];
+			$by_id[$category->id] = &$by_parent[$category->parent_id][count($by_parent[$category->parent_id])-1];
+		}
+
+		foreach ($by_parent as $parent_id => &$categ) {
+			if ($parent_id != '') {
+				$by_id[$parent_id]['children'] = $categ;
+			}
+		}
+
+		if (isset($by_parent[NULL])) {
+			return $by_parent[NULL];
+		}
+		return [];
 	}
 }

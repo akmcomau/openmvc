@@ -98,6 +98,13 @@ class Menu {
 		file_put_contents($site_file, '<?php $_MENU = '.var_export($menu, TRUE).';');
 	}
 
+	public function setTemplate($template, $ul_class = '', $a_class = '') {
+		$this->template = new Template($this->config, $this->language, $template);
+		$this->template_dropdown = new Template($this->config, $this->language, substr($template, 0, -4).'_dropdown.php');
+		$this->ul_class = $ul_class;
+		$this->a_class = $a_class;
+	}
+
 	public function getMenuData() {
 		return $this->menu_data;
 	}

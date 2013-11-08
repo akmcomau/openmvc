@@ -43,6 +43,7 @@ class Administrators extends Controller {
 		$model     = new Model($this->config, $this->database);
 		$administrator  = $model->getModel('\core\classes\models\Administrator');
 		$administrators = $administrator->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
+		$pagination->setRecordCount($administrator->getCount($params));
 
 		$message_js = NULL;
 		switch($message) {
