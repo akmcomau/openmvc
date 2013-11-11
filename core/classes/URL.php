@@ -212,7 +212,7 @@ class URL {
 		return $meta_tags;
 	}
 
-	public function getURL($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+	public function getUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 		if (!$params)          $params          = [];
@@ -272,7 +272,7 @@ class URL {
 	}
 
 	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
-		$url = $this->getURL($controller_name, $method_name, $params, $get_params);
+		$url = $this->getUrl($controller_name, $method_name, $params, $get_params);
 		$text = $this->getLinkText($controller_name, $method_name);
 
 		return '<a class="'.$class.'" href="'.$url.'">'.$text.'</a>';

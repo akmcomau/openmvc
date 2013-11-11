@@ -12,7 +12,7 @@ class RedirectException extends Exception {
 		parent::__construct("Redirect to: $url");
 	}
 
-	public function getURL() {
+	public function getUrl() {
 		return $this->url;
 	}
 }

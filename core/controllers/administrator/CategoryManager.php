@@ -114,21 +114,21 @@ class CategoryManager extends Controller {
 			$model->name = $this->request->requestParam('name');
 			$model->insert();
 
-			throw new RedirectException($this->url->getURL('administrator/CategoryManager', $this->request->getMethodName(), ['add-success']));
+			throw new RedirectException($this->url->getUrl('administrator/CategoryManager', $this->request->getMethodName(), ['add-success']));
 		}
 		elseif ((int)$this->request->requestParam('edit_category')) {
 			$model = $model->get(['id' => (int)$this->request->requestParam('category')]);
 			$model->name = $this->request->requestParam('name');
 			$model->update();
 
-			throw new RedirectException($this->url->getURL('administrator/CategoryManager', $this->request->getMethodName(), ['update-success']));
+			throw new RedirectException($this->url->getUrl('administrator/CategoryManager', $this->request->getMethodName(), ['update-success']));
 		}
 		elseif ((int)$this->request->requestParam('add_subcategory')) {
 			$model->name = $this->request->requestParam('name');
 			$model->parent_id = (int)$this->request->requestParam('category');
 			$model->insert();
 
-			throw new RedirectException($this->url->getURL('administrator/CategoryManager', $this->request->getMethodName(), ['add-success']));
+			throw new RedirectException($this->url->getUrl('administrator/CategoryManager', $this->request->getMethodName(), ['add-success']));
 		}
 	}
 
@@ -147,7 +147,7 @@ class CategoryManager extends Controller {
 				$category->delete();
 			}
 
-			throw new RedirectException($this->url->getURL('administrator/CategoryManager', $this->request->getMethodName(), ['delete-success']));
+			throw new RedirectException($this->url->getUrl('administrator/CategoryManager', $this->request->getMethodName(), ['delete-success']));
 		}
 	}
 

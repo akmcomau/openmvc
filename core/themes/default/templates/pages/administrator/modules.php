@@ -35,7 +35,7 @@
 				</td>
 				<td>
 					<?php if ($module['enabled']) { ?>
-						<a href="<?php echo $this->url->getURL($module['config_controller'], 'config'); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+						<a href="<?php echo $this->url->getUrl($module['config_controller'], 'config'); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
 					<?php } ?>
 				</td>
 			</tr>

@@ -23,7 +23,7 @@ class Administrator extends Controller {
 
 	public function logout() {
 		$this->authentication->logoutAdministrator();
-		throw new RedirectException($this->url->getURL());
+		throw new RedirectException($this->url->getUrl());
 	}
 
 	public function login_register() {
@@ -44,7 +44,7 @@ class Administrator extends Controller {
 			]);
 			if ($admin && Encryption::bcrypt_verify($form_login->getValue('password'), $admin->password)) {
 				$this->authentication->loginAdministrator($admin);
-				throw new RedirectException($this->url->getURL('Administrator'));
+				throw new RedirectException($this->url->getUrl('Administrator'));
 			}
 			else {
 				$form_login->addError('login-failed', $this->language->get('login_failed'));

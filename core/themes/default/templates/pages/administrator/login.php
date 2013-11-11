@@ -1,7 +1,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form id="form-login" class="form-login-register" action="<?php echo $this->url->getURL('Administrator', 'login'); ?>" method="post">
+			<form id="form-login" class="form-login-register" action="<?php echo $this->url->getUrl('Administrator', 'login'); ?>" method="post">
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php echo $this->language->get('login_header'); ?></h3>

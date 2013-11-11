@@ -1,7 +1,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form id="form-register" action="<?php echo $this->url->getURL('Customer', 'forgot'); ?>" method="post">
+			<form id="form-register" action="<?php echo $this->url->getUrl('Customer', 'forgot'); ?>" method="post">
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php echo $text_forgot_password; ?></h3>

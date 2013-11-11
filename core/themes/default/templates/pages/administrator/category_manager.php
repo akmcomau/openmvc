@@ -61,7 +61,7 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 						</form>
 						<?php } ?>
 					</div>
-					<form action="<?php echo $this->url->getURL($controller_name, $method_name); ?>" method="post" id="form-category-list">
+					<form action="<?php echo $this->url->getUrl($controller_name, $method_name); ?>" method="post" id="form-category-list">
 						<table class="table category-manager">
 							<tr>
 								<?php if (!$readonly) { ?>

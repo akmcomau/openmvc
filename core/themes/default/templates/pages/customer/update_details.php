@@ -1,7 +1,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form id="form-update-details" action="<?php echo $this->url->getURL('Customer', 'contact_details'); ?>" method="post">
+			<form id="form-update-details" action="<?php echo $this->url->getUrl('Customer', 'contact_details'); ?>" method="post">
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php echo $text_update_details_header; ?></h3>

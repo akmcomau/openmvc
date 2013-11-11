@@ -101,7 +101,7 @@ class Blocks extends Controller {
 			$this->updateFromRequest($form_block, $block);
 			$block->insert();
 			$this->callHook('block_add', [$block]);
-			throw new RedirectException($this->url->getURL('administrator/Blocks', 'index', ['add-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Blocks', 'index', ['add-success']));
 		}
 		elseif ($form_block->isSubmitted()) {
 			$this->updateFromRequest($form_block, $block);
@@ -134,7 +134,7 @@ class Blocks extends Controller {
 			$this->updateFromRequest($form_block, $block);
 			$block->update();
 			$this->callHook('block_update', [$block]);
-			throw new RedirectException($this->url->getURL('administrator/Blocks', 'index', ['update-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Blocks', 'index', ['update-success']));
 		}
 		elseif ($form_block->isSubmitted()) {
 			$this->updateFromRequest($form_block, $block);
@@ -158,7 +158,7 @@ class Blocks extends Controller {
 				$block->delete();
 			}
 
-			throw new RedirectException($this->url->getURL('administrator/Blocks', 'index', ['delete-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Blocks', 'index', ['delete-success']));
 		}
 	}
 

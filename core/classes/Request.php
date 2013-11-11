@@ -115,7 +115,7 @@ class Request {
 
 	public function currentURL(array $params = NULL) {
 		$controller_class = $this->url->getControllerClassName($this->controller_class);
-		return $this->url->getURL($controller_class, $this->method_name, $params);
+		return $this->url->getUrl($controller_class, $this->method_name, $params);
 	}
 
 	public function clearDispatcherParams() {

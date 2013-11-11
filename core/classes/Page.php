@@ -49,7 +49,7 @@ class Page {
 				}
 
 				$method = [
-					'url' => $this->url->getURL($controller_name, $method),
+					'url' => $this->url->getUrl($controller_name, $method),
 					'title' => $meta_tags['title'],
 					'description' => !empty($meta_tags['description']),
 					'keywords' => !empty($meta_tags['keywords']),
@@ -117,7 +117,7 @@ class Page {
 	public function getPage($controller = NULL, $method = NULL) {
 		if (is_null($controller) || is_null($method)) {
 			return [
-				'url'              => $this->url->getURL('Root', 'page', ['--NOT_SET--']),
+				'url'              => $this->url->getUrl('Root', 'page', ['--NOT_SET--']),
 				'meta_tags'        => ['title'=>'', 'description'=>'', 'keywords'=>''],
 				'link_text'        => '',
 				'controller'       => 'Root',
@@ -146,7 +146,7 @@ class Page {
 		}
 
 		return [
-			'url'              => $this->url->getURL($controller, $method),
+			'url'              => $this->url->getUrl($controller, $method),
 			'meta_tags'        => $meta_tags,
 			'link_text'        => $this->url->getLinkText($controller, $method),
 			'controller'       => $controller,

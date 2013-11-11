@@ -1,7 +1,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form id="form-change-password" class="form-login-register" action="<?php echo $this->url->getURL('Customer', 'change_password'); ?>" method="post">
+			<form id="form-change-password" class="form-login-register" action="<?php echo $this->url->getUrl('Customer', 'change_password'); ?>" method="post">
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php echo $text_change_password_header; ?></h3>

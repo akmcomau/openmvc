@@ -27,7 +27,7 @@ class Customer extends Controller {
 
 	public function logout() {
 		$this->authentication->logoutCustomer();
-		throw new RedirectException($this->url->getURL());
+		throw new RedirectException($this->url->getUrl());
 	}
 
 	public function login_register($controller = NULL, $method = NULL, $params = NULL) {
@@ -50,7 +50,7 @@ class Customer extends Controller {
 
 	public function login($controller = NULL, $method = NULL, $params = NULL) {
 		if ($this->authentication->customerLoggedIn()) {
-			throw new RedirectException($this->url->getURL('Customer'));
+			throw new RedirectException($this->url->getUrl('Customer'));
 		}
 
 		$this->language->loadLanguageFile('customer.php');
@@ -68,10 +68,10 @@ class Customer extends Controller {
 				$this->authentication->loginCustomer($customer);
 
 				if ($controller) {
-					throw new RedirectException($this->url->getURL($controller, $method, $params));
+					throw new RedirectException($this->url->getUrl($controller, $method, $params));
 				}
 				else {
-					throw new RedirectException($this->url->getURL('Customer'));
+					throw new RedirectException($this->url->getUrl('Customer'));
 				}
 			}
 			else {
@@ -110,10 +110,10 @@ class Customer extends Controller {
 			$this->authentication->loginCustomer($customer);
 
 			if ($controller) {
-				throw new RedirectException($this->url->getURL($controller, $method, $params));
+				throw new RedirectException($this->url->getUrl($controller, $method, $params));
 			}
 			else {
-				throw new RedirectException($this->url->getURL('Customer'));
+				throw new RedirectException($this->url->getUrl('Customer'));
 			}
 		}
 
@@ -159,7 +159,7 @@ class Customer extends Controller {
 					$token = $customer->generateToken();
 					$enc_customer_id = Encryption::obfuscate($customer->id, $this->config->siteConfig()->secret);
 					$data = [
-						'url' => $this->config->getUrl().$this->url->getURL('Customer', 'reset', [$enc_customer_id, $token]),
+						'url' => $this->config->getUrl().$this->url->getUrl('Customer', 'reset', [$enc_customer_id, $token]),
 						'name' => $customer->getName(),
 						'username' => $customer->login,
 					];
@@ -195,13 +195,13 @@ class Customer extends Controller {
 			'token' => $token,
 		]);
 		if (!$customer) {
-			throw new RedirectException($this->url->getURL('Customer', 'login'. ['invalid_token']));
+			throw new RedirectException($this->url->getUrl('Customer', 'login'. ['invalid_token']));
 		}
 
 		// login the customer
 		$this->authentication->loginCustomer($customer);
 		$this->authentication->forcePasswordChange(TRUE);
-		throw new RedirectException($this->url->getURL('Customer', 'change_password'));
+		throw new RedirectException($this->url->getUrl('Customer', 'change_password'));
 	}
 
 	public function contact_details($status = NULL) {
@@ -218,7 +218,7 @@ class Customer extends Controller {
 			$customer->email = $form->getValue('email');
 			$customer->phone = $form->getValue('phone');
 			$customer->update();
-			throw new RedirectException($this->url->getURL('Customer', 'contact_details', ['update-success']));
+			throw new RedirectException($this->url->getUrl('Customer', 'contact_details', ['update-success']));
 		}
 		elseif ($form->isSubmitted()) {
 			$customer->first_name = $form->getValue('first_name');
@@ -255,7 +255,7 @@ class Customer extends Controller {
 			$customer->password = Encryption::bcrypt($form->getValue('password1'), $bcrypt_cost);
 			$customer->update();
 			$this->authentication->forcePasswordChange(FALSE);
-			throw new RedirectException($this->url->getURL('Customer', 'change_password', ['update-success']));
+			throw new RedirectException($this->url->getUrl('Customer', 'change_password', ['update-success']));
 		}
 
 		$message_js = NULL;

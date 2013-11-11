@@ -1,7 +1,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form class="admin-search-form" method="get" id="form-page-search">
+			<form action="<?php echo $this->url->getUrl('administrator/Pages', 'index'); ?>" class="admin-search-form" method="get" id="form-page-search">
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php echo $text_search; ?></h3>
@@ -98,7 +98,7 @@
 					<div class="pagination">
 						<?php echo $pagination->getPageLinks(); ?>
 					</div>
-					<form action="<?php echo $this->url->getURL('administrator/Pages', 'delete'); ?>" method="post">
+					<form action="<?php echo $this->url->getUrl('administrator/Pages', 'delete'); ?>" method="post">
 						<table class="table">
 							<tr>
 								<th></th>
@@ -133,7 +133,7 @@
 									<?php } ?>
 								</td>
 								<td>
-									<a href="<?php echo $this->url->getURL('administrator/Pages', 'edit', [$method['controller'], $method['main_method'], $method['sub_method']]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+									<a href="<?php echo $this->url->getUrl('administrator/Pages', 'edit', [$method['controller'], $method['main_method'], $method['sub_method']]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
 								</td>
 							</tr>
 							<?php } ?>

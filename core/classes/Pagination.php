@@ -134,14 +134,14 @@ $url = $this->request->currentURL();
 			$sort_asc = '<i class="icon-arrow-up"></i> ';
 		}
 		else {
-			$sort_asc = $this->url->getURL($controller, $method, $params, $params_up);
+			$sort_asc = $this->url->getUrl($controller, $method, $params, $params_up);
 			$sort_asc = '<a href="'.$sort_asc.'"><i class="icon-arrow-up"></i></a> ';
 		}
 		if ($column == $this->ordering && strtolower($this->direction) == 'desc') {
 			$sort_desc = '<i class="icon-arrow-down"></i>';
 		}
 		else {
-			$sort_desc = $this->url->getURL($controller, $method, $params, $params_down);
+			$sort_desc = $this->url->getUrl($controller, $method, $params, $params_down);
 			$sort_desc = '<a href="'.$sort_desc.'"><i class="icon-arrow-down"></i></a>';
 		}
 

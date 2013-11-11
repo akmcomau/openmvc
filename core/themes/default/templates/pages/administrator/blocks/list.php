@@ -1,7 +1,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form class="admin-search-form" method="get" id="form-block-search">
+			<form action="<?php echo $this->url->getUrl('administrator/Blocks', 'index'); ?>" class="admin-search-form" method="get" id="form-block-search">
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php echo $text_search; ?></h3>
@@ -86,7 +86,7 @@
 					<div class="pagination">
 						<?php echo $pagination->getPageLinks(); ?>
 					</div>
-					<form action="<?php echo $this->url->getURL('administrator/Blocks', 'delete'); ?>" method="post">
+					<form action="<?php echo $this->url->getUrl('administrator/Blocks', 'delete'); ?>" method="post">
 						<table class="table">
 							<tr>
 								<th></th>
@@ -102,7 +102,7 @@
 								<td><?php echo $block->tag; ?></td>
 								<td><?php echo $block->getCategoryName(); ?></td>
 								<td>
-									<a href="<?php echo $this->url->getURL('administrator/Blocks', 'edit', [$block->tag]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+									<a href="<?php echo $this->url->getUrl('administrator/Blocks', 'edit', [$block->tag]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
 								</td>
 							</tr>
 							<?php } ?>

@@ -1,7 +1,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form class="admin-search-form" method="get" id="form-customer-search">
+			<form action="<?php echo $this->url->getUrl('administrator/Customers', 'index'); ?>" class="admin-search-form" method="get" id="form-customer-search">
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php echo $text_search; ?></h3>
@@ -50,7 +50,7 @@
 					<div class="pagination">
 						<?php echo $pagination->getPageLinks(); ?>
 					</div>
-					<form action="<?php echo $this->url->getURL('administrator/Customers', 'delete'); ?>" method="post">
+					<form action="<?php echo $this->url->getUrl('administrator/Customers', 'delete'); ?>" method="post">
 						<table class="table">
 							<tr>
 								<th></th>
@@ -70,7 +70,7 @@
 								<td><?php echo $customer->last_name; ?></td>
 								<td><?php echo $customer->active ? $text_active : $text_not_active; ?></td>
 								<td>
-									<a href="<?php echo $this->url->getURL('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+									<a href="<?php echo $this->url->getUrl('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
 								</td>
 							</tr>
 							<?php } ?>

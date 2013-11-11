@@ -134,7 +134,7 @@ class Menu {
 		if (isset($item['controller']) && isset($item['method'])) {
 			$params = [];
 			if (isset($item['params'])) $params = $item['params'];
-			$item['url'] = $this->url->getURL($item['controller'], $item['method'], $params);
+			$item['url'] = $this->url->getUrl($item['controller'], $item['method'], $params);
 			if (!isset($item['text'])) {
 				$item['text'] = $this->url->getLinkText($item['controller'], $item['method']);
 			}

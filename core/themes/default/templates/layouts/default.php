@@ -50,7 +50,7 @@
 					<span class="sr-only"><?php echo $text_toggle_navigation; ?></span>
 					<i class="icon-cog"></i>
 				</button>
-				<a class="navbar-brand" href="<?php echo $this->url->getURL('Administrator');?>"><?php echo $text_administrator_panel; ?></a>
+				<a class="navbar-brand" href="<?php echo $this->url->getUrl('Administrator');?>"><?php echo $text_administrator_panel; ?></a>
 			</div>
 			<div class="collapse navbar-collapse navbar-ex1-collapse">
 				<?php $admin_panel->echoBootstrapMenu(); ?>
@@ -73,7 +73,7 @@
 					</div>
 					<div class="col-md-4 col-sm-4 col-xs-12 header-search">
 						<a href="cart.html"><h4><?php echo $text_search;?></h4></a>
-						<form action="<?php echo $this->url->getURL('Root', 'search'); ?>">
+						<form action="<?php echo $this->url->getUrl('Root', 'search'); ?>">
 							<input type="text" class="float-left" name="search" value="" />
 							<input type="submit" class="btn btn-primary btn-small hidden-sm hidden-xs float-left" value="<?php echo $text_search_button;?>" />
 						</form>

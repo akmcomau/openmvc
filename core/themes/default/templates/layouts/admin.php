@@ -57,7 +57,7 @@
 					<span class="sr-only"><?php echo $text_toggle_navigation; ?></span>
 					<i class="icon-cog"></i>
 				</button>
-				<a class="navbar-brand" href="<?php echo $this->url->getURL('Administrator');?>"><?php echo $this->config->siteConfig()->name; ?></a>
+				<a class="navbar-brand" href="<?php echo $this->url->getUrl('Administrator');?>"><?php echo $this->config->siteConfig()->name; ?></a>
 			</div>
 			<?php if ($administrator_logged_in) { ?>
 				<div class="collapse navbar-collapse navbar-ex1-collapse">

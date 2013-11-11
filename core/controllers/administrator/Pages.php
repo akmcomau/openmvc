@@ -88,7 +88,7 @@ class Pages extends Controller {
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
 			$page->update($data, FALSE);
-			throw new RedirectException($this->url->getURL('administrator/Pages', 'index', ['add-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['add-success']));
 		}
 		elseif ($form_page->isSubmitted()) {
 			$this->updateFromRequest($form_page, $data);
@@ -121,7 +121,7 @@ class Pages extends Controller {
 		if ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
 			$page->update($data, TRUE);
-			throw new RedirectException($this->url->getURL('administrator/Pages', 'index', ['update-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['update-success']));
 		}
 		elseif ($form_page->isSubmitted()) {
 			$this->updateFromRequest($form_page, $data);
@@ -147,7 +147,7 @@ class Pages extends Controller {
 				$page->delete($controller, $method, $sub_method);
 			}
 
-			throw new RedirectException($this->url->getURL('administrator/Pages', 'index', ['delete-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['delete-success']));
 		}
 	}
 

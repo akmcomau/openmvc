@@ -1,4 +1,4 @@
-<form id="form-login" class="form-login-register" action="<?php echo $this->url->getURL('Customer', 'login', [$controller, $method, $params]); ?>" method="post">
+<form id="form-login" class="form-login-register" action="<?php echo $this->url->getUrl('Customer', 'login', [$controller, $method, $params]); ?>" method="post">
 <div class="widget">
 	<div class="widget-header">
 		<h3><?php echo $text_login_header; ?></h3>
@@ -14,7 +14,7 @@
 		<br />
 		<br />
 		<div  class="align-center">
-			<a href="<?php echo $this->url->getURL('Customer', 'forgot'); ?>"><?php echo $text_forgot_password; ?></a>
+			<a href="<?php echo $this->url->getUrl('Customer', 'forgot'); ?>"><?php echo $text_forgot_password; ?></a>
 		</div>
 	</div>
 </div>

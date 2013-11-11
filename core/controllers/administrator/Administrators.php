@@ -82,7 +82,7 @@ class Administrators extends Controller {
 			$this->updateFromRequest($form_administrator, $administrator);
 			$administrator->insert();
 			$form_administrator->setNotification('success', $this->language->get('notification_add_success'));
-			throw new RedirectException($this->url->getURL('administrator/Administrators', 'index', ['add-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Administrators', 'index', ['add-success']));
 		}
 		elseif ($form_administrator->isSubmitted()) {
 			$this->updateFromRequest($form_administrator, $administrator);
@@ -112,7 +112,7 @@ class Administrators extends Controller {
 		if ($form_administrator->validate()) {
 			$this->updateFromRequest($form_administrator, $administrator);
 			$administrator->update();
-			throw new RedirectException($this->url->getURL('administrator/Administrators', 'index', ['update-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Administrators', 'index', ['update-success']));
 		}
 		elseif ($form_administrator->isSubmitted()) {
 			$this->updateFromRequest($form_administrator, $administrator);
@@ -139,7 +139,7 @@ class Administrators extends Controller {
 				$administrator->delete();
 			}
 
-			throw new RedirectException($this->url->getURL('administrator/Administrators', 'index', ['delete-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Administrators', 'index', ['delete-success']));
 		}
 	}
 

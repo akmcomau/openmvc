@@ -85,7 +85,7 @@ class Customers extends Controller {
 			$this->updateFromRequest($form_customer, $customer);
 			$customer->insert();
 			$form_customer->setNotification('success', $this->language->get('notification_add_success'));
-			throw new RedirectException($this->url->getURL('administrator/Customers', 'index', ['add-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Customers', 'index', ['add-success']));
 		}
 		elseif ($form_customer->isSubmitted()) {
 			$this->updateFromRequest($form_customer, $customer);
@@ -115,7 +115,7 @@ class Customers extends Controller {
 		if ($form_customer->validate()) {
 			$this->updateFromRequest($form_customer, $customer);
 			$customer->update();
-			throw new RedirectException($this->url->getURL('administrator/Customers', 'index', ['update-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Customers', 'index', ['update-success']));
 		}
 		elseif ($form_customer->isSubmitted()) {
 			$this->updateFromRequest($form_customer, $customer);
@@ -142,7 +142,7 @@ class Customers extends Controller {
 				$customer->delete();
 			}
 
-			throw new RedirectException($this->url->getURL('administrator/Customers', 'index', ['delete-success']));
+			throw new RedirectException($this->url->getUrl('administrator/Customers', 'index', ['delete-success']));
 		}
 	}
 

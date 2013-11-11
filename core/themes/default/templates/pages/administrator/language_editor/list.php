@@ -47,7 +47,7 @@
 							<td><?php echo $file['file']; ?></td>
 							<td><?php echo $file['count']; ?></td>
 							<td>
-								<a href="<?php echo $this->url->getURL('administrator/LanguageEditor', 'edit', [urlencode($file['file'])]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+								<a href="<?php echo $this->url->getUrl('administrator/LanguageEditor', 'edit', [urlencode($file['file'])]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
 							</td>
 						</tr>
 						<?php } ?>
