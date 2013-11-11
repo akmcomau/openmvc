@@ -41,7 +41,7 @@ class Model {
 	public function __construct(Config $config, Database $database) {
 		$this->config   = $config;
 		$this->database = $database;
-		$this->logger   = Logger::getLogger(__CLASS__);
+		$this->logger   = Logger::getLogger(get_class($this));
 	}
 
 	public function getRecord() {
@@ -133,7 +133,7 @@ class Model {
 				$columns[] = $column;
 				$values[]  = 'NOW()';
 			}
-			elseif ($column != $primary_key && isset($this->record[$column])) {
+			elseif ($column != $primary_key && array_key_exists($column, $this->record)) {
 				$columns[] = $column;
 				$values[]  = $this->database->quote($this->record[$column]);
 			}
@@ -166,7 +166,7 @@ class Model {
 
 		$values  = [];
 		foreach (array_keys($this->columns) as $column) {
-			if ($column != $primary_key && isset($this->record[$column])) {
+			if ($column != $primary_key && array_key_exists($column, $this->record)) {
 				$values[]  = $column.'='.$this->database->quote($this->record[$column]);
 			}
 		}

@@ -61,6 +61,12 @@ class Dispatcher {
 
 		$this->logger->debug("Dispatching request to $controller_class::$method_name");
 
+	    if ($controller->getAuthentication()->forcePasswordChangeEnabled()) {
+			if (!preg_match('/\Customer$/', $controller_class) || $method_name != 'change_password') {
+				throw new RedirectException($this->url->getURL('Customer', 'change_password'));
+			}
+		}
+
 		// check permissions
 		$is_admin_required = FALSE;
 		$is_customer_logged_in = FALSE;

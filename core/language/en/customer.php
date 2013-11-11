@@ -20,9 +20,17 @@ $_LANGUAGE = [
 	'password1' => 'Password',
 	'password2' => 'Confirm Password',
 	'phone' => 'Phone',
+	'forgot_password' => 'Forgot your username or password?',
+	'button_username' => 'Forgot Username',
+	'button_password' => 'Forgot Password',
 
+	'email_not_found' => 'That email address was not be found.',
+	'forgot_password_email_sent' => 'An email has been sent to your email address with link to reset your password.',
+	'forgot_username_email_sent' => 'And email has been sent to your email address containing your username.',
 	'change_password_success' => 'Your password has been successfully changed',
 	'update_details_success' => 'Your details have been successfully updated',
+	'forgot_password_subject' => 'Reset your password',
+	'forgot_username_subject' => 'Your username',
 
 	'login_failed' => 'Login Failed',
 	'error_first_name' => 'Between 2-32 characters',

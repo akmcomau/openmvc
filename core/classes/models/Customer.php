@@ -91,4 +91,21 @@ class Customer extends Model {
 		['site_id', 'customer_email'],
 	];
 
+	public function getName() {
+		return $this->first_name.' '.$this->last_name;
+	}
+
+	public function generateToken() {
+		$this->customer_token = md5($this->id.time());
+		$this->customer_token_created = date('c');
+		$this->update();
+
+		return $this->customer_token;
+	}
+
+	public function clearToken() {
+		$this->token = NULL;
+		$this->token_created = NULL;
+		$this->update();
+	}
 }

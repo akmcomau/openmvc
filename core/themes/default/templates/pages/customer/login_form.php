@@ -11,6 +11,11 @@
 		<input type="password" name="password" class="form-control" placeholder="<?php echo $text_password; ?>" />
 		<?php echo $login->getHtmlErrorDiv('password'); ?>
 		<button name="form-login-submit" class="btn btn-lg btn-primary btn-block" type="submit"><?php echo $text_login_button; ?></button>
+		<br />
+		<br />
+		<div  class="align-center">
+			<a href="<?php echo $this->url->getURL('Customer', 'forgot'); ?>"><?php echo $text_forgot_password; ?></a>
+		</div>
 	</div>
 </div>
 </form>

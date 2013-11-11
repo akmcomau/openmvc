@@ -12,6 +12,10 @@ $_URLS = [
 		'login' => [
 			'link_text' => ['en' => 'Login'],
 		],
+		'forgot' => [
+			'aliases' => ['en' => 'forgot-username-password'],
+			'link_text' => ['en' => 'Forgot Username or Password'],
+		],
 		'login_register' => [
 			'aliases' => ['en' => 'login-register'],
 			'link_text' => ['en' => 'Login/Register'],

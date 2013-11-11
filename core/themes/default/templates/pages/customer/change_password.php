@@ -7,9 +7,11 @@
 						<h3><?php echo $text_change_password_header; ?></h3>
 					</div>
 					<div class="widget-content">
-						<input type="password" name="current_password" class="form-control" placeholder="<?php echo $text_current_password; ?>" autofocus="autofocus" value="" />
-						<?php echo $form->getHtmlErrorDiv('current_password'); ?>
-						<hr />
+						<?php if (!$force_password_change) { ?>
+							<input type="password" name="current_password" class="form-control" placeholder="<?php echo $text_current_password; ?>" autofocus="autofocus" value="" />
+							<?php echo $form->getHtmlErrorDiv('current_password'); ?>
+							<hr />
+						<?php } ?>
 						<input type="password" name="password1" class="form-control" placeholder="<?php echo $text_new_password; ?>" autofocus="autofocus" value="" />
 						<?php echo $form->getHtmlErrorDiv('password1'); ?>
 						<hr />

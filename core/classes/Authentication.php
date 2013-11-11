@@ -80,6 +80,11 @@ class Authentication {
 		$this->request->session->set(['authentication', 'customer'], $customer->getRecord());
 		$this->customer_data = $customer->getRecord();
 		$this->logger->info("Customer logged in: ".$this->getCustomerID());
+
+		// clear the token on successful login
+		if ($customer->token) {
+			$customer->clearToken();
+		}
 		return TRUE;
 	}
 
@@ -117,6 +122,20 @@ class Authentication {
 		unset($_SESSION['authentication']['administrator']);  // HACK above line not working
 		$this->logged_in = $this->administratorLoggedIn();
 		$this->customer_data  = NULL;
+	}
+
+	public function forcePasswordChangeEnabled() {
+		$enabled = $this->request->session->get('force_password_change');
+		return $enabled ? TRUE : FALSE;
+	}
+
+	public function forcePasswordChange($enable = NULL) {
+		if ($enable) {
+			$auth = $this->request->session->set('force_password_change',  TRUE);
+		}
+		else {
+			$this->request->session->delete('force_password_change');
+		}
 	}
 
 }

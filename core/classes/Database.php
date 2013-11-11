@@ -53,6 +53,9 @@ class Database extends PDO {
 		elseif (is_integer($value)) {
 			return (int)$value;
 		}
+		elseif (is_null($value)) {
+			return 'NULL';
+		}
 		return parent::quote($value, $parameter_type);
 	}
 

@@ -141,6 +141,10 @@ class Config {
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($config, TRUE).';');
 	}
 
+	public function getUrl() {
+		return 'http://www.'.$this->site_domain;
+	}
+
 	public function getSiteDomain() {
 		return $this->site_domain;
 	}
