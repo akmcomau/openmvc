@@ -17,10 +17,10 @@ CKEDITOR.editorConfig = function( config ) {
 	];
 
 	if (typeof(MathJax) == 'undefined') {
-		config.extraPlugins = 'onchange';
+		config.extraPlugins = 'font,onchange';
 	}
 	else {
-		config.extraPlugins = 'onchange,mathjax';
+		config.extraPlugins = 'font,onchange,mathjax';
 	}
 
 	config.extraAllowedContent = '*(*)';

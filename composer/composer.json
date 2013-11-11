@@ -49,6 +49,17 @@
 		{
 			"type":"package",
 			"package": {
+				"name": "ckeditor/font",
+				"version": "4.2.1",
+				"dist": {
+					"url": "http://download.ckeditor.com/font/releases/font_4.2.1.zip",
+					"type": "zip"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
 				"name": "twbs/bootstrap",
 				"version": "v3.0.0",
 				"source": {
@@ -148,6 +159,7 @@
 		"simogeo/Filemanager": "v1.0",
 		"spekkionu/wideimage": "11.02.19",
 		"ckeditor/ckeditor": "4.2.1",
+		"ckeditor/font": "4.2.1",
 		"ckeditor/onchange": "1.8",
 		"twbs/bootstrap": "v3.0.0",
 		"FortAwesome/Font-Awesome": "v3.2.1",
