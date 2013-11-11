@@ -108,6 +108,10 @@
 			}
 		});
 	});
+	CKEDITOR.on('instanceReady', function( ev ) {
+		var writer = ev.editor.dataProcessor.writer;
+		writer.lineBreakChars = '';
+	});
 	updatePreview($('textarea[name="content"]').val());
 </script>
 

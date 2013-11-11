@@ -25,6 +25,7 @@ CKEDITOR.editorConfig = function( config ) {
 
 	config.extraAllowedContent = '*(*)';
 	config.protectedSource.push(/<\?[\s\S]*?\?>/g);
+	config.protectedSource.push(/\r|\n/g);
 	config.removeButtons = 'Underline,Subscript,Superscript';
 	config.format_tags = 'p;h1;h2;h3;pre';
 	config.removeDialogTabs = 'image:advanced;link:advanced';
