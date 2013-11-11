@@ -31,7 +31,7 @@
 							<div class="col-md-9 col-sm-9 ">
 								<select name="type" class="form-control">
 									<?php foreach ($types as $value => $text) { ?>
-										<option value="<?php echo $value; ?>" <?php if ($block->getCategory() && $value == $block->getCategory()->id) echo 'selected="selected"'; ?>><?php echo $text; ?></option>
+										<option value="<?php echo $value; ?>" <?php if ($value == $block->type_id) echo 'selected="selected"'; ?>><?php echo $text; ?></option>
 									<?php } ?>
 								</select>
 							</div>
