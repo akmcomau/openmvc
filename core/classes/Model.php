@@ -195,7 +195,7 @@ class Model {
 		$table  = $this->generateFromClause($params);
 		$where  = $this->generateWhereClause($params);
 		if (strlen($where)) $where = "WHERE $where";
-		$sql    = "SELECT $table.* FROM $table $where";
+		$sql    = "SELECT ".$this->table.".* FROM $table $where";
 		if (isset($params['get_random_record'])) {
 			$sql .= " ORDER BY RANDOM() LIMIT 1";
 		}
