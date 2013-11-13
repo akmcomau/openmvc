@@ -113,7 +113,7 @@ class URL {
 		}
 		foreach (glob("$base_site_path*", GLOB_ONLYDIR) as $dir) {
 			if (preg_match('/\/([\w]+)$/', $dir, $matches)) {
-				if (!in_array($matches[1])) {
+				if (!in_array($matches[1], $dirs)) {
 					$dirs[] = $matches[1];
 				}
 			}

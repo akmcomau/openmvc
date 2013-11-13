@@ -131,6 +131,7 @@ class Block extends Model {
 		]);
 
 		// update the category
+		$this->getCategory();
 		$category = $this->objects['category'];
 		if ($category && $link) {
 			// update the category

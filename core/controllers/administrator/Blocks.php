@@ -111,6 +111,7 @@ class Blocks extends Controller {
 		$data['is_add_page'] = TRUE;
 		$data['form'] = $form_block;
 		$data['block'] = $block;
+		$data['content_buttons'] = $this->getAddContentButtons();
 		$template = $this->getTemplate('pages/administrator/blocks/add_edit.php', $data);
 		$this->response->setContent($template->render());
 	}
@@ -144,6 +145,7 @@ class Blocks extends Controller {
 		$data['is_add_page'] = FALSE;
 		$data['form'] = $form_block;
 		$data['block'] = $block;
+		$data['content_buttons'] = $this->getUpdateContentButtons($block);
 		$template = $this->getTemplate('pages/administrator/blocks/add_edit.php', $data);
 		$this->response->setContent($template->render());
 	}
@@ -160,6 +162,14 @@ class Blocks extends Controller {
 
 			throw new RedirectException($this->url->getUrl('administrator/Blocks', 'index', ['delete-success']));
 		}
+	}
+
+	protected function getAddContentButtons() {
+		return [];
+	}
+
+	protected function getUpdateContentButtons($block) {
+		return [];
 	}
 
 	protected function updateFromRequest(FormValidator $form_block, $block) {

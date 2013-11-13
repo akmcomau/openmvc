@@ -50,7 +50,12 @@
 						</div>
 						<hr class="separator-2column" />
 						<div class="row">
-							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_content; ?></div>
+							<div class="col-md-3 col-sm-3 title-2column">
+								<?php echo $text_content; ?>
+								<?php foreach ($content_buttons as $text => $url) { ?>
+									<br /><a href="<?php echo $url; ?>" class="btn btn-primary"><?php echo $text; ?></a>
+								<?php } ?>
+							</div>
 							<div class="col-md-9 col-sm-9 ">
 								<textarea class="form-control ckeditor" name="content"><?php echo htmlspecialchars($block->content); ?></textarea>
 								<?php echo $form->getHtmlErrorDiv('content'); ?>
