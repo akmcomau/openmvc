@@ -67,7 +67,7 @@ class Administrator extends Controller {
 		$this->response->setContent($template->render());
 	}
 
-	public function error_401() {
+	public function error401() {
 		$this->show_admin_layout = TRUE;
 		$this->language->loadLanguageFile('error.php');
 		header("HTTP/1.1 401 Permission Denied");
@@ -75,7 +75,7 @@ class Administrator extends Controller {
 		$this->response->setContent($template->render());
 	}
 
-	public function error_404() {
+	public function error404() {
 		$this->show_admin_layout = TRUE;
 		$this->language->loadLanguageFile('error.php');
 		header("HTTP/1.1 404 Not Found");

@@ -20,13 +20,13 @@ class Root extends Controller {
 	public function page($page_name = NULL) {
 		// go to homepage if there is no page
 		if (!$page_name) {
-			throw new SoftRedirectException(__CLASS__, 'error_404');
+			throw new SoftRedirectException(__CLASS__, 'error404');
 		}
 
 		$page_data = $this->url->getMethodConfig('Root', "page/$page_name");
 		if (!$page_data) {
 			$this->logger->debug('Method config not found');
-			throw new SoftRedirectException(__CLASS__, 'error_404');
+			throw new SoftRedirectException(__CLASS__, 'error404');
 		}
 
 		if (isset($page_data['language'])) {
@@ -48,7 +48,7 @@ class Root extends Controller {
 		}
 		catch (TemplateException $ex) {
 			$this->logger->debug('Misc page template not found');
-			throw new SoftRedirectException(__CLASS__, 'error_404');
+			throw new SoftRedirectException(__CLASS__, 'error404');
 		}
 	}
 
@@ -76,7 +76,7 @@ class Root extends Controller {
 				throw new RedirectException($this->url->getUrl('Root', 'page/contact_us_sent'));
 			}
 			else {
-				throw new RedirectException($this->url->getUrl('Error', 'error_500'));
+				throw new RedirectException($this->url->getUrl('Error', 'error500'));
 			}
 		}
 
@@ -96,21 +96,21 @@ class Root extends Controller {
 		return new FormValidator($this->request, 'form-contact-us', $inputs);
 	}
 
-	public function error_401() {
+	public function error401() {
 		$this->language->loadLanguageFile('error.php');
 		header("HTTP/1.1 401 Permission Denied");
 		$template = $this->getTemplate('pages/error_401.php');
 		$this->response->setContent($template->render());
 	}
 
-	public function error_404() {
+	public function error404() {
 		$this->language->loadLanguageFile('error.php');
 		header("HTTP/1.1 404 Not Found");
 		$template = $this->getTemplate('pages/error_404.php');
 		$this->response->setContent($template->render());
 	}
 
-	public function error_500() {
+	public function error500() {
 		$this->language->loadLanguageFile('error.php');
 		header("HTTP/1.1 500 Internal Server Error");
 		$template = $this->getTemplate('pages/error_500.php');

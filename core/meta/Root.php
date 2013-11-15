@@ -32,13 +32,13 @@ $_URLS = [
 		'contactUsSend' => [
 			'aliases' => ['en' => 'contact-us-send'],
 		],
-		'error_401' => [
+		'error401' => [
 			'aliases' => ['en' => 'error-401']
 		],
-		'error_404' => [
+		'error404' => [
 			'aliases' => ['en' => 'error-404']
 		],
-		'error_500' => [
+		'error500' => [
 			'aliases' => ['en' => 'error-500']
 		],
 	],
