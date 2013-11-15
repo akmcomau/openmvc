@@ -6,7 +6,9 @@ use core\classes\exceptions\SoftRedirectException;
 use core\classes\exceptions\RedirectException;
 use core\classes\exceptions\TemplateException;
 use core\classes\renderable\Controller;
+use core\classes\Email;
 use core\classes\URL;
+use core\classes\FormValidator;
 
 class Root extends Controller {
 
@@ -21,10 +23,27 @@ class Root extends Controller {
 			throw new SoftRedirectException(__CLASS__, 'error_404');
 		}
 
-		$page_name = str_replace('-', '_', $page_name);
+		$page_data = $this->url->getMethodConfig('Root', "page/$page_name");
+		if (!$page_data) {
+			$this->logger->debug('Method config not found');
+			throw new SoftRedirectException(__CLASS__, 'error_404');
+		}
+
+		if (isset($page_data['language'])) {
+			foreach ($page_data['language'] as $file) {
+				$this->language->loadLanguageFile($file);
+			}
+		}
+
+		$data = [];
+		if (isset($page_data['data'])) {
+			foreach ($page_data['data'] as $property => $method) {
+				$data[$property] = $this->$method();
+			}
+		}
 
 		try {
-			$template = $this->getTemplate("pages/misc/$page_name.php");
+			$template = $this->getTemplate("pages/misc/$page_name.php", $data);
 			$this->response->setContent('<div class="container">'.$template->render().'</div>');
 		}
 		catch (TemplateException $ex) {
@@ -33,44 +52,48 @@ class Root extends Controller {
 		}
 	}
 
-	public function contactUs($status = NULL) {
+	public function contactUsSend() {
+		$this->language->loadLanguageFile('contact_us.php');
 		$site_params = $this->config->siteConfig();
-		if ($this->request->postParam('send_message') == 1) {
-			$headers  = "From: {$this->request->postParam('email')}\n";
-			$headers .= "Content-Type: text/html";
+		$form = $this->contactUsForm();
 
-			$subject = "Website Enquiry";
+		if ($form->validate()) {
+			$data = [];
+			foreach ($site_params->contact_fields as $property => $stuff) {
+				$data['fields'][$this->language->get($property)] = $this->request->postParam($property);
+			}
 
-			$body  = "An enquiry has been submitted.<br/><br/>";
-			$body .= "Name : " . $this->request->postParam('name') . "<br/>";
-			$body .= "Email: " . $this->request->postParam('email') . "<br/>";
-			$body .= "Desc : " . $this->request->postParam('description') . "<br/><br/>";
-			$body .= "Regards,<br/>";
-			$body .= "AKM Computer Services<br/><br/>";
+			$body = $this->getTemplate('emails/enquiry.txt.php', $data);
+			$html = $this->getTemplate('emails/enquiry.html.php', $data);
+			$email = new Email($this->config);
+			$email->setFromEmail($this->request->postParam('email'));
+			$email->setToEmail($this->config->siteConfig()->email_addresses->contact_us);
+			$email->setSubject($this->config->siteConfig()->name.': Website Enquiry');
+			$email->setBodyTemplate($body);
+			$email->setHtmlTemplate($html);
 
-			if (mail($site_params->email_addresses->contact_us, $subject, $body, $headers)) {
-				throw new RedirectException($this->request->currentURL([]).'/success');
+			if ($email->send()) {
+				throw new RedirectException($this->url->getUrl('Root', 'page/contact_us_sent'));
 			}
 			else {
-				throw new RedirectException($this->request->currentURL([]).'/error');
+				throw new RedirectException($this->url->getUrl('Error', 'error_500'));
 			}
 		}
 
-		$message = '';
-		if ($status == 'success') {
-			$message = 'Your Message has been sent.';
-		}
-		elseif ($status == 'error') {
-			$message = 'An error occured during sending you message.  Please try again later.';
+		throw new SoftRedirectException(__CLASS__, 'page/contact_us');
+	}
+
+	protected function contactUsForm() {
+		$inputs = [];
+		$site_params = $this->config->siteConfig();
+		foreach ($site_params->contact_fields as $property => $data) {
+			if (property_exists($data, 'message_text_tag')) {
+				$data->message = $this->language->get($data->message_text_tag);
+			}
+			$inputs[$property] = (array)$data;
 		}
 
-		$data = [
-			'message' => $message,
-			'contact_us_email' => $site_params->email_addresses->contact_us,
-		];
-
-		$template = $this->getTemplate('pages/contact_us.php', $data);
-		$this->response->setContent($template->render());
+		return new FormValidator($this->request, 'form-contact-us', $inputs);
 	}
 
 	public function error_401() {

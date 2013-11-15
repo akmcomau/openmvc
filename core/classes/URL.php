@@ -212,6 +212,18 @@ class URL {
 		return $meta_tags;
 	}
 
+	public function getMethodConfig($controller_name = NULL, $method_name = NULL) {
+		$meta_tags = [];
+		if (!$controller_name) $controller_name = 'Root';
+		if (!$method_name)     $method_name     = 'index';
+
+		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name])) {
+			return $this->url_map['forward'][$controller_name]['methods'][$method_name];
+		}
+
+		return NULL;
+	}
+
 	public function getUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';

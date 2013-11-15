@@ -296,3 +296,8 @@ input[type="text"].small-text {
 	-moz-border-radius: 2px;
 	border-radius: 2px;
 }
+
+/* contact us */
+#form-contact-us textarea {
+	height: 100px;
+}

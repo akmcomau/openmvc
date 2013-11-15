@@ -19,9 +19,18 @@ $_URLS = [
 			'aliases' => ['en' => 'about-us'],
 			'link_text' => ['en' => 'About Us'],
 		],
-		'contactUs' => [
+		'page/contact_us' => [
 			'aliases' => ['en' => 'contact-us'],
 			'link_text' => ['en' => 'Contact Us'],
+			'language' => ['contact_us.php'],
+			'data' => ['form' => 'contactUsForm'],
+		],
+		'page/contact_us_sent' => [
+			'aliases' => ['en' => 'contact-us-sent'],
+			'language' => ['contact_us.php'],
+		],
+		'contactUsSend' => [
+			'aliases' => ['en' => 'contact-us-send'],
 		],
 		'error_401' => [
 			'aliases' => ['en' => 'error-401']

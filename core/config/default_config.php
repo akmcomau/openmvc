@@ -3,7 +3,10 @@
 $_DEFAULT_CONFIG = (object)[
 	'modules' => [],
 	'default_site' => [
-		'email_addresses' => [],
+		'email_addresses' => [
+        	'from' => 'info@example.com',
+	        'contact_us' => 'info@example.com',
+		],
 		'modules' => [],
 		'secret' => 'ABCDEFGHIJK123456789',
 		'name' => 'OpenMVC',
@@ -25,6 +28,11 @@ $_DEFAULT_CONFIG = (object)[
 		'locale' => 'en_AU.utf8',
 		'language' => 'en',
 		'records_per_page' => 20,
-		'num_pagination_links' => 11
+		'num_pagination_links' => 11,
+		'contact_fields' => [
+			'name' => ['type'=>'string', 'message_text_tag' => 'error_name'],
+			'email' => ['type'=>'email', 'message_text_tag' => 'error_email'],
+			'enquiry' => ['type'=>'string', 'message_text_tag' => 'error_enquiry'],
+		],
 	]
 ];
