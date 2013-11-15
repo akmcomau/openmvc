@@ -48,9 +48,13 @@ class Customer extends Controller {
 
 	}
 
-	public function login($controller = NULL, $method = NULL, $params = NULL) {
+	public function login($controller = NULL, $method = NULL, $param = NULL) {
 		if ($this->authentication->customerLoggedIn()) {
 			throw new RedirectException($this->url->getUrl('Customer'));
+		}
+		$params = NULL;
+		if ($param) {
+			$params = [ $param ];
 		}
 
 		$this->language->loadLanguageFile('customer.php');
@@ -83,7 +87,7 @@ class Customer extends Controller {
 			'login' => $form_login,
 			'controller' => $controller,
 			'method' => $method,
-			'params' => $params,
+			'params' => $param,
 		];
 
 		$template = $this->getTemplate('pages/customer/login.php', $data);
