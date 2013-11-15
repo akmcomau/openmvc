@@ -24,6 +24,12 @@ $_LANGUAGE = [
 	'button_username' => 'Forgot Username',
 	'button_password' => 'Forgot Password',
 
+	'account_created' => 'Account Created',
+	'hi' => 'Hi',
+	'regards' => 'Regards',
+	'url' => 'URL',
+	'your_account_created' => 'Your account has been created, you can login here:',
+
 	'email_not_found' => 'That email address was not be found.',
 	'forgot_password_email_sent' => 'An email has been sent to your email address with link to reset your password.',
 	'forgot_username_email_sent' => 'And email has been sent to your email address containing your username.',

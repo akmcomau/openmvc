@@ -107,6 +107,19 @@ class Customer extends Controller {
 			$customer->email      = $form_register->getValue('email');
 			$customer->insert();
 
+			$data = [
+				'name' => $customer->getName(),
+				'username' => $customer->login,
+			];
+			$body = $this->getTemplate('emails/account_created.txt.php', $data);
+			$html = $this->getTemplate('emails/account_created.html.php', $data);
+			$email = new Email($this->config);
+			$email->setToEmail($customer->email);
+			$email->setSubject($this->language->get('account_created'));
+			$email->setBodyTemplate($body);
+			$email->setHtmlTemplate($html);
+			$email->send();
+
 			$this->authentication->loginCustomer($customer);
 
 			if ($controller) {
