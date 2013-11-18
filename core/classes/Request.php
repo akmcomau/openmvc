@@ -13,6 +13,7 @@ class Request {
 	protected $site_params = NULL;
 	protected $controller_class = NULL;
 	protected $method_name = NULL;
+	protected $method_params = NULL;
 
 	protected $authentication;
 	protected $url;
@@ -114,6 +115,9 @@ class Request {
 	}
 
 	public function currentURL(array $params = NULL) {
+		if (is_null($params)) {
+			$params = $this->method_params;
+		}
 		$controller_class = $this->url->getControllerClassName($this->controller_class);
 		return $this->url->getUrl($controller_class, $this->method_name, $params);
 	}
