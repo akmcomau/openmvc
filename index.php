@@ -43,7 +43,7 @@ function shutdown_error_handler() {
 	if ($error) {
 		$ex = new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']);
 		log_display_exception($display_errors, $logger, $ex);
-	}
+}
 	$script_time = number_format(microtime(TRUE) - $script_start, 6);
 	$logger->info("End Request: $script_time");
 }
@@ -70,7 +70,7 @@ try {
 	);
 	$request    = new Request($config, $database);
 	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ':'.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
-	$logger->info('Start Request ['.$ip.']: '.$config->getSiteDomain().' => '.json_encode($request->get_params));
+	$logger->info('Start Request ['.$ip.'] ['.session_id().']: '.$config->getSiteDomain().' => '.json_encode($request->get_params));
 
 	$dispatcher = new Dispatcher($config, $database);
 	$response = $dispatcher->dispatch($request);
