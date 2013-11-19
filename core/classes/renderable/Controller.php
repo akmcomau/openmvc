@@ -47,7 +47,7 @@ class Controller extends Renderable {
 		$this->response       = $response;
 		$this->url            = new URL($config);
 		$this->language       = new Language($config);
-		$this->authentication = new Authentication($config, $database, $request);
+		$this->authentication = $request->getAuthentication();
 
 		$menu = NULL;
 		if ($this->show_admin_layout) {

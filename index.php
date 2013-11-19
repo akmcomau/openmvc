@@ -58,6 +58,9 @@ $logger = Logger::getLogger('');
 $config = new Config();
 
 try {
+	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ':'.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
+	$logger->info('Start Request ['.$ip.'] ['.session_id().']: '.$config->getSiteDomain().' => '.json_encode($_GET));
+
 	$config->setSiteDomain($_SERVER['HTTP_HOST']);
 	$display_errors = $config->siteConfig()->display_errors;
 
@@ -69,8 +72,6 @@ try {
 		$config->database->password
 	);
 	$request    = new Request($config, $database);
-	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ':'.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
-	$logger->info('Start Request ['.$ip.'] ['.session_id().']: '.$config->getSiteDomain().' => '.json_encode($request->get_params));
 
 	$dispatcher = new Dispatcher($config, $database);
 	$response = $dispatcher->dispatch($request);

@@ -5,14 +5,10 @@ namespace core\classes;
 class Session {
 	public function delete($name) {
 		if (is_array($name)) {
-			$data = &$_SESSION;
-			foreach ($name as $element) {
-				if (!isset($data[$element])) {
-					$data[$element] = NULL;
-				}
-				$data = &$data[$element];
-			}
-			unset($data);
+			$php  = 'unset($_SESSION[\'';
+			$php .= join("']['", $name);
+			$php .= '\']);';
+			eval($php);
 			return;
 		}
 

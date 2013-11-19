@@ -29,6 +29,8 @@ class Authentication {
 			$this->customer_data = isset($auth['customer']) ? $auth['customer'] : NULL;
 			$this->administrator_data = isset($auth['administrator']) ? $auth['administrator'] : NULL;
 		}
+
+		$this->callHook('init_authentication', [$this]);
 	}
 
 	public function loggedIn() {
@@ -69,6 +71,8 @@ class Authentication {
 	}
 
 	public function loginCustomer(Customer $customer) {
+		$this->callHook('before_loginCustomer', [$customer]);
+
 		if ($this->customerLoggedIn()) {
 			$this->logger->info("Customer already logged in, logging out: ".$this->getCustomerID());
 			$this->logoutCustomer();
@@ -85,10 +89,14 @@ class Authentication {
 		if ($customer->token) {
 			$customer->clearToken();
 		}
+
+		$this->callHook('after_loginCustomer', [$customer]);
 		return TRUE;
 	}
 
 	public function loginAdministrator(Administrator $admin) {
+		$this->callHook('before_loginAdministrator', [$admin]);
+
 		if ($this->administratorLoggedIn()) {
 			$this->logger->info("Administrator already logged in, logging out: ".$this->getAdministratorID());
 			$this->logoutAdministrator();
@@ -100,28 +108,48 @@ class Authentication {
 		$this->request->session->set(['authentication', 'administrator'], $admin->getRecord());
 		$this->administrator_data = $admin->getRecord();
 		$this->logger->info("Administrator logged in: ".$this->getAdministratorID());
+
+		$this->callHook('after_loginAdministrator', [$admin]);
 		return TRUE;
 	}
 
-	public function logout() {
-		$auth = $this->request->session->delete('authentication');
-		$this->logged_in = FALSE;
-		$this->administrator_data = NULL;
-		$this->customer_data  = NULL;
+	public function logout($call_hooks = TRUE) {
+		$this->logoutCustomer($call_hooks);
+		$this->logoutAdministrator($call_hooks);
 	}
 
-	public function logoutCustomer() {
-		$auth = $this->request->session->delete(['authentication', 'customer']);
-		unset($_SESSION['authentication']['customer']);  // HACK above line not working
-		$this->logged_in = $this->administratorLoggedIn();
-		$this->customer_data  = NULL;
+	public function logoutCustomer($call_hooks = TRUE) {
+		if ($this->customerLoggedIn()) {
+			$customer_id = $this->getCustomerID();
+			if ($call_hooks) {
+				$this->callHook('before_logoutCustomer', [$customer_id]);
+			}
+
+			$auth = $this->request->session->delete(['authentication', 'customer']);
+			$this->logged_in = $this->administratorLoggedIn();
+			$this->customer_data  = NULL;
+
+			if ($call_hooks) {
+				$this->callHook('after_logoutCustomer', [$customer_id]);
+			}
+		}
 	}
 
-	public function logoutAdministrator() {
-		$auth = $this->request->session->delete(['authentication', 'administrator']);
-		unset($_SESSION['authentication']['administrator']);  // HACK above line not working
-		$this->logged_in = $this->administratorLoggedIn();
-		$this->customer_data  = NULL;
+	public function logoutAdministrator($call_hooks = TRUE) {
+		if ($this->administratorLoggedIn()) {
+			$admin_id = $this->getAdministratorID();
+			if ($call_hooks) {
+				$this->callHook('before_logoutAdministrator', [$admin_id]);
+			}
+
+			$auth = $this->request->session->delete(['authentication', 'administrator']);
+			$this->logged_in = $this->administratorLoggedIn();
+			$this->administrator_data = NULL;
+
+			if ($call_hooks) {
+				$this->callHook('after_logoutAdministrator', [$admin_id]);
+			}
+		}
 	}
 
 	public function forcePasswordChangeEnabled() {
@@ -135,6 +163,18 @@ class Authentication {
 		}
 		else {
 			$this->request->session->delete('force_password_change');
+		}
+	}
+
+	protected function callHook($name, array $params = []) {
+		$modules = (new Module($this->config))->getEnabledModules();
+		foreach ($modules as $module) {
+			if (isset($module['hooks']['authentication'][$name])) {
+				$class = $module['namespace'].'\\'.$module['hooks']['authentication'][$name];
+				$this->logger->debug("Calling Hook: $class::$name");
+				$class = new $class($this->config, $this->database, $this->request);
+				return call_user_func_array(array($class, $name), $params);
+			}
 		}
 	}
 
