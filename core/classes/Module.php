@@ -95,6 +95,18 @@ class Module {
 		return $enabled;
 	}
 
+	public function isModuleEnabled($name) {
+		$enabled = [];
+		$modules = $this->getModules();
+		foreach ($modules as $module_name => $module) {
+			if ($module['enabled'] && $module_name == $name) {
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
 	public function install($module_name, Database $database) {
 		if (!isset($this->getModules()[$module_name])) {
 			throw new ErrorException("No module named $module_name");

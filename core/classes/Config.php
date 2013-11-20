@@ -124,6 +124,14 @@ class Config {
 		return $this->sites->{$this->site_domain};
 	}
 
+	public function updateSiteConfigParam($name, $value) {
+		$this->sites->{$this->site_domain}->{$name} = $value;
+	}
+
+	public function updateConfigParam($name, $value) {
+		$this->sites->{$name} = $value;
+	}
+
 	public function getSiteConfig() {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
 		require($filename);
