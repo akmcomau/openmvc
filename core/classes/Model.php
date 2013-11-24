@@ -185,10 +185,10 @@ class Model {
 			throw new ModelException("Object has no primary key: ".print_r($this, TRUE));
 		}
 
+		$this->callHook('delete');
+
 		$sql = "DELETE FROM $table WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
 		$this->database->executeQuery($sql);
-
-		$this->callHook('delete');
 	}
 
 	public function get(array $params) {

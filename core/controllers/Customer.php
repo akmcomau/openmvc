@@ -45,7 +45,6 @@ class Customer extends Controller {
 
 		$template = $this->getTemplate('pages/customer/login_register.php', $data);
 		$this->response->setContent($template->render());
-
 	}
 
 	public function login($controller = NULL, $method = NULL, $param = NULL) {
@@ -409,7 +408,7 @@ class Customer extends Controller {
 		return new FormValidator($this->request, 'form-change-password', $inputs, $validators);
 	}
 
-	protected function getRegisterForm() {
+	public function getRegisterForm() {
 		$model = new Model($this->config, $this->database);
 
 		$inputs = [
@@ -500,33 +499,16 @@ class Customer extends Controller {
 		return new FormValidator($this->request, 'form-register', $inputs, $validators);
 	}
 
-	protected function getLoginForm() {
+	public function getLoginForm() {
 		$inputs = [
 			'username' => [
 				'type' => 'string',
-				'min_length' => 6,
-				'max_length' => 32,
-				'message' => $this->language->get('error_username'),
 			],
 			'password' => [
 				'type' => 'string',
-				'min_length' => 6,
-				'max_length' => 32,
-				'message' => $this->language->get('error_password'),
 			],
 		];
 
-		$validators = [
-			'password' => [
-				[
-					'type'      => 'regex',
-					'regex'     => '\d',
-					'modifiers' => '',
-					'message'   => $this->language->get('error_password_number'),
-				],
-			],
-		];
-
-		return new FormValidator($this->request, 'form-login', $inputs, $validators);
+		return new FormValidator($this->request, 'form-login', $inputs);
 	}
 }

@@ -83,6 +83,10 @@ class Controller extends Renderable {
 		}
 	}
 
+	public function setLanguage(Language $language) {
+		return $this->language = $language;
+	}
+
 	public function setUrl($url) {
 		return $this->url = $url;
 	}

@@ -87,29 +87,12 @@ class Administrator extends Controller {
 		$inputs = [
 			'username' => [
 				'type' => 'string',
-				'min_length' => 6,
-				'max_length' => 32,
-				'message' => $this->language->get('error_username'),
 			],
 			'password' => [
 				'type' => 'string',
-				'min_length' => 6,
-				'max_length' => 32,
-				'message' => $this->language->get('error_password'),
 			],
 		];
 
-		$validators = [
-			'password' => [
-				[
-					'type'      => 'regex',
-					'regex'     => '\d',
-					'modifiers' => '',
-					'message'   => $this->language->get('error_password_number'),
-				],
-			],
-		];
-
-		return new FormValidator($this->request, 'form-login', $inputs, $validators);
+		return new FormValidator($this->request, 'form-login', $inputs);
 	}
 }
