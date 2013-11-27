@@ -211,7 +211,7 @@ class Customer extends Controller {
 			'token' => $token,
 		]);
 		if (!$customer) {
-			throw new RedirectException($this->url->getUrl('Customer', 'login'. ['invalid_token']));
+			throw new RedirectException($this->url->getUrl('Customer', 'login', ['invalid_token']));
 		}
 
 		// login the customer

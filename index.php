@@ -12,8 +12,14 @@ use core\classes\Logger;
 use core\classes\Request;
 use core\classes\URL;
 
+$suppress_exceptions = NULL;
 $display_errors = TRUE;
 $script_start = microtime(TRUE);
+
+function suppress_exceptions($value) {
+	global $suppress_exceptions;
+	$suppress_exceptions = $value;
+}
 
 function log_display_exception($display_error, $logger, $ex) {
 	global $config;
@@ -32,7 +38,10 @@ function log_display_exception($display_error, $logger, $ex) {
 	}
 }
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
-	throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+	global $suppress_exceptions;
+	if (!$suppress_exceptions || !preg_match($suppress_exceptions, $errstr)) {
+		throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+	}
 }
 function shutdown_error_handler() {
 	global $display_errors;

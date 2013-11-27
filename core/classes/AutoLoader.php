@@ -15,9 +15,6 @@ class AutoLoader {
 			if (file_exists($filename)) {
 				include($filename);
 			}
-			else {
-				throw new AutoLoaderException("Attempt to autoload non-existant class: $class");
-			}
 		});
 	}
 
