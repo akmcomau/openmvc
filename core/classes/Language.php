@@ -28,11 +28,17 @@ class Language {
 		return $this->strings;
 	}
 
-	public function get($tag) {
+	public function get($tag, $params = NULL) {
 		if (!isset($this->strings[$tag])) {
 			throw new LanguageException("Language string not defined: $tag");
 		}
-		return $this->strings[$tag];
+
+		if ($params) {
+			return vsprintf($this->strings[$tag], $params);
+		}
+		else {
+			return $this->strings[$tag];
+		}
 	}
 
 	public function getFile($file) {
