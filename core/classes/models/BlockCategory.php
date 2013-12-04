@@ -6,6 +6,8 @@ use core\classes\Model;
 
 class BlockCategory extends Category {
 
+	protected $link_type   = 'link-table';
+
 	protected $table       = 'block_category';
 	protected $primary_key = 'block_category_id';
 	protected $columns     = [

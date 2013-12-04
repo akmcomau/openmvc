@@ -205,7 +205,7 @@ $.extend(FormValidator, {
 				}
 				is_valid = false;
 
-				if ($("#"+form_id+" *[name='"+element_name+"']")) {
+				if ($("#"+form_id+" *[name='"+element_name+"']").length) {
 					scroll = $("#"+form_id+" *[name='"+element_name+"']").offset().top-80;
 					if (scroll < scroll_position) {
 						scroll_position = scroll;

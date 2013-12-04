@@ -13,19 +13,9 @@ use core\classes\Model;
 class CategoryManager extends Controller {
 
 	protected $show_admin_layout = TRUE;
+	protected $controller_class = 'administrator/CategoryManager';
 
-	protected $permissions = [
-		'block' => ['administrator'],
-		'page' => ['administrator'],
-	];
-
-	public function page($message = NULL) {
-		$this->category_manager($message, '\core\classes\models\PageCategory');
-	}
-
-	public function block($message = NULL) {
-		$this->category_manager($message, '\core\classes\models\BlockCategory');
-	}
+	protected $permissions = [];
 
 	protected function category_manager($message, $model_class, $allow_subcategories = TRUE, $readonly = FALSE) {
 		$this->language->loadLanguageFile('administrator/category_manager.php');
@@ -114,21 +104,21 @@ class CategoryManager extends Controller {
 			$model->name = $this->request->requestParam('name');
 			$model->insert();
 
-			throw new RedirectException($this->url->getUrl('administrator/CategoryManager', $this->request->getMethodName(), ['add-success']));
+			throw new RedirectException($this->url->getUrl($this->controller_class, $this->request->getMethodName(), ['add-success']));
 		}
 		elseif ((int)$this->request->requestParam('edit_category')) {
 			$model = $model->get(['id' => (int)$this->request->requestParam('category')]);
 			$model->name = $this->request->requestParam('name');
 			$model->update();
 
-			throw new RedirectException($this->url->getUrl('administrator/CategoryManager', $this->request->getMethodName(), ['update-success']));
+			throw new RedirectException($this->url->getUrl($this->controller_class, $this->request->getMethodName(), ['update-success']));
 		}
 		elseif ((int)$this->request->requestParam('add_subcategory')) {
 			$model->name = $this->request->requestParam('name');
 			$model->parent_id = (int)$this->request->requestParam('category');
 			$model->insert();
 
-			throw new RedirectException($this->url->getUrl('administrator/CategoryManager', $this->request->getMethodName(), ['add-success']));
+			throw new RedirectException($this->url->getUrl($this->controller_class, $this->request->getMethodName(), ['add-success']));
 		}
 	}
 
@@ -147,7 +137,7 @@ class CategoryManager extends Controller {
 				$category->delete();
 			}
 
-			throw new RedirectException($this->url->getUrl('administrator/CategoryManager', $this->request->getMethodName(), ['delete-success']));
+			throw new RedirectException($this->url->getUrl($this->controller_class, $this->request->getMethodName(), ['delete-success']));
 		}
 	}
 

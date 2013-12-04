@@ -28,8 +28,8 @@ $_MENU = [
 							'method' => 'add',
 						],
 						'content_pages_categories' => [
-							'controller' => 'administrator/CategoryManager',
-							'method' => 'page',
+							'controller' => 'administrator/PageCategories',
+							'method' => 'index',
 						]
 					],
 				],
@@ -46,8 +46,8 @@ $_MENU = [
 							'method' => 'add',
 						],
 						'content_blocks_categories' => [
-							'controller' => 'administrator/CategoryManager',
-							'method' => 'block',
+							'controller' => 'administrator/BlockCategories',
+							'method' => 'index',
 						]
 					],
 				],

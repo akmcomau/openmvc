@@ -208,7 +208,7 @@ class FormValidator {
 						break;
 
 					default:
-						throw new FormException('Invalid form element type: '.print_r($data, TRUE));
+						throw new FormException("Invalid form element type [$name]: ".$data['type']);
 						break;
 				}
 			}

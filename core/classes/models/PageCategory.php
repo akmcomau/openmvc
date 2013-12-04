@@ -6,6 +6,8 @@ use core\classes\Model;
 
 class PageCategory extends Category {
 
+	protected $link_type   = 'link-table';
+
 	protected $table       = 'page_category';
 	protected $primary_key = 'page_category_id';
 	protected $columns     = [
