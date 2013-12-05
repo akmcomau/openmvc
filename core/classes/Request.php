@@ -9,6 +9,7 @@ class Request {
 	public $request_params;
 	public $server_params;
 	public $session;
+	public $file_params = NULL;
 
 	protected $site_params = NULL;
 	protected $controller_class = NULL;
@@ -21,10 +22,11 @@ class Request {
 
 	public function __construct(Config $config, Database $database) {
 		$this->config = $config;
-		$this->get_params = $_GET;
-		$this->post_params = $_POST;
-		$this->request_params = $_REQUEST;
-		$this->server_params = $_SERVER;
+		$this->get_params = &$_GET;
+		$this->post_params = &$_POST;
+		$this->request_params = &$_REQUEST;
+		$this->server_params = &$_SERVER;
+		$this->file_params = &$_FILES;
 		$this->session = new Session();
 		$this->authentication = new Authentication($config, $database, $this);
 		$this->url = new URL($config);
@@ -99,6 +101,15 @@ class Request {
 
 		if (isset($this->request_params[$name])) {
 			return $this->request_params[$name];
+		}
+		else {
+			return NULL;
+		}
+	}
+
+	public function fileParam($name) {
+		if (isset($this->file_params[$name])) {
+			return $this->file_params[$name];
 		}
 		else {
 			return NULL;

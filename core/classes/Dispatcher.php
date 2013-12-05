@@ -38,7 +38,6 @@ class Dispatcher {
 		$sub_page = NULL;
 		$response = new Response();
 		$controller_class = $request->getControllerClass();
-
 		if (!$controller_class) {
 			$this->logger->debug("Controller Not found: ".$request->getParam('controller'));
 			return $this->error404($request);
@@ -206,7 +205,7 @@ class Dispatcher {
 			return NULL;
 		}
 		else {
-			return '\\core\\controllers\\Root';
+			return $this->url->getControllerClass('Root');
 		}
 	}
 

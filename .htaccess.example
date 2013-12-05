@@ -14,6 +14,7 @@ DirectoryIndex index.php
 
 	# give static content proper urls
 	RewriteRule ^/?static-\d+/(.*)/themes/(.*)$ /$1/themes/$2 [PT,L]
+	RewriteRule ^/?static-\d+/(.*)/assets/(.*)$ /$1/assets/$2 [PT,L]
 
 	# For the file manager
 	RewriteRule ^/?admin/scripts/filemanager.config.js$ /index.php?controller=admin\%5Cfile-manager&method=config [QSA,L]
@@ -28,6 +29,10 @@ DirectoryIndex index.php
 	RewriteCond %{DOCUMENT_ROOT}/$1/themes/$2 -f
 	RewriteCond %{REQUEST_URI} !\.php$
 	RewriteRule ^(.*)/themes/(.*)$ $1/themes/$2 [PT,L]
+
+	RewriteCond %{DOCUMENT_ROOT}/$1/assets/$2 -f
+	RewriteCond %{REQUEST_URI} !\.php$
+	RewriteRule ^(.*)/assets/(.*)$ $1/assets/$2 [PT,L]
 
 	# Rewrite controller methods to index.php
 	RewriteRule ^/?admin/([^/]+)(/([^/]+))?(/(.*))?$ /index.php?controller=admin\%5C$1&method=$3&params=$5 [QSA,L]
