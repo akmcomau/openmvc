@@ -65,6 +65,8 @@ class Layout extends Renderable {
 			'logged_in'               => $this->authentication->loggedIn(),
 			'customer_logged_in'      => $this->authentication->customerLoggedIn(),
 			'administrator_logged_in' => $this->authentication->administratorLoggedIn(),
+			'database'                => $this->database,
+			'request'                 => $this->request,
 		];
 		$data = array_merge($data, $this->template_data);
 		$template = new Template($this->config, $this->language, $this->template, $data);

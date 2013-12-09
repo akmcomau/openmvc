@@ -28,6 +28,7 @@ class Language {
 		return $this->strings;
 	}
 
+	// use params like '%1$d items' => [1]
 	public function get($tag, $params = NULL) {
 		if (!isset($this->strings[$tag])) {
 			throw new LanguageException("Language string not defined: $tag");
