@@ -34,7 +34,7 @@ function log_display_exception($display_error, $logger, $ex) {
 	}
 	else {
 		$url = new URL($config);
-		header("Location: ".$url->getURL('Error', 'error_500'));
+		header("Location: ".$url->getURL('Root', 'error500'));
 	}
 }
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {

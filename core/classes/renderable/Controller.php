@@ -212,16 +212,31 @@ class Controller extends Renderable {
 		}
 
 		if (is_null($model)) {
-				throw new SoftRedirectException('\\core\\controllers\\Administrator', 'error404');
+			if ($show_admin_layout) {
+				throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error404');
+			}
+			else {
+				throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error404');
+			}
 		}
 		elseif ($this->request->session->get('admin_site_id')) {
 			if ($this->request->session->get('admin_site_id') != $model->site_id) {
-				throw new SoftRedirectException('\\core\\controllers\\Administrator', 'error401');
+				if ($show_admin_layout) {
+					throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error401');
+				}
+				else {
+					throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error404', 'error401');
+				}
 			}
 		}
 		elseif ($this->config->siteConfig()->site_id) {
 			if ($this->config->siteConfig()->site_id != $model->site_id) {
-				throw new SoftRedirectException('\\core\\controllers\\Administrator', 'error401');
+				if ($show_admin_layout) {
+					throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error401');
+				}
+				else {
+					throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error404', 'error401');
+				}
 			}
 		}
 	}
