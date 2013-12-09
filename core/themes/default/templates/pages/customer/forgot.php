@@ -1,4 +1,5 @@
 <div class="container">
+	<br />
 	<div class="row">
 		<div class="col-md-12">
 			<form id="form-register" action="<?php echo $this->url->getUrl('Customer', 'forgot'); ?>" method="post">

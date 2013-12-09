@@ -1,6 +1,7 @@
 <?php
 
 $_LANGUAGE = [
+	'contact_us' => 'Contact Us',
 	'contact_note' => 'Please use the form below to send us your enquiry and we will get back to you shortly.',
 	'name' => 'Name',
 	'email' => 'Email',

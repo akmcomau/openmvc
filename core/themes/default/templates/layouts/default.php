@@ -110,7 +110,7 @@
 				<div class="row">
 					<div class="col-md-4 col">
 						<div class="block contact-block">
-							<h3><?php echo $this->url->getLink('', 'Root', 'contactUs'); ?></h3>
+							<h3><?php echo $this->url->getLink('', 'Root', 'page/contact_us'); ?></h3>
 							<address>
 								<p><abbr title="Phone"><i class="icon-phone"></i></abbr> <?php echo $text_footer_phone; ?></p>
 								<p><abbr title="Email"><i class="icon-envelope"></i></abbr> <?php echo $this->config->siteConfig()->email_addresses->contact_us; ?></p>
@@ -133,7 +133,7 @@
 						<ul class="list-inline align-center">
 							<li><?php echo $this->url->getLink('', 'Root', 'page/terms'); ?></li>
 							<li><?php echo $this->url->getLink('', 'Root', 'page/privacy'); ?></li>
-							<li><?php echo $this->url->getLink('', 'Root', 'contactUs'); ?></li>
+							<li><?php echo $this->url->getLink('', 'Root', 'page/contact_us'); ?></li>
 						</ul>
 					</div>
 				</div>

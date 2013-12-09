@@ -1,12 +1,12 @@
 <div class="container">
-	<h1>Contact Us</h1>
+	<br />
 	<div class="row">
 		<div class="col-md-12">
 			<form id="form-contact-us" action="<?php echo $this->url->getUrl('Root', 'contactUsSend'); ?>" method="post">
 				<input type="hidden" name="send_message" value="1" />
 				<div class="widget">
 					<div class="widget-header">
-						<h3></h3>
+						<h3><?php echo $text_contact_us; ?></h3>
 					</div>
 					<div class="widget-content">
 						<p><?php echo $text_contact_note; ?></p>
