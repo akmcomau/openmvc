@@ -156,7 +156,12 @@ class Controller extends Renderable {
 					$admin_panel->addMenuData(['language', 'params'], $language_files);
 				}
 				if (isset($menu_data['edit_page'])) {
-					$admin_panel->addMenuData(['edit_page', 'params'], [$this->request->getControllerName(), $this->request->getMethodName()]);
+					if ($this->request->getControllerName() == 'Root' && $this->request->getMethodName() == 'page') {
+						$admin_panel->addMenuData(['edit_page', 'params'], [$this->request->getControllerName(), $this->request->getMethodName(), $this->request->getMethodParams()[0]]);
+					}
+					else {
+						$admin_panel->addMenuData(['edit_page', 'params'], [$this->request->getControllerName(), $this->request->getMethodName()]);
+					}
 				}
 
 				$this->layout->setTemplateData([
