@@ -46,12 +46,14 @@ class LanguageEditor extends Controller {
 	public function edit() {
 		$this->language->loadLanguageFile('administrator/language_editor.php');
 
-		$file_list = func_get_args();
 		$language_files = [];
-		for ($i=0; $i<count($file_list); $i++) {
-			$file = $file_list[$i];
-			$language_files[$file] = $this->language->getFile($file);
+		$files = '/'.join('/', func_get_args());
+		if (preg_match_all('|/file/(.*?)/path/(.*?)/end|', $files, $matches)) {
+			for ($i=0; $i<count($matches[0]); $i++) {
+				$language_files[$matches[2][$i].'/'.$matches[1][$i]] = $this->language->getFile($matches[1][$i], $matches[2][$i]);
+			}
 		}
+
 		$form = $this->getLanguageForm($language_files);
 
 		if ($form->validate()) {

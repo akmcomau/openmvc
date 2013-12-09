@@ -41,8 +41,8 @@ class Language {
 		}
 	}
 
-	public function getFile($file) {
-		$filename = $this->getAbsoluteFilename($file);
+	public function getFile($file, $path = NULL) {
+		$filename = $this->getAbsoluteFilename($file, $path);
 		require($filename);
 		return $_LANGUAGE;
 	}
@@ -56,6 +56,7 @@ class Language {
 
 		if (preg_match('|^(.*)/([^/]+)$|', $file, $matches)) {
 			$path = str_replace('/', DS, $matches[1]);
+			if ($path == '-') $path = '';
 			$theme_path .= $path.DS;
 			$theme_file = $root_path.$theme_path.$matches[2];
 		}
@@ -72,7 +73,7 @@ class Language {
 		$filename = $this->getAbsoluteFilename($filename, $path);
 		require($filename);
 		$this->strings = array_merge($this->strings, $_LANGUAGE);
-		$this->loaded_files[] = str_replace('/', '\\', $file);
+		$this->loaded_files[] = [$file, $path];
 	}
 
 	public function getAbsoluteFilename($filename, $path = NULL) {
@@ -92,6 +93,10 @@ class Language {
 			return $default_file;
 		}
 		if ($path) {
+			$theme_file = 'sites'.DS.$site->namespace.DS.'language'.DS.$this->language.DS.$path.DS.$filename;
+			if (file_exists($theme_file)) {
+				return $theme_file;
+			}
 			$path_file = $root_path.$path.DS.'language'.DS.$this->language.DS.$filename;
 			if (file_exists($path_file)) {
 				return $path_file;

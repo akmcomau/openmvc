@@ -47,8 +47,8 @@ class Layout extends Renderable {
 		$this->sub_page = $sub_page;
 	}
 
-	public function loadLanguageFile($filename) {
-		$this->language->loadLanguageFile($filename);
+	public function loadLanguageFile($filename, $path = NULL) {
+		$this->language->loadLanguageFile($filename, $path);
 	}
 
 	public function render() {
@@ -65,7 +65,6 @@ class Layout extends Renderable {
 			'logged_in'               => $this->authentication->loggedIn(),
 			'customer_logged_in'      => $this->authentication->customerLoggedIn(),
 			'administrator_logged_in' => $this->authentication->administratorLoggedIn(),
-			'language_files'          => $this->language->getLoadedFiles(),
 		];
 		$data = array_merge($data, $this->template_data);
 		$template = new Template($this->config, $this->language, $this->template, $data);

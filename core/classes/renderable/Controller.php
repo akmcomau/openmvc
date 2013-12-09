@@ -147,7 +147,13 @@ class Controller extends Renderable {
 				$menu_data = $admin_panel->getMenuData();
 
 				if (isset($menu_data['language'])) {
-					$admin_panel->addMenuData(['language', 'params'], $this->language->getLoadedFiles());
+					$language_files = [];
+					foreach ($this->language->getLoadedFiles() as $file) {
+						$file = 'file/'.$file[0].'/path/'.($file[1] ? $file[1] : '-').'/end';
+						$file_parts = explode('/', $file);
+						$language_files = array_merge($language_files, $file_parts);
+					}
+					$admin_panel->addMenuData(['language', 'params'], $language_files);
 				}
 				if (isset($menu_data['edit_page'])) {
 					$admin_panel->addMenuData(['edit_page', 'params'], [$this->request->getControllerName(), $this->request->getMethodName()]);
