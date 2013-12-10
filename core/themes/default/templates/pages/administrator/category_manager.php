@@ -1,9 +1,22 @@
 <?php
-function echoCategory($readonly, $allow_subcategories, $add_text, $category, $depth = 0) {
+// recursive function to render out the categories
+function echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $category, $depth = 0) {
+	global $static_prefix;
 	?>
 	<tr>
 		<?php if (!$readonly) { ?>
 			<td class="select"><input type="checkbox" name="selected[]" value="<?php echo $category['id'];?>" /></td>
+		<?php } ?>
+		<?php if ($has_image) { ?>
+			<td>
+				<?php
+					if ($category['image']) {
+						?><img src="<?php echo $category['thumbnail']; ?>" height="50px" /><?php
+					}
+					else {
+						?><img src="<?php echo $static_prefix; ?>/core/themes/default/images/no_image.svg" height="50px" /><?php
+				} ?>
+			</td>
 		<?php } ?>
 		<td class="name">
 			<?php if ($allow_subcategories) { ?>
@@ -12,6 +25,8 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 			<span id="category-name-<?php echo $category['id'];?>"><?php echo $category['name']; ?></span>
 			<?php if (!$readonly) { ?>
 				<a id="edit-category-<?php echo $category['id'];?>" href="javascript:editCategoryName(<?php echo $category['id'];?>);"><i class="icon-edit"></i></a>
+				&nbsp;
+				<a id="image-category-<?php echo $category['id'];?>" href="javascript:uploadCategoryImage(<?php echo $category['id'];?>);"><i class="icon-camera"></i></a>
 			<?php } ?>
 		</td>
 		<?php if ($allow_subcategories) { ?>
@@ -20,19 +35,19 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 	</tr>
 	<tr id="subcategory-<?php echo $category['id'];?>" class="subcategory">
 		<td></td>
-		<td colspan="2">
+		<td colspan="3">
 			<table class="table">
 				<?php
 				if (isset($category['subcategories'])) {
 					foreach ($category['subcategories'] as $sub_category) {
-						echoCategory($readonly, $allow_subcategories, $add_text, $sub_category, ++$depth);
+						echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $sub_category, ++$depth);
 					}
 				}
 				?>
 				<?php if (!$readonly) { ?>
 					<tr>
 						<td></td>
-						<td id="add-subcategory-<?php echo $category['id'];?>"><a class="" href="javascript:addSubcategory(<?php echo $category['id'];?>);"><?php echo $add_text; ?></a></td>
+						<td colspan="2" id="add-subcategory-<?php echo $category['id'];?>"><a href="javascript:addSubcategory(<?php echo $category['id'];?>);"><?php echo $add_text; ?></a></td>
 						<td></td>
 					</tr>
 				<?php } ?>
@@ -67,13 +82,16 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 								<?php if (!$readonly) { ?>
 								<th>&nbsp;</th>
 								<?php } ?>
+								<?php if ($has_image) { ?>
+								<th>&nbsp;</th>
+								<?php } ?>
 								<th><?php echo $text_name; ?></th>
 								<?php if ($allow_subcategories) { ?>
 								<th><?php echo $text_num_subcategories; ?></th>
 								<?php } ?>
 							</tr>
 							<?php foreach ($categories as $category) {
-							  echoCategory($readonly, $allow_subcategories, $text_add_subcategory, $category);
+							  echoCategory($readonly, $has_image, $allow_subcategories, $text_add_subcategory, $category);
 							} ?>
 						</table>
 						<button type="submit" class="btn btn-primary" name="form-category-list-submit" onclick="return deleteSelected();"><?php echo $text_delete_selected; ?></button>
@@ -93,6 +111,12 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 	<input type="hidden" name="category" value="" />
 	<input type="text" class="form-control" name="name" value="" />
 </form>
+<form action="" method="post" id="form-category-image" class="hidden" enctype="multipart/form-data">
+	<input type="hidden" name="image_category" value="1" />
+	<input type="hidden" name="category" value="" />
+	<input type="file" name="image" />
+	<input type="submit" class="btn btn-primary btn-small" value="<?php echo $text_upload_image; ?>" />
+</form>
 <br />
 <script type="text/javascript">
 	<?php echo $message_js; ?>
@@ -109,14 +133,30 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 		}
 	}
 
+	function uploadCategoryImage (id) {
+		var form = $('#form-category-image').clone();
+		form.removeClass('hidden');
+		form.find('input[name="category"]').val(id);
+		form.attr('id', 'form-subcategory-image-'+id);
+
+		$('#category-name-'+id).parent().find('a').hide();
+		$('#category-name-'+id).html('')
+		$('#category-name-'+id).append(form);
+	}
+
 	function addSubcategory(id) {
 		var form = $('#form-subcategory-add').clone();
 		form.removeClass('hidden');
 		form.find('input[name="category"]').val(id);
 		form.attr('id', 'form-subcategory-add-'+id);
+		form.find('input[name="name"]').blur(function() {
+			$(this).parent().submit();
+		});
 
 		$('#add-subcategory-'+id).html('')
 		$('#add-subcategory-'+id).append(form);
+
+		$('#form-subcategory-add-'+id+' input[name="name"]').focus();
 	}
 
 	function editCategoryName(id) {
@@ -126,10 +166,15 @@ function echoCategory($readonly, $allow_subcategories, $add_text, $category, $de
 		form.find('input[name="name"]').val(name);
 		form.find('input[name="category"]').val(id);
 		form.attr('id', 'form-category-edit-'+id);
+		form.find('input[name="name"]').blur(function() {
+			$(this).parent().submit();
+		});
 
 		$('#category-name-'+id).parent().find('a').hide();
 		$('#category-name-'+id).html('')
 		$('#category-name-'+id).append(form);
+
+		$('#form-category-edit-'+id+' input[name="name"]').focus();
 	}
 
 	function deleteSelected() {

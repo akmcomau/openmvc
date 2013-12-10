@@ -24,9 +24,11 @@ class Category extends Model {
 		$categ_data = [];
 		foreach ($categories as $category) {
 			$categ_data[$category->parent_id][] = [
-				'id'     => $category->id,
-				'name'   => $category->name,
-				'parent' => $category->parent_id,
+				'id'        => $category->id,
+				'name'      => $category->name,
+				'parent'    => $category->parent_id,
+				'image'     => $category->hasImage() ? $category->getImageUrl() : NULL,
+				'thumbnail' => $category->hasImage() ? $category->getImageThumbnailUrl() : NULL,
 			];
 		}
 		return $categ_data;
@@ -126,7 +128,11 @@ class Category extends Model {
 		return FALSE;
 	}
 
-	public function getImage() {
+	public function getImageUrl() {
+		return NULL;
+	}
+
+	public function getImageThumbnailUrl() {
 		return NULL;
 	}
 }

@@ -80,6 +80,14 @@ class CategoryManager extends Controller {
 			case 'update-success':
 				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_update_success')).'");';
 				break;
+
+			case 'upload-success':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_upload_success')).'");';
+				break;
+
+			case 'upload-error':
+				$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_upload_error')).'");';
+				break;
 		}
 
 		$data = [
@@ -91,6 +99,7 @@ class CategoryManager extends Controller {
 			'message_js' => $message_js,
 			'controller_name' => $controller,
 			'method_name' => $method,
+			'has_image' => $page_category->hasImage(),
 		];
 
 		$template = $this->getTemplate('pages/administrator/category_manager.php', $data);
@@ -119,6 +128,19 @@ class CategoryManager extends Controller {
 			$model->insert();
 
 			throw new RedirectException($this->url->getUrl($this->controller_class, $this->request->getMethodName(), ['add-success']));
+		}
+		elseif ((int)$this->request->requestParam('image_category')) {
+			if ($this->request->fileParam('image')['error'] == 0) {
+				$category = $model->getModel('\modules\products\classes\models\ProductCategory')->get(['id' => $this->request->requestParam('category')]);
+				$category->uploadImage(
+					$this->request->fileParam('image')['tmp_name'],
+					$category->id.'-'.$this->request->fileParam('image')['name']
+				);
+
+				throw new RedirectException($this->url->getUrl($this->controller_class, $this->request->getMethodName(), ['upload-success']));
+			}
+
+			throw new RedirectException($this->url->getUrl($this->controller_class, $this->request->getMethodName(), ['upload-error']));
 		}
 	}
 
