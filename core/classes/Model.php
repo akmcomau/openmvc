@@ -337,7 +337,12 @@ class Model {
 				}
 			}
 			else {
-				$where[] = $column.'='.$this->database->quote($value);
+				if (is_null($value)) {
+					$where[] = $column.' IS NULL';
+				}
+				else {
+					$where[] = $column.'='.$this->database->quote($value);
+				}
 			}
 		}
 		return join (' AND ', $where);

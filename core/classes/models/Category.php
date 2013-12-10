@@ -121,4 +121,12 @@ class Category extends Model {
 	public function getCanonicalName() {
 		return str_replace(' ', '-', strtolower($this->name));
 	}
+
+	public function hasImage() {
+		return FALSE;
+	}
+
+	public function getImage() {
+		return NULL;
+	}
 }
