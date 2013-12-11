@@ -40,7 +40,7 @@ trait Thumbnails {
 		if ($imgt) {
 			$old_image = $imgcreatefrom("$updir" . "$img");
 			$new_image = imagecreatetruecolor($new_width, $new_height);
-			imagecopyresized($new_image, $old_image, 0, 0, 0, 0, $new_width, $new_height, $original_width, $original_height);
+			imagecopyresampled($new_image, $old_image, 0, 0, 0, 0, $new_width, $new_height, $original_width, $original_height);
 			$imgt($new_image, "$updir" . "$thumb_beforeword" . "$img");
 		}
 	}
