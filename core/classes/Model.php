@@ -297,7 +297,7 @@ class Model {
 		return join(' ', $tables);
 	}
 
-	public function generateWhereClause(array $params) {
+	public function generateWhereClause(array $params, $and = TRUE) {
 		$where = [];
 		foreach ($params as $column => $value) {
 			if (isset($this->columns[$this->table.'_'.$column])) {
@@ -305,6 +305,10 @@ class Model {
 			}
 			elseif (isset($this->columns[$column])) {
 				$column = $this->table.'.'.$column;
+			}
+			elseif (preg_match('/^or-\d$/', $column)) {
+				$where[] = $this->generateWhereClause($value, FALSE);
+				continue;
 			}
 			else {
 				$found = FALSE;
@@ -334,6 +338,15 @@ class Model {
 							$where[] = $column.' IN ('.join(',', $value['value']).')';
 						}
 						break;
+
+					case 'or':
+						if ($value['value']) {
+							foreach ($value['value'] as &$val) {
+								$val = $this->database->quote($val);
+							}
+							$where[] = $column.' IN ('.join(',', $value['value']).')';
+						}
+						break;
 				}
 			}
 			else {
@@ -345,7 +358,13 @@ class Model {
 				}
 			}
 		}
-		return join (' AND ', $where);
+
+		if ($and) {
+			return join (' AND ', $where);
+		}
+		else {
+			return join (' OR ', $where);
+		}
 	}
 
 	public function getModel($class, array $data = NULL) {
