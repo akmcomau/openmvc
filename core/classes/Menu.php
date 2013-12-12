@@ -199,8 +199,9 @@ class Menu {
 				$children = $item['children'];
 			}
 			$class = $children ? 'dropdown-submenu' : '';
+			$a_class = $this->a_class.(isset($item['class']) ? ' '.$item['class'] : '');
 			print '<li class="'.$class.'">';
-			print '<a href="'.$item['url'].'" class="'.$this->a_class.'">'.$item['text'].'</a>';
+			print '<a href="'.$item['url'].'" class="'.$a_class.'">'.$item['text'].'</a>';
 
 			if ($children) {
 				$this->recursiveBootstrapMenu($children, $depth++);
