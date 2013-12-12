@@ -212,7 +212,7 @@ class Controller extends Renderable {
 		}
 
 		if (is_null($model)) {
-			if ($show_admin_layout) {
+			if ($this->show_admin_layout) {
 				throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error404');
 			}
 			else {
@@ -221,7 +221,7 @@ class Controller extends Renderable {
 		}
 		elseif ($this->request->session->get('admin_site_id')) {
 			if ($this->request->session->get('admin_site_id') != $model->site_id) {
-				if ($show_admin_layout) {
+				if ($this->show_admin_layout) {
 					throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error401');
 				}
 				else {
@@ -231,7 +231,7 @@ class Controller extends Renderable {
 		}
 		elseif ($this->config->siteConfig()->site_id) {
 			if ($this->config->siteConfig()->site_id != $model->site_id) {
-				if ($show_admin_layout) {
+				if ($this->show_admin_layout) {
 					throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error401');
 				}
 				else {
