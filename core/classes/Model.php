@@ -713,7 +713,7 @@ class Model {
 				break;
 
 			case 'datetime':
-				$type = 'TIMESTAMP WITHOUT time zone';
+				$type = 'TIMESTAMP WITH time zone';
 				break;
 
 			case 'bool':
