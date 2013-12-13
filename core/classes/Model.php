@@ -23,33 +23,53 @@ class Model {
 	protected $uniques        = [];
 	protected $relationships  = [];
 
-	protected $core_models = [
-		'Administrator',
-		'Customer',
-		'Country',
-		'State',
-		'City',
-		'Address',
-		'PageCategory',
-		'PageCategoryLink',
-		'BlockCategory',
-		'BlockType',
-		'Block',
-		'BlockCategoryLink',
-	];
+	protected $site_models;
 
 	public function __construct(Config $config, Database $database) {
 		$this->config   = $config;
 		$this->database = $database;
 		$this->logger   = Logger::getLogger(get_class($this));
+
+		if (isset($GLOBALS['cache']['site_models'])) {
+			$this->site_models = $GLOBALS['cache']['site_models'];
+		}
+		else {
+			$this->findAllModels();
+		}
+	}
+
+	public function findAllModels() {
+		$site = $this->config->siteConfig();
+		$site_controllers = [];
+		$core_controllers = [];
+		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+
+		$dirs = [];
+		$dirs[] = $root_path.'core'.DS.'classes'.DS.'models'.DS;
+		$dirs[] = $root_path.'sites'.DS.$site->namespace.DS.'classes'.DS.'models'.DS;
+		$modules = (new Module($this->config))->getModules();
+		foreach ($modules as $module) {
+			$dir[] = $root_path.$module['namespace'].DS.'classes'.DS.'models'.DS;
+		}
+
+		$this->site_models = [];
+		foreach ($dirs as $dir) {
+			foreach (glob("$dir*.php") as $filename) {
+				if (preg_match('|^'.$root_path.'(.*?)'.DS.'([\w]+)\.php$|', $filename, $matches)) {
+					$this->site_models[] = str_replace('/', '\\', $matches[1]).'\\'.$matches[2];
+				}
+			}
+		}
+
+		$GLOBALS['cache']['site_models'] = $this->site_models;
 	}
 
 	public function getRecord() {
  		return $this->record;
 	}
 
-	public function getCoreModels() {
- 		return $this->core_models;
+	public function getSiteModels() {
+ 		return $this->site_models;
 	}
 
 	public function setRecord($record) {
@@ -380,33 +400,37 @@ class Model {
 
 	public function createDatabase() {
 		// Create the tables
-		foreach ($this->core_models as $table) {
-			$this->logger->info("Creating table: $table");
-			$model = $this->getModel("core\\classes\\models\\$table");
+		foreach ($this->site_models as $model) {
+			$this->logger->info("Creating table: $model");
+			$model = $this->getModel($model);
 			$model->createTable();
 		}
 
 		// Create the indexes
-		foreach ($this->core_models as $table) {
-			$this->logger->info("Creating indexes: $table");
-			$model = $this->getModel("core\\classes\\models\\$table");
+		foreach ($this->site_models as $model) {
+			$this->logger->info("Creating indexes: $model");
+			$model = $this->getModel($model);
 			$model->createIndexes();
 		}
 
 		// Create the foreign keys
-		foreach ($this->core_models as $table) {
-			$this->logger->info("Creating foreign keys: $table");
-			$model = $this->getModel("core\\classes\\models\\$table");
+		foreach ($this->site_models as $model) {
+			$this->logger->info("Creating foreign keys: $model");
+			$model = $this->getModel($model);
 			$model->createForeignKeys();
 		}
 	}
 
 	public function dropTable() {
+		if (is_null($table)) return;
+
 		$sql = 'DROP TABLE '.$this->table;
 		return $this->database->executeQuery($sql);
 	}
 
 	public function createTable() {
+		if (is_null($this->table)) return;
+
 		if ($this->database->getEngine() == 'mysql') {
 			return $this->createTableMySQL();
 		}
@@ -416,6 +440,8 @@ class Model {
 	}
 
 	public function createForeignKeys() {
+		if (is_null($this->table)) return;
+
 		if ($this->database->getEngine() == 'mysql') {
 			return $this->createForeignKeysMySQL();
 		}
@@ -425,6 +451,8 @@ class Model {
 	}
 
 	public function createIndexes() {
+		if (is_null($this->table)) return;
+
 		if ($this->database->getEngine() == 'mysql') {
 			return TRUE;
 		}

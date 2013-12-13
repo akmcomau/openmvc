@@ -135,4 +135,6 @@ class Category extends Model {
 	public function getImageThumbnailUrl() {
 		return NULL;
 	}
+
+	
 }
