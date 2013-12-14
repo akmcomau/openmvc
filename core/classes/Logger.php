@@ -13,6 +13,13 @@ class Logger extends Log4phpLogger {
 		$_SERVER['method'] = isset($_REQUEST['method']) ? $_REQUEST['method'] : '';
 		$_SERVER['params'] = isset($_REQUEST['params']) ? $_REQUEST['params'] : '';
 
+		// argv causes "Array to string conversion" notices
+		$argv = NULL;
+		if (isset($_SERVER['argv'])) {
+			$argv = $_SERVER['argv'];
+			unset($_SERVER['argv']);
+		}
+
 		$filename = __DIR__.DS.'..'.DS.'..'.DS.'core'.DS.'config'.DS.'log4php.json';
 		$contents = file_get_contents($filename);
 		$config   = json_decode($contents, TRUE);
@@ -20,6 +27,10 @@ class Logger extends Log4phpLogger {
 			throw new ErrorException("Could not decode Log4php config file $filename");
 		}
 		Log4phpLogger::configure($config);
+
+		if ($argv) {
+			$_SERVER['argv'] = $argv;
+		}
 	}
 
 }

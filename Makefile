@@ -38,5 +38,5 @@ install-npm-depends:
 
 # update dependancies
 create-database:
-	./bin/create_database.php;
-	./bin/create_database_data.php;
+	./bin/create_database.php ${SITE};
+	./bin/create_database_data.php ${SITE};
