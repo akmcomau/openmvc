@@ -169,7 +169,7 @@ class Model {
 		else {
 			$this->record[$primary_key] = $this->lastInsertId();
 		}
-		$this->logger->info("Inserted record in $table => ".$this->record[$primary_key]);
+		$this->logger->debug("Inserted record in $table => ".$this->record[$primary_key]);
 
 		$this->callHook('insert');
 

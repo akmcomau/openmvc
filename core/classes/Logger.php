@@ -17,7 +17,7 @@ class Logger extends Log4phpLogger {
 		$argv = NULL;
 		if (isset($_SERVER['argv'])) {
 			$argv = $_SERVER['argv'];
-			unset($_SERVER['argv']);
+			$_SERVER['argv'] = json_encode($argv);
 		}
 
 		$filename = __DIR__.DS.'..'.DS.'..'.DS.'core'.DS.'config'.DS.'log4php.json';
