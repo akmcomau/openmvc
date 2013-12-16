@@ -359,6 +359,15 @@ class Model {
 						}
 						break;
 
+					case 'notin':
+						if ($value['value']) {
+							foreach ($value['value'] as &$val) {
+								$val = $this->database->quote($val);
+							}
+							$where[] = $column.' NOT IN ('.join(',', $value['value']).')';
+						}
+						break;
+
 					case 'or':
 						if ($value['value']) {
 							foreach ($value['value'] as &$val) {
@@ -366,6 +375,35 @@ class Model {
 							}
 							$where[] = $column.' IN ('.join(',', $value['value']).')';
 						}
+						break;
+
+					case 'and':
+						if ($value['value']) {
+							foreach ($value['value'] as &$val) {
+								$val = $this->database->quote($val);
+							}
+							$where[] = $column.' IN ('.join(',', $value['value']).')';
+						}
+						break;
+
+					case '>':
+						$where[] = $column.'>'.$this->database->quote($value['value']);
+						break;
+
+					case '>=':
+						$where[] = $column.'>='.$this->database->quote($value['value']);
+						break;
+
+					case '<':
+						$where[] = $column.'<'.$this->database->quote($value['value']);
+						break;
+
+					case '<=':
+						$where[] = $column.'<='.$this->database->quote($value['value']);
+						break;
+
+					case '!=':
+						$where[] = $column.'!='.$this->database->quote($value['value']);
 						break;
 				}
 			}
