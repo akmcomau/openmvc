@@ -284,6 +284,19 @@ class Model {
 				$sql .= " WHERE $where";
 			}
 		}
+		if ($ordering && count($ordering)) {
+			$ordering_sql = [];
+			foreach ($ordering as $column => $direction) {
+				$direction = (strtolower($direction) == 'asc') ? 'ASC' : 'DESC';
+				$column = $this->getColumnName($column);
+				if ($column) {
+					$ordering_sql[] = "$column $direction";
+				}
+			}
+			if (count($ordering_sql)) {
+				$sql  .= " ORDER BY ".join(',', $ordering_sql);
+			}
+		}
 		$records = $this->database->queryMulti($sql);
 
 		$models = [];
@@ -320,6 +333,8 @@ class Model {
 	public function generateWhereClause(array $params, $and = TRUE) {
 		$where = [];
 		foreach ($params as $column => $value) {
+			$parts  = explode(':', $column);
+			$column = $parts[0];
 			if (isset($this->columns[$this->table.'_'.$column])) {
 				$column = $this->table.'.'.$this->table.'_'.$column;
 			}
@@ -327,6 +342,10 @@ class Model {
 				$column = $this->table.'.'.$column;
 			}
 			elseif (preg_match('/^or-\d$/', $column)) {
+				$where[] = $this->generateWhereClause($value, FALSE);
+				continue;
+			}
+			elseif (preg_match('/^and-\d$/', $column)) {
 				$where[] = $this->generateWhereClause($value, FALSE);
 				continue;
 			}
