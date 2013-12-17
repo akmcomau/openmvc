@@ -386,6 +386,14 @@ class Model {
 						}
 						break;
 
+					case 'upper=':
+						$where[] = 'UPPER('.$column.')='.$this->database->quote(strtoupper($value['value']));
+						break;
+
+					case 'lower=':
+						$where[] = 'LOWER('.$column.')='.$this->database->quote(strtolower($value['value']));
+						break;
+
 					case '>':
 						$where[] = $column.'>'.$this->database->quote($value['value']);
 						break;
