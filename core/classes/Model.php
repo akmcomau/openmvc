@@ -276,6 +276,7 @@ class Model {
 			}
 		}
 		if ($pagination) {
+			if (!isset($pagination['offset'])) $pagination['offset'] = 0;
 			$sql .= " OFFSET ".(int)$pagination['offset']." LIMIT ".(int)$pagination['limit'];
 		}
 		$records = $this->database->queryMulti($sql);
