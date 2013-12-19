@@ -211,13 +211,26 @@ class Model {
 		$this->database->executeQuery($sql);
 	}
 
-	public function get(array $params) {
-		$table  = $this->generateFromClause($params);
+	public function get(array $params, array $ordering = NULL) {
+		$table  = $this->generateFromClause($params, $ordering);
 		$where  = $this->generateWhereClause($params);
 		if (strlen($where)) $where = "WHERE $where";
 		$sql    = "SELECT ".$this->table.".* FROM $table $where";
 		if (isset($params['get_random_record'])) {
 			$sql .= " ORDER BY RANDOM() LIMIT 1";
+		}
+		if ($ordering && count($ordering)) {
+			$ordering_sql = [];
+			foreach ($ordering as $column => $direction) {
+				$direction = (strtolower($direction) == 'asc') ? 'ASC' : 'DESC';
+				$column = $this->getColumnName($column);
+				if ($column) {
+					$ordering_sql[] = "$column $direction";
+				}
+			}
+			if (count($ordering_sql)) {
+				$sql  .= " ORDER BY ".join(',', $ordering_sql);
+			}
 		}
 		$record = $this->database->querySingle($sql);
 		if ($record) {
@@ -314,6 +327,8 @@ class Model {
 		$in_from = [];
 		foreach (array_merge($params, $ordering) as $column => $value) {
 			foreach ($this->relationships as $table => $data) {
+				$table_parts = explode(':', $table);
+				$table = $table_parts[0];
 				if ($table == '__common_join__') continue;
 				if (!isset($in_from[$table]) && in_array($column, $data['where_fields'])) {
 					if (isset($data['join_clause'])) {
@@ -341,20 +356,24 @@ class Model {
 			elseif (isset($this->columns[$column])) {
 				$column = $this->table.'.'.$column;
 			}
-			elseif (preg_match('/^or-\d$/', $column)) {
-				$where[] = $this->generateWhereClause($value, FALSE);
+			elseif ($column == 'or') {
+				$where[] = '('.$this->generateWhereClause($value, FALSE).')';
 				continue;
 			}
-			elseif (preg_match('/^and-\d$/', $column)) {
-				$where[] = $this->generateWhereClause($value, FALSE);
+			elseif ($column == 'and') {
+				$where[] = '('.$this->generateWhereClause($value, FALSE).')';
 				continue;
 			}
 			else {
 				$found = FALSE;
 				foreach ($this->relationships as $table => $data) {
 					if ($table == '__common_join__') continue;
+					$table_parts = explode(':', $table);
+					$table = $table_parts[0];
 					if (in_array($column, $data['where_fields'])) {
 						$found = TRUE;
+						$parts  = explode('.', $column);
+						$column = isset($parts[1]) ? $parts[1] : $parts[0];
 						$column = "$table.$column";
 					}
 				}
@@ -378,30 +397,20 @@ class Model {
 						}
 						break;
 
+					case 'isnull':
+						$where[] = $column.' IS NULL';
+						break;
+
+					case 'isnotnull':
+						$where[] = $column.' IS NOT NULL';
+						break;
+
 					case 'notin':
 						if ($value['value']) {
 							foreach ($value['value'] as &$val) {
 								$val = $this->database->quote($val);
 							}
 							$where[] = $column.' NOT IN ('.join(',', $value['value']).')';
-						}
-						break;
-
-					case 'or':
-						if ($value['value']) {
-							foreach ($value['value'] as &$val) {
-								$val = $this->database->quote($val);
-							}
-							$where[] = $column.' IN ('.join(',', $value['value']).')';
-						}
-						break;
-
-					case 'and':
-						if ($value['value']) {
-							foreach ($value['value'] as &$val) {
-								$val = $this->database->quote($val);
-							}
-							$where[] = $column.' IN ('.join(',', $value['value']).')';
 						}
 						break;
 
