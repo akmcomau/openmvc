@@ -23,6 +23,11 @@ class State extends Model {
 			'data_length'    => '128',
 			'null_allowed'   => FALSE,
 		],
+		'state_abbrev' => [
+			'data_type'      => 'text',
+			'data_length'    => '8',
+			'null_allowed'   => TRUE,
+		],
 	];
 	protected $indexes = [
 		'state_name',
@@ -31,5 +36,15 @@ class State extends Model {
 	protected $foreign_keys = [
 		'country_id' => ['country', 'country_id'],
 	];
+	protected $uniques = [
+		['country_id', 'state_name'],
+		['country_id', 'state_abbrev'],
+	];
 
+	protected $relationships = [
+		'country' => [
+			'where_fields' => ['country_code', 'country_name'],
+			'join_clause'  => 'JOIN country USING (country_id)',
+		],
+	];
 }

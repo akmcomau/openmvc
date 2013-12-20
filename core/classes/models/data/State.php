@@ -12,34 +12,42 @@ class State extends models\State {
 		return [
 			[
 				'name' => 'Queensland',
+				'abbrev' => 'QLD',
 				'country_id' => $australia->id,
 			],
 			[
 				'name' => 'New South Wales',
+				'abbrev' => 'NSW',
 				'country_id' => $australia->id,
 			],
 			[
 				'name' => 'Victoria',
+				'abbrev' => 'VIC',
 				'country_id' => $australia->id,
 			],
 			[
 				'name' => 'Tasmania',
+				'abbrev' => 'TAS',
 				'country_id' => $australia->id,
 			],
 			[
 				'name' => 'Northern Territory',
+				'abbrev' => 'NT',
 				'country_id' => $australia->id,
 			],
 			[
 				'name' => 'South Australia',
+				'abbrev' => 'SA',
 				'country_id' => $australia->id,
 			],
 			[
 				'name' => 'Western Australia',
+				'abbrev' => 'WA',
 				'country_id' => $australia->id,
 			],
 			[
 				'name' => 'Australian Capital Territory',
+				'abbrev' => 'ACT',
 				'country_id' => $australia->id,
 			],
 		];
