@@ -6,6 +6,7 @@ use core\classes\Model;
 
 class City extends Model {
 
+	protected $cacheable   = TRUE;
 	protected $table       = 'city';
 	protected $primary_key = 'city_id';
 	protected $columns     = [

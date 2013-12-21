@@ -16,6 +16,9 @@ class Database extends PDO {
 
 	protected $logger;
 
+	protected $cache_enabled = TRUE;
+	protected $cache = [];
+
 	/**
 	 * Constructor
 	 */
@@ -44,6 +47,27 @@ class Database extends PDO {
 
 	public function getEngine() {
 		return $this->engine;
+	}
+
+	public function enableCache() {
+		$this->cache_enabled = TRUE;
+	}
+
+	public function disableCache() {
+		$this->cache_enabled = FALSE;
+	}
+
+	public function setCache($key, $value) {
+		if ($this->cache_enabled) {
+			$this->cache[$key] = $value;
+		}
+	}
+
+	public function getCache($key) {
+		if ($this->cache_enabled && isset($this->cache[$key])) {
+			return $this->cache[$key];
+		}
+		return NULL;
 	}
 
 	public function quote($value, $parameter_type = NULL) {

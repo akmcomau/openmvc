@@ -6,6 +6,7 @@ use core\classes\Model;
 
 class Country extends Model {
 
+	protected $cacheable   = TRUE;
 	protected $table       = 'country';
 	protected $primary_key = 'country_id';
 	protected $columns     = [

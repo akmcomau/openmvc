@@ -15,6 +15,8 @@ class Model {
 
 	protected $objects = [];
 
+	protected $cacheable      = FALSE;
+
 	protected $table          = NULL;
 	protected $primary_key    = NULL;
 	protected $columns        = NULL;
@@ -212,6 +214,14 @@ class Model {
 	}
 
 	public function get(array $params, array $ordering = NULL) {
+		// check for a cached object
+		if ($this->cacheable) {
+			$cache_key = md5(get_class($this).print_r($params, TRUE));
+			if ($this->database->getCache($cache_key)) {
+				return $this->getModel(get_class($this), $this->database->getCache($cache_key));
+			}
+		}
+
 		$table  = $this->generateFromClause($params, $ordering);
 		$where  = $this->generateWhereClause($params);
 		if (strlen($where)) $where = "WHERE $where";
@@ -219,21 +229,14 @@ class Model {
 		if (isset($params['get_random_record'])) {
 			$sql .= " ORDER BY RANDOM() LIMIT 1";
 		}
-		if ($ordering && count($ordering)) {
-			$ordering_sql = [];
-			foreach ($ordering as $column => $direction) {
-				$direction = (strtolower($direction) == 'asc') ? 'ASC' : 'DESC';
-				$column = $this->getColumnName($column);
-				if ($column) {
-					$ordering_sql[] = "$column $direction";
-				}
-			}
-			if (count($ordering_sql)) {
-				$sql  .= " ORDER BY ".join(',', $ordering_sql);
-			}
-		}
+		$sql .= $this->getOrderGroupSQL($ordering);
 		$record = $this->database->querySingle($sql);
 		if ($record) {
+			// chache this object
+			if ($this->cacheable) {
+				$this->database->setCache($cache_key, $record);
+			}
+
 			return $this->getModel(get_class($this), $record);
 		}
 		else {
@@ -253,14 +256,13 @@ class Model {
 		return $this->database->queryValue($sql);
 	}
 
-	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
-		$table = $this->table;
-		$sql   = "SELECT $table.* FROM ".$this->generateFromClause($params, $ordering);
-		if ($params) {
-			$where = $this->generateWhereClause($params);
-			if ($where) {
-				$sql .= " WHERE $where";
+	protected function getOrderGroupSQL(array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
+		$sql = '';
+		if ($grouping) {
+			foreach ($grouping as &$column) {
+				$field = $this->getColumnName($column);
 			}
+			$sql .= " GROUP BY ".join(', ', $grouping);
 		}
 		if ($ordering && count($ordering)) {
 			$ordering_sql = [];
@@ -279,6 +281,19 @@ class Model {
 			if (!isset($pagination['offset'])) $pagination['offset'] = 0;
 			$sql .= " OFFSET ".(int)$pagination['offset']." LIMIT ".(int)$pagination['limit'];
 		}
+		return $sql;
+	}
+
+	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
+		$table = $this->table;
+		$sql   = "SELECT $table.* FROM ".$this->generateFromClause($params, $ordering);
+		if ($params) {
+			$where = $this->generateWhereClause($params);
+			if ($where) {
+				$sql .= " WHERE $where";
+			}
+		}
+		$sql .= $this->getOrderGroupSQL($ordering, $pagination, $grouping);
 		$records = $this->database->queryMulti($sql);
 
 		$models = [];
@@ -289,7 +304,7 @@ class Model {
 		return $models;
 	}
 
-	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL) {
+	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
 		$table = $this->table;
 		$sql   = "SELECT $table.* FROM ".$this->generateFromClause($params, $ordering);
 		if ($params) {
@@ -298,19 +313,7 @@ class Model {
 				$sql .= " WHERE $where";
 			}
 		}
-		if ($ordering && count($ordering)) {
-			$ordering_sql = [];
-			foreach ($ordering as $column => $direction) {
-				$direction = (strtolower($direction) == 'asc') ? 'ASC' : 'DESC';
-				$column = $this->getColumnName($column);
-				if ($column) {
-					$ordering_sql[] = "$column $direction";
-				}
-			}
-			if (count($ordering_sql)) {
-				$sql  .= " ORDER BY ".join(',', $ordering_sql);
-			}
-		}
+		$sql .= $this->getOrderGroupSQL($ordering, $pagination, $grouping);
 		$records = $this->database->queryMulti($sql);
 
 		$models = [];

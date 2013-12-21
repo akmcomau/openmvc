@@ -6,6 +6,7 @@ use core\classes\Model;
 
 class State extends Model {
 
+	protected $cacheable   = TRUE;
 	protected $table       = 'state';
 	protected $primary_key = 'state_id';
 	protected $columns     = [
