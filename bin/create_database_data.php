@@ -10,6 +10,7 @@ use core\classes\Model;
 use core\classes\URL;
 use core\classes\AutoLoader;
 
+include('core/ErrorHandler.php');
 include('core/Constants.php');
 include('core/classes/AutoLoader.php');
 AutoLoader::init();

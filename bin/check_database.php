@@ -7,6 +7,7 @@ use core\classes\Logger;
 use core\classes\Model;
 use core\classes\AutoLoader;
 
+include('core/ErrorHandler.php');
 include('core/Constants.php');
 include('core/classes/AutoLoader.php');
 AutoLoader::init();
