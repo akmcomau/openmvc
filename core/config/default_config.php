@@ -8,6 +8,7 @@ $_DEFAULT_CONFIG = (object)[
 	        'contact_us' => 'info@example.com',
 		],
 		'modules' => [],
+		'tmp_path' => '/tmp',
 		'secret' => 'ABCDEFGHIJK123456789',
 		'name' => 'OpenMVC',
 		'namespace' => 'default',

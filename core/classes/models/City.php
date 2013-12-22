@@ -21,12 +21,17 @@ class City extends Model {
 		],
 		'state_id' => [
 			'data_type'      => 'int',
-			'null_allowed'   => FALSE,
+			'null_allowed'   => TRUE,
 		],
 		'city_name' => [
 			'data_type'      => 'text',
 			'data_length'    => '128',
 			'null_allowed'   => FALSE,
+		],
+		'city_timezone' => [
+			'data_type'      => 'text',
+			'data_length'    => '32',
+			'null_allowed'   => TRUE,
 		],
 	];
 	protected $indexes = [

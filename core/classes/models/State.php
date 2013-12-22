@@ -29,6 +29,11 @@ class State extends Model {
 			'data_length'    => '8',
 			'null_allowed'   => TRUE,
 		],
+		'state_timezone' => [
+			'data_type'      => 'text',
+			'data_length'    => '32',
+			'null_allowed'   => TRUE,
+		],
 	];
 	protected $indexes = [
 		'state_name',
