@@ -9,9 +9,28 @@ use core\classes\exceptions\RedirectException;
 
 class Dispatcher {
 
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The database object
+	 * @var Database $database
+	 */
 	protected $database;
+
+	/**
+	 * The logger object
+	 * @var Logger $logger
+	 */
 	protected $logger;
+
+	/**
+	 * The URL object
+	 * @var URL $url
+	 */
 	protected $url;
 
 	public function __construct(Config $config, Database $database) {

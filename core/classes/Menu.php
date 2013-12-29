@@ -6,10 +6,30 @@ use ErrorException;
 use core\classes\exceptions\TemplateException;
 
 class Menu {
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The language object
+	 * @var Language $language
+	 */
 	protected $language;
+
+	/**
+	 * The authentication object
+	 * @var Authentication $authentication
+	 */
 	protected $authentication;
+
+	/**
+	 * The URL object
+	 * @var URL $url
+	 */
 	protected $url;
+
 	protected $template;
 	protected $template_dropdown;
 	protected $ul_class;

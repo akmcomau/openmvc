@@ -7,3 +7,9 @@ composer/vendor/
 logs/*.log
 sites/*
 modules/*
+docs/phpdoc
+docs/schemaspy
+docs/doxygen_*.tmp
+docs/html
+docs/latex
+docs/src/mainpage.dox

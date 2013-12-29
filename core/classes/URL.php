@@ -5,7 +5,6 @@ namespace core\classes;
 use ErrorException;
 
 class URL {
-	protected $url;
 	protected $url_map = NULL;
 
 	public function __construct(Config $config) {

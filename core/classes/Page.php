@@ -6,7 +6,16 @@ use core\classes\exceptions\ModelException;
 
 class Page {
 
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The database object
+	 * @var Database $database
+	 */
 	protected $database;
 
 	public function __construct(Config $config, Database $database) {

@@ -6,6 +6,10 @@ use ErrorException;
 
 class Module {
 
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
 
 	protected $modules = NULL;

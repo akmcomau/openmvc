@@ -34,11 +34,23 @@ DirectoryIndex index.php
 	RewriteCond %{REQUEST_URI} !\.php$
 	RewriteRule ^(.*)/assets/(.*)$ $1/assets/$2 [PT,L]
 
-	# Rewrite controller methods to index.php
+	#
+	# Rewrite everthing else to index.php
+	#
 	RewriteRule ^/?admin/([^/]+)(/([^/]+))?(/(.*))?$ /index.php?controller=admin\%5C$1&method=$3&params=$5 [QSA,L]
 	RewriteRule ^/?customer/([^/]+)(/([^/]+))?(/(.*))?$ /index.php?controller=customer\%5C$1&method=$3&params=$5 [QSA,L]
+
+	# Avoid endless loop
 	RewriteCond %{REQUEST_URI} !^/?index.php
+
+	# Allow access google webmasters file
 	RewriteCond %{REQUEST_URI} !^/?google.*html
+
+	# Allow access to robots.txt
 	RewriteCond %{REQUEST_URI} !^/?robots.txt
+
+	# Allow access to docs
+	RewriteCond %{REQUEST_URI} !^/?docs
+
 	RewriteRule ^/?([^/]+)(/([^/]+))?(/(.*))?$ /index.php?controller=$1&method=$3&params=$5 [QSA,L]
 </IfModule>

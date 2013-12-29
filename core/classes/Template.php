@@ -9,9 +9,18 @@ use core\classes\Language;
 use core\classes\URL;
 
 class Template {
-
-	protected $logger;
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The logger object
+	 * @var Logger $logger
+	 */
+	protected $logger;
+
 	protected $filename = NULL;
 	protected $data = NULL;
 	protected $url;

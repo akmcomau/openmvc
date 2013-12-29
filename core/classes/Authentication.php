@@ -8,9 +8,28 @@ use core\classes\exceptions\AuthenticationException;
 
 class Authentication {
 
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The database object
+	 * @var Database $database
+	 */
 	protected $database;
+
+	/**
+	 * The logger object
+	 * @var Logger $logger
+	 */
 	protected $logger;
+
+	/**
+	 * The request object
+	 * @var Request $request
+	 */
 	protected $request;
 
 	protected $logged_in = FALSE;

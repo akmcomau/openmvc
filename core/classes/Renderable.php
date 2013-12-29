@@ -10,8 +10,22 @@ use core\classes\exceptions\RenderableException;
 
 abstract class Renderable {
 
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The database object
+	 * @var Database $database
+	 */
 	protected $database;
+
+	/**
+	 * The logger object
+	 * @var Logger $logger
+	 */
 	protected $logger;
 
 	public function __construct(Config $config, Database $database) {

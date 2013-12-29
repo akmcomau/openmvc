@@ -4,9 +4,24 @@ namespace core\classes;
 
 class Pagination {
 
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The URL object
+	 * @var URL $url
+	 */
 	protected $url;
+
+	/**
+	 * The request object
+	 * @var Request $request
+	 */
 	protected $request;
+
 	protected $ordering;
 	protected $direction;
 	protected $records_per_page;

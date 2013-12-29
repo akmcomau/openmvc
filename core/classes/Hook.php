@@ -10,10 +10,34 @@ use core\classes\Database;
 
 class Hook {
 
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The database object
+	 * @var Database $database
+	 */
 	protected $database;
+
+	/**
+	 * The request object
+	 * @var Request $request
+	 */
 	protected $request;
+
+	/**
+	 * The logger object
+	 * @var Logger $logger
+	 */
 	protected $logger;
+
+	/**
+	 * The URL object
+	 * @var URL $url
+	 */
 	protected $url;
 
 	public function __construct(Config $config, Database $database, Request $request = NULL) {

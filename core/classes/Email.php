@@ -3,7 +3,16 @@
 namespace core\classes;
 
 class Email {
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The database object
+	 * @var Database $database
+	 */
 	protected $logger;
 
 	protected $to_email;

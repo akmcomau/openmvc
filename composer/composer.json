@@ -152,6 +152,28 @@
 					"reference":"v2.11.1"
 				}
 			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "schemaspy/schemaspy",
+				"version": "5.0.0",
+				"dist": {
+					"url": "http://downloads.sourceforge.net/project/schemaspy/schemaspy/SchemaSpy%205.0.0/schemaSpy_5.0.0.jar",
+					"type": "zip"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "schemaspy/postgres",
+				"version": "9.3.1100.3",
+				"dist": {
+					"url": "http://jdbc.postgresql.org/download/postgresql-9.3-1100.jdbc3.jar",
+					"type": "zip"
+				}
+			}
 		}
 	],
 	"require": {
@@ -168,6 +190,8 @@
 		"malsup/form": "3.25.0",
 		"arnklint/jquery-contextMenu": "1.0.4",
 		"trentrichardson/jQuery-Impromptu": "v5.0",
-		"Mottie/tablesorter": "v2.11.1"
+		"Mottie/tablesorter": "v2.11.1",
+		"schemaspy/schemaspy": "5.0.0",
+		"schemaspy/postgres": "9.3.1100.3"
 	}
 }

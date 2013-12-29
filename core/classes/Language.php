@@ -6,8 +6,19 @@ use core\classes\exceptions\LanguageException;
 
 class Language {
 
+
+	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
 	protected $config;
+
+	/**
+	 * The logger object
+	 * @var Logger $logger
+	 */
 	protected $logger;
+
 	protected $language;
 
 	protected $strings = [];
