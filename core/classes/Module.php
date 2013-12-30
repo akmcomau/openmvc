@@ -37,31 +37,25 @@ class Module {
 		// get the paths
 		$site = $this->config->siteConfig();
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
-		$core_glob = $root_path.'core'.DS.'modules'.DS.'*'.DS.'module.json';
-		$site_glob = $root_path.'modules'.DS.'*'.DS.'module.json';
+		$core_glob = $root_path.'core'.DS.'modules'.DS.'*'.DS.'module.php';
+		$site_glob = $root_path.'modules'.DS.'*'.DS.'module.php';
 
 		// get the modules
 		$this->modules = [];
 		foreach (glob($core_glob) as $filename) {
-			$contents = file_get_contents($filename);
-			$json = json_decode($contents, TRUE);
-			if (!$json) {
-				throw new ErrorException("Could not decode: $filename");
-			}
+			$_MODULE = NULL;
+			require($filename);
 
-			if (!(isset($json['hidden']) && $json['hidden'])) {
-				$this->modules[$json['name']] = $json;
+			if (!(isset($_MODULE['hidden']) && $_MODULE['hidden'])) {
+				$this->modules[$_MODULE['name']] = $_MODULE;
 			}
 		}
 		foreach (glob($site_glob) as $filename) {
-			$contents = file_get_contents($filename);
-			$json = json_decode($contents, TRUE);
-			if (!$json) {
-				throw new ErrorException("Could not decode: $filename");
-			}
+			$_MODULE = NULL;
+			require($filename);
 
-			if (!(isset($json['hidden']) && $json['hidden'])) {
-				$this->modules[$json['name']] = $json;
+			if (!(isset($_MODULE['hidden']) && $_MODULE['hidden'])) {
+				$this->modules[$_MODULE['name']] = $_MODULE;
 			}
 		}
 

@@ -1,4 +1,5 @@
 .htaccess
+robots.txt
 core/config/log4php.php
 core/config/config.php
 composer/composer.lock
