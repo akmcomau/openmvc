@@ -9,12 +9,12 @@ $_MENU = [
 			'controller' => 'Root',
 			'method' => 'index',
 			'text_tag' => 'public_site',
-			'icon' => 'icon-home',
+			'icon' => 'fa fa-home',
 		],
 		'administrator' => [
 			'url' => 'javascript:;',
 			'text' => $this->authentication->administratorLoggedIn()['administrator_name'],
-			'icon' => 'icon-user',
+			'icon' => 'fa fa-user',
 			'children' => [
 				'profile' => [
 					'controller' => 'administrator/Administrators',

@@ -106,11 +106,11 @@ class Pagination {
 		if ($curr_page > 1) {
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => 1]);
 			$url = $this->request->currentURL();
-			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="icon-arrow-left"></i></a>';
+			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="fa fa-arrow-left"></i></a>';
 
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => ($curr_page-1)]);
 			$url = $this->request->currentURL();
-			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="icon-double-angle-left"></i></a>';
+			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="fa fa-double-angle-left"></i></a>';
 		}
 
 		for ($i=$min_page; $i<=$max_page; $i++) {
@@ -127,11 +127,11 @@ class Pagination {
 		if ($curr_page < $this->getMaxPage()) {
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => ($curr_page+1)]);
 			$url = $this->request->currentURL();
-			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="icon-double-angle-right"></i></a>';
+			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="fa fa-double-angle-right"></i></a>';
 
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => $this->getMaxPage()]);
 $url = $this->request->currentURL();
-			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="icon-arrow-right"></i></a>';
+			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="fa fa-arrow-right"></i></a>';
 		}
 
 		return $pages;
@@ -146,18 +146,18 @@ $url = $this->request->currentURL();
 		$params_down = array_merge($this->request->get_params, ['ordering' => $column, 'direction' => 'desc', 'page' => 1]);
 
 		if ($column == $this->ordering && strtolower($this->direction) == 'asc') {
-			$sort_asc = '<i class="icon-arrow-up"></i> ';
+			$sort_asc = '<i class="fa fa-arrow-up"></i> ';
 		}
 		else {
 			$sort_asc = $this->url->getUrl($controller, $method, $params, $params_up);
-			$sort_asc = '<a href="'.$sort_asc.'"><i class="icon-arrow-up"></i></a> ';
+			$sort_asc = '<a href="'.$sort_asc.'"><i class="fa fa-arrow-up"></i></a> ';
 		}
 		if ($column == $this->ordering && strtolower($this->direction) == 'desc') {
-			$sort_desc = '<i class="icon-arrow-down"></i>';
+			$sort_desc = '<i class="fa fa-arrow-down"></i>';
 		}
 		else {
 			$sort_desc = $this->url->getUrl($controller, $method, $params, $params_down);
-			$sort_desc = '<a href="'.$sort_desc.'"><i class="icon-arrow-down"></i></a>';
+			$sort_desc = '<a href="'.$sort_desc.'"><i class="fa fa-arrow-down"></i></a>';
 		}
 
 		return $sort_asc.$sort_desc;

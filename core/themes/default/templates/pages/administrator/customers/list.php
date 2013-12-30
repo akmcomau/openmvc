@@ -70,7 +70,7 @@
 								<td><?php echo $customer->last_name; ?></td>
 								<td><?php echo $customer->active ? $text_active : $text_not_active; ?></td>
 								<td>
-									<a href="<?php echo $this->url->getUrl('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary"><i class="icon-edit-sign" title="<?php echo $text_edit; ?>"></i></a>
+									<a href="<?php echo $this->url->getUrl('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary"><i class="fa fa-edit" title="<?php echo $text_edit; ?>"></i></a>
 								</td>
 							</tr>
 							<?php } ?>

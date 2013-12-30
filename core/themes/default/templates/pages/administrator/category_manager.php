@@ -20,13 +20,13 @@ function echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $c
 		<?php } ?>
 		<td class="name">
 			<?php if ($allow_subcategories) { ?>
-				<a id="subcategories-<?php echo $category['id'];?>" href="javascript:toggleSubcategory(<?php echo $category['id'];?>)"><i class="icon-expand"></i></a>
+				<a id="subcategories-<?php echo $category['id'];?>" href="javascript:toggleSubcategory(<?php echo $category['id'];?>)"><i class="fa fa-expand"></i></a>
 			<?php } ?>
 			<span id="category-name-<?php echo $category['id'];?>"><?php echo $category['name']; ?></span>
 			<?php if (!$readonly) { ?>
-				<a id="edit-category-<?php echo $category['id'];?>" href="javascript:editCategoryName(<?php echo $category['id'];?>);"><i class="icon-edit"></i></a>
+				<a id="edit-category-<?php echo $category['id'];?>" href="javascript:editCategoryName(<?php echo $category['id'];?>);"><i class="fa fa-edit"></i></a>
 				&nbsp;
-				<a id="image-category-<?php echo $category['id'];?>" href="javascript:uploadCategoryImage(<?php echo $category['id'];?>);"><i class="icon-camera"></i></a>
+				<a id="image-category-<?php echo $category['id'];?>" href="javascript:uploadCategoryImage(<?php echo $category['id'];?>);"><i class="fa fa-camera"></i></a>
 			<?php } ?>
 		</td>
 		<?php if ($allow_subcategories) { ?>
@@ -124,11 +124,11 @@ function echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $c
 	function toggleSubcategory(id) {
 		$('#subcategories-'+id).removeClass('subcategory');
 		if ($('#subcategory-'+id).is(':visible')) {
-			$('#subcategories-'+id).html('<i class="icon-expand"></i>');
+			$('#subcategories-'+id).html('<i class="fa fa-expand"></i>');
 			$('#subcategory-'+id).hide();
 		}
 		else {
-			$('#subcategories-'+id).html('<i class="icon-collapse"></i>');
+			$('#subcategories-'+id).html('<i class="fa fa-collapse"></i>');
 			$('#subcategory-'+id).show();
 		}
 	}

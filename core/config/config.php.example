@@ -1,0 +1,21 @@
+<?php
+
+$_CONFIG = [
+	'database' => [
+		'engine' => 'pgsql',
+		'hostname' => 'localhost',
+		'username' => 'openmvc',
+		'database' => 'openmvc',
+		'password' => 'secret'
+	],
+	'sites' => [
+		'example.com' => [
+			'site_id' => 1,
+			'email_addresses' => [
+				'contact_us' => 'info@example.com',
+				'errors' => 'errors@example'
+			],
+			'display_errors' => true
+		]
+	]
+];

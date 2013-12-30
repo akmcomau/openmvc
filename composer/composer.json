@@ -61,11 +61,10 @@
 			"type":"package",
 			"package": {
 				"name": "twbs/bootstrap",
-				"version": "v3.0.0",
-				"source": {
-					"url": "https://github.com/twbs/bootstrap.git",
-					"type": "git",
-					"reference":"v3.0.0"
+				"version": "v3.0.3",
+				"dist": {
+					"url": "https://github.com/twbs/bootstrap/releases/download/v3.0.3/bootstrap-3.0.3-dist.zip",
+					"type": "zip"
 				}
 			}
 		},
@@ -73,11 +72,11 @@
 			"type":"package",
 			"package": {
 				"name": "FortAwesome/Font-Awesome",
-				"version": "v3.2.1",
+				"version": "v4.0.3",
 				"source": {
 					"url": "https://github.com/FortAwesome/Font-Awesome.git",
 					"type": "git",
-					"reference":"v3.2.1"
+					"reference":"v4.0.3"
 				}
 			}
 		},
@@ -86,10 +85,9 @@
 			"package": {
 				"name": "jquery/jquery",
 				"version": "2.0.3",
-				"source": {
-					"url": "https://github.com/jquery/jquery.git",
-					"type": "git",
-					"reference":"2.0.3"
+				"dist": {
+					"url": "http://code.jquery.com/jquery-2.0.3.min.js",
+					"type": "file"
 				}
 			}
 		},
@@ -98,10 +96,9 @@
 			"package": {
 				"name": "jquery/jquery-ui",
 				"version": "1.10.3",
-				"source": {
-					"url": "https://github.com/jquery/jquery-ui.git",
-					"type": "git",
-					"reference":"1.10.3"
+				"dist": {
+					"url": "http://jqueryui.com/resources/download/jquery-ui-1.10.3.zip",
+					"type": "zip"
 				}
 			}
 		},
@@ -183,8 +180,8 @@
 		"ckeditor/ckeditor": "4.2.1",
 		"ckeditor/font": "4.2.1",
 		"ckeditor/onchange": "1.8",
-		"twbs/bootstrap": "v3.0.0",
-		"FortAwesome/Font-Awesome": "v3.2.1",
+		"twbs/bootstrap": "v3.0.3",
+		"FortAwesome/Font-Awesome": "v4.0.3",
 		"jquery/jquery": "2.0.3",
 		"jquery/jquery-ui": "1.10.3",
 		"malsup/form": "3.25.0",

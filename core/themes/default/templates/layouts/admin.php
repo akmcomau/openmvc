@@ -8,17 +8,15 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome.min.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome-ie7.min.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery-ui/jquery-ui.min.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery-ui/themes/base/jquery-ui.css" rel="stylesheet" media="screen" />
 
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/bootstrap.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/common.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin.css" rel="stylesheet" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin_responsive.css" rel="stylesheet" />
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin.css" rel="stylesheet" media="screen" />
 
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery/jquery.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery-ui/jquery-ui.min.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.min.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery-ui/ui/jquery-ui.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
 
@@ -55,7 +53,7 @@
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
 					<span class="sr-only"><?php echo $text_toggle_navigation; ?></span>
-					<i class="icon-cog"></i>
+					<i class="fa fa-cog"></i>
 				</button>
 				<a class="navbar-brand" href="<?php echo $this->url->getUrl('Administrator');?>"><?php echo $this->config->siteConfig()->name; ?></a>
 			</div>
@@ -68,17 +66,19 @@
 	</nav>
 
 	<?php if ($administrator_logged_in) { ?>
-		<div class="subnavbar">
-			<div class="subnavbar-inner">
-				<div class="container">
-					<a href="javascript:;" class="subnav-toggle" data-toggle="collapse" data-target=".subnav-collapse">
-						<span class="sr-only"><?php echo $text_toggle_navigation; ?></span>
-						<i class="icon-reorder"></i>
-					</a>
-					<div class="collapse subnav-collapse">
-						<?php $main_menu->echoBootstrapMenu(); ?>
+		<div class="navbar-default">
+			<div class="container">
+				<nav role="navigation">
+					<div class="container">
+						<a href="javascript:;" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex2-collapse">
+							<span class="sr-only"><?php echo $text_toggle_navigation; ?></span>
+							<i class="fa fa-reorder"></i>
+						</a>
+						<div class="collapse navbar-collapse navbar-ex2-collapse">
+							<?php $main_menu->echoBootstrapMenu(); ?>
+						</div>
 					</div>
-				</div>
+				</nav>
 			</div>
 		</div>
 	<?php } ?>

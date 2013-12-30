@@ -1,5 +1,5 @@
 .htaccess
-core/config/log4php.json
+core/config/log4php.php
 core/config/config.php
 composer/composer.lock
 composer/composer.phar

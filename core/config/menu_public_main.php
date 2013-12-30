@@ -2,7 +2,7 @@
 
 $_MENU = [
 	'template' => 'menus/public_main.php',
-	'ul_class' => 'nav navbar-nav main-menu',
+	'ul_class' => 'nav navbar-nav navbar-left main-menu',
 	'a_class' => 'menu-item',
 	'menu' => [
 		'home' => [

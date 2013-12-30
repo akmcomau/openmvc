@@ -20,13 +20,13 @@ class Logger extends Log4phpLogger {
 			$_SERVER['argv'] = json_encode($argv);
 		}
 
-		$filename = __DIR__.DS.'..'.DS.'..'.DS.'core'.DS.'config'.DS.'log4php.json';
-		$contents = file_get_contents($filename);
-		$config   = json_decode($contents, TRUE);
-		if (!$config) {
-			throw new ErrorException("Could not decode Log4php config file $filename");
+		$root_dir = __DIR__.DS.'..'.DS.'..'.DS;
+		$filename = $root_dir.'core'.DS.'config'.DS.'log4php.php';
+		require($filename);
+		if (!$_LOG4PHP) {
+			throw new ErrorException("Could not read Log4php config file: $filename");
 		}
-		Log4phpLogger::configure($config);
+		Log4phpLogger::configure($_LOG4PHP);
 
 		if ($argv) {
 			$_SERVER['argv'] = $argv;

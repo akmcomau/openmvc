@@ -1,5 +1,9 @@
 <?php
 /**
+ * Based from the filemanager.php connector in FileManager
+ *
+ * Original File Comment:
+ *
  *	Filemanager PHP class
  *
  *	filemanager.class.php

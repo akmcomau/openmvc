@@ -6,16 +6,13 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome.min.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome-ie7.min.css" rel="stylesheet" media="screen" />
 
+	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/bootstrap.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/common.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/navigation.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/colour_blue.css" rel="stylesheet" media="screen" />
 	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/theme.css" rel="stylesheet" media="screen" />
 
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery/jquery.min.js"></script>
+	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
 	<?php if ($this->config->siteConfig()->enable_latex) { ?>
@@ -48,7 +45,7 @@
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex2-collapse">
 					<span class="sr-only"><?php echo $text_toggle_navigation; ?></span>
-					<i class="icon-cog"></i>
+					<i class="fa fa-cog"></i>
 				</button>
 				<a class="navbar-brand" href="<?php echo $this->url->getUrl('Administrator');?>"><?php echo $text_administrator_panel; ?></a>
 			</div>
@@ -59,7 +56,7 @@
 	</nav>
 <?php } ?>
 <div id="navigation" class="wrapper">
-	<div class="navbar  navbar-static-top">
+	<div class="navbar-static-top">
 		<div class="header">
 			<div class="header-inner container">
 				<div class="row-fluid">
@@ -82,11 +79,11 @@
 			</div>
 		</div>
 		<div class="container">
-			<div class="navbar navbar-inner">
+			<div class="navbar-default">
 				<nav role="navigation">
 					<div class="btn-navbar navbar-header">
 						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-							<i class="icon-reorder"></i>
+							<i class="fa fa-reorder"></i>
 						</button>
 					</div>
 					<div class="collapse navbar-collapse navbar-ex1-collapse">
@@ -112,8 +109,8 @@
 						<div class="block contact-block">
 							<h3><?php echo $this->url->getLink('', 'Root', 'page/contact_us'); ?></h3>
 							<address>
-								<p><abbr title="Phone"><i class="icon-phone"></i></abbr> <?php echo $text_footer_phone; ?></p>
-								<p><abbr title="Email"><i class="icon-envelope"></i></abbr> <?php echo $this->config->siteConfig()->email_addresses->contact_us; ?></p>
+								<p><abbr title="Phone"><i class="fa fa-phone"></i></abbr> <?php echo $text_footer_phone; ?></p>
+								<p><abbr title="Email"><i class="fa fa-envelope"></i></abbr> <?php echo $this->config->siteConfig()->email_addresses->contact_us; ?></p>
 							</address>
 						</div>
 					</div>
@@ -125,10 +122,10 @@
 					</div>
 					<div class="col-md-3 col">
 						<div class="social-media">
-						<a href="#"><i class="icon-twitter"></i></a>
-						<a href="#"><i class="icon-facebook"></i></a>
-						<a href="#"><i class="icon-linkedin"></i></a>
-						<a href="#"><i class="icon-google-plus"></i></a> </div>
+						<a href="#"><i class="fa fa-twitter"></i></a>
+						<a href="#"><i class="fa fa-facebook"></i></a>
+						<a href="#"><i class="fa fa-linkedin"></i></a>
+						<a href="#"><i class="fa fa-google-plus"></i></a> </div>
 
 						<ul class="list-inline align-center">
 							<li><?php echo $this->url->getLink('', 'Root', 'page/terms'); ?></li>
@@ -138,7 +135,6 @@
 					</div>
 				</div>
 				<div class="row-fluid">
-					<div id="toplink"><a href="#top" class="top-link" title="Back to top"><?php echo $text_back_to_top; ?> <i class="icon-chevron-up"></i></a></div>
 					<div class="subfooter">
 						<div class="col-md-12">
 							<p><?php echo $text_footer_text; ?></p>

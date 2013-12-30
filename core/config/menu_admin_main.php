@@ -2,18 +2,18 @@
 
 $_MENU = [
 	'template' => 'menus/admin_main.php',
-	'ul_class' => 'mainnav',
+	'ul_class' => 'nav navbar-nav main-menu',
 	'a_class' => '',
 	'menu' => [
 		'home' => [
 			'controller' => 'Administrator',
 			'method' => 'index',
-			'icon' => 'icon-home',
+			'icon' => 'fa fa-home',
 		],
 		'content' => [
 			'url' => 'javascript:;',
 			'text_tag' => 'content',
-			'icon' => 'icon-copy',
+			'icon' => 'fa fa-copy',
 			'children' => [
 				'content_pages' => [
 					'controller' => 'administrator/Pages',
@@ -68,7 +68,7 @@ $_MENU = [
 		'users' => [
 			'url' => 'javascript:;',
 			'text_tag' => 'users',
-			'icon' => 'icon-user',
+			'icon' => 'fa fa-user',
 			'children' => [
 				'administrators' => [
 					'controller' => 'administrator/Administrators',

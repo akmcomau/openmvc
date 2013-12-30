@@ -28,7 +28,7 @@ class Installer {
 		$main = [
 			'url' => 'javascript:;',
 			'text_tag' => 'skeleton_module_skeleton',
-			'icon' => 'icon-copy',
+			'icon' => 'fa fa-copy',
 		];
 
 		// Add some menu items to the admin menu
