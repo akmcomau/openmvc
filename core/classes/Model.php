@@ -2,6 +2,7 @@
 
 namespace core\classes;
 
+use ReflectionClass;
 use core\classes\exceptions\AutoloaderException;
 use core\classes\exceptions\ModelException;
 
@@ -171,37 +172,65 @@ class Model {
 		$this->database = $database;
 		$this->logger   = Logger::getLogger(get_class($this));
 
-		$this->findAllModels();
+		if ($this->config->getSiteDomain()) {
+			$this->findAllModels($this->config->siteConfig());
+		}
+		else {
+			$this->findAllModels();
+		}
 	}
 
 	/**
 	 * Finds all the available models for this site and stores them in $this->site_models
+	 * @param[in] site  [Optional] Get models for a sepecific site, if NULL then
+	 *                  this will find all models for all sites.
 	 */
-	protected function findAllModels() {
+	protected function findAllModels($site = NULL) {
 		if (isset($GLOBALS['cache']['site_models'])) {
 			$this->site_models = $GLOBALS['cache']['site_models'];
 			return;
 		}
 
-		$site = $this->config->siteConfig();
-		$site_controllers = [];
-		$core_controllers = [];
-		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$sites = $this->config->sites;
+		if ($site) {
+			$sites = [ $site ];
+		}
 
-		$dirs = [];
-		$dirs[] = $root_path.'core'.DS.'classes'.DS.'models'.DS;
-		$dirs[] = $root_path.'sites'.DS.$site->namespace.DS.'classes'.DS.'models'.DS;
-		$modules = (new Module($this->config))->getModules();
-		foreach ($modules as $module) {
-			$dir[] = $root_path.$module['namespace'].DS.'classes'.DS.'models'.DS;
+		$site_models = [];
+		foreach ($sites as $site) {
+			$config = clone $this->config;
+			$config->setSiteDomain($site->domain, FALSE);
+
+			$site_controllers = [];
+			$core_controllers = [];
+			$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+
+			$dirs = [];
+			$dirs[] = $root_path.'core'.DS.'classes'.DS.'models'.DS;
+			$dirs[] = $root_path.'sites'.DS.$site->namespace.DS.'classes'.DS.'models'.DS;
+			$modules = (new Module($config))->getModules();
+			foreach ($modules as $module) {
+				if ($module['installed']) {
+					$module_path = str_replace('\\', DS, $module['namespace']);
+					$dirs[] = $root_path.$module_path.DS.'classes'.DS.'models'.DS;
+				}
+			}
+
+			foreach ($dirs as $dir) {
+				foreach (glob("$dir*.php") as $filename) {
+					if (preg_match('|^'.$root_path.'(.*?)'.DS.'([\w]+)\.php$|', $filename, $matches)) {
+						$class = str_replace('/', '\\', $matches[1]).'\\'.$matches[2];
+						$site_models[$class] = 1;
+					}
+				}
+			}
 		}
 
 		$this->site_models = [];
-		foreach ($dirs as $dir) {
-			foreach (glob("$dir*.php") as $filename) {
-				if (preg_match('|^'.$root_path.'(.*?)'.DS.'([\w]+)\.php$|', $filename, $matches)) {
-					$this->site_models[] = str_replace('/', '\\', $matches[1]).'\\'.$matches[2];
-				}
+		foreach ($site_models as $class => $value) {
+			$reflectionClass = new ReflectionClass($class);
+			if ($reflectionClass->IsInstantiable()) {
+				$this->site_models[] = $class;
 			}
 		}
 

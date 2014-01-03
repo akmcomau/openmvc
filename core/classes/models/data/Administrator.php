@@ -12,7 +12,7 @@ class Administrator extends models\Administrator {
 			[
 				'type'       => ADMINISTRATOR_TYPE_SUPER,
 				'login'      => 'administrator',
-				'password'   => Encryption::bcrypt('admin12', $this->config->siteConfig()->bcrypt_cost),
+				'password'   => Encryption::bcrypt('admin12', 12),
 				'first_name' => 'Administrator',
 				'last_name'  => '',
 				'email'      => 'admin@openmvc.com',

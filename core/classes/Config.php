@@ -37,6 +37,7 @@ class Config {
 					$site_data->$key = $value;
 				}
 			}
+			$site_data->domain = $domain;
 		}
 		unset($_DEFAULT_CONFIG->default_site);
 
@@ -161,13 +162,13 @@ class Config {
 		return 'http://www.'.$this->site_domain;
 	}
 
-	public function setSiteDomain($host) {
+	public function setSiteDomain($host, $redirect = TRUE) {
 		$sites = $this->sites;
 		foreach ($sites as $domain => $site) {
-			if ($domain == $host) {
+			if ($redirect && $domain == $host) {
 				throw new DomainRedirectException('www.'.$domain);
 			}
-			elseif ('www.'.$domain == $host) {
+			elseif ('www.'.$domain == $host || (!$redirect && $domain == $host)) {
 				$this->site_domain = $domain;
 
 				// set locale

@@ -87,16 +87,18 @@
 <script type="text/javascript">
 	<?php echo $form->getJavascriptValidation(); ?>
 
-	var showPreview = true;
-	function togglePreview() {
-		if ($('#preview').is(':visible')) {
+	function togglePreview(force_show) {
+		if (typeof(force_show) == 'undefined') {
+			force_show = false;
+		}
+		if (!force_show && $('#preview').is(':visible')) {
 			$('#preview').hide();
 		}
 		else {
 			$('#preview').show();
 		}
 	}
-	togglePreview();
+	togglePreview(true);
 
 	function updatePreview(content) {
 		$('#content-preview').html(content);
@@ -107,7 +109,7 @@
 	CKEDITOR.on('instanceCreated', function (e) {
 		var editor = e.editor;
 		editor.on('change', function (ev) {
-			if (showPreview) {
+			if ($('#preview').is(':visible')) {
 				var content = e.editor.getData();
 				updatePreview(content);
 			}

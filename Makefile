@@ -25,7 +25,6 @@ site-update-depends:
 # update dependancies
 create-database:
 	./bin/create_database.php
-	./bin/create_database_data.php
 
 # setup enviroment
 setup-env:
