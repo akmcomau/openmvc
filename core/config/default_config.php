@@ -7,6 +7,7 @@ $_DEFAULT_CONFIG = (object)[
         	'from' => 'info@example.com',
 	        'contact_us' => 'info@example.com',
 		],
+		'default_block_type' => 'HTML',
 		'modules' => [],
 		'tmp_path' => '/tmp',
 		'secret' => 'ABCDEFGHIJK123456789',

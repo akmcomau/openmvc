@@ -1,6 +1,6 @@
 # update composer
-update-composer:
-	cd composer && curl -sS https://getcomposer.org/installer | php && php composer.phar install;
+install-composer:
+	cd composer && curl -sS https://getcomposer.org/installer | php;
 
 # update dependancies
 update-depends:

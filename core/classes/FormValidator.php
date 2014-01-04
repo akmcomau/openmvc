@@ -232,7 +232,7 @@ class FormValidator {
 							break;
 
 						case 'function':
-							if (!$validator['function']($value)) {
+							if (!$validator['function']($value, $this)) {
 								$this->form_errors[$name] = $validator['message'];
 								$is_this_valid = FALSE;
 							}
