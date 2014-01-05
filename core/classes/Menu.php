@@ -116,6 +116,9 @@ class Menu {
 			mkdir($site_path, 0775, TRUE);
 		}
 		file_put_contents($site_file, '<?php $_MENU = '.var_export($menu, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($site_file);
+		}
 	}
 
 	public function setTemplate($template, $ul_class = '', $a_class = '') {

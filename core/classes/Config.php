@@ -66,6 +66,9 @@ class Config {
 		}
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($filename);
+		}
 	}
 
 	public function uninstallModule($module) {
@@ -80,6 +83,9 @@ class Config {
 		}
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($filename);
+		}
 	}
 
 	public function enableModule($module) {
@@ -95,6 +101,9 @@ class Config {
 		}
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($filename);
+		}
 	}
 
 	public function moduleConfig($module) {
@@ -119,6 +128,9 @@ class Config {
 		}
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($filename);
+		}
 	}
 
 	public function siteConfig() {
@@ -148,6 +160,9 @@ class Config {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($config, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($filename);
+		}
 	}
 
 	public function getUrl() {

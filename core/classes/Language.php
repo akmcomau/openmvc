@@ -77,6 +77,9 @@ class Language {
 			mkdir($theme_path, 0775, TRUE);
 		}
 		file_put_contents($theme_file, '<?php $_LANGUAGE = '.var_export($strings, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($theme_file);
+		}
 	}
 
 	public function loadLanguageFile($filename, $path = NULL) {

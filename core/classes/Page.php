@@ -186,6 +186,9 @@ class Page {
 			mkdir($site_path, 0775, TRUE);
 		}
 		file_put_contents($site_file, '<?php $_URLS = '.var_export($controller_map, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($site_file);
+		}
 
 		// remove the template file
 		$theme_path = $root_path.'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS.'pages'.DS.'misc'.DS;
@@ -281,6 +284,9 @@ class Page {
 			mkdir($site_path, 0775, TRUE);
 		}
 		file_put_contents($site_file, '<?php $_URLS = '.var_export($controller_map, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($site_file);
+		}
 
 		// Update the template file
 		if ($data['misc_page']) {
@@ -291,6 +297,9 @@ class Page {
 				mkdir($theme_path, 0775, TRUE);
 			}
 			file_put_contents($theme_file, $data['content']);
+			if (function_exists('opcache_invalidate')) {
+				opcache_invalidate($theme_file);
+			}
 		}
 	}
 }
