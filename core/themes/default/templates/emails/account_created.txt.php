@@ -3,7 +3,7 @@
 <?php echo $text_your_account_created; ?>
 
 
-<?php echo $text_url.': '.$this->config->getSiteURL().$this->url->getUrl('Customer', 'login'); ?>
+<?php echo $text_url.': '.$this->config->getSiteUrl().$this->url->getUrl('Customer', 'login'); ?>
 
 <?php echo $text_username.': '.$username; ?>
 

@@ -125,7 +125,7 @@ class Request {
 		}
 	}
 
-	public function currentURL(array $params = NULL) {
+	public function currentUrl(array $params = NULL) {
 		if (is_null($params)) {
 			$params = $this->method_params;
 		}

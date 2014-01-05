@@ -278,7 +278,7 @@ class URL {
 		return $url;
 	}
 
-	public function getSecureURL($controller = NULL, $method = NULL, array $params = NULL) {
+	public function getSecureUrl($controller = NULL, $method = NULL, array $params = NULL) {
 		throw new \Exception('TODO');
 	}
 

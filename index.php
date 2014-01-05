@@ -44,7 +44,7 @@ try {
 }
 catch (RedirectException $ex) {
 	$logger->info($ex->getMessage());
-	header("Location: {$ex->getURL()}");
+	header("Location: {$ex->getUrl()}");
 }
 catch (DomainRedirectException $ex) {
 	$config->setSiteDomain($ex->getDomain());
@@ -55,7 +55,7 @@ catch (DomainRedirectException $ex) {
 	}
 	$controller = isset($_GET['controller']) ?  $_GET['controller'] : NULL;
 	$method = isset($_GET['method']) ?  $_GET['method'] : NULL;
-	header('Location: http://'.$ex->getDomain().$url->getURL($controller, $method, $params));
+	header('Location: http://'.$ex->getDomain().$url->getUrl($controller, $method, $params));
 }
 catch (Exception $ex) {
 	log_display_exception($display_errors, $logger, $ex);

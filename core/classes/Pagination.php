@@ -105,11 +105,11 @@ class Pagination {
 
 		if ($curr_page > 1) {
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => 1]);
-			$url = $this->request->currentURL();
+			$url = $this->request->currentUrl();
 			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="fa fa-arrow-left"></i></a>';
 
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => ($curr_page-1)]);
-			$url = $this->request->currentURL();
+			$url = $this->request->currentUrl();
 			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="fa fa-double-angle-left"></i></a>';
 		}
 
@@ -120,17 +120,17 @@ class Pagination {
 			}
 
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => $i]);
-			$url = $this->request->currentURL();
+			$url = $this->request->currentUrl();
 			$pages .= '<a'.$class.' href="'.$url.'?'.http_build_query($params).'">'.$i.'</a>';
 		}
 
 		if ($curr_page < $this->getMaxPage()) {
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => ($curr_page+1)]);
-			$url = $this->request->currentURL();
+			$url = $this->request->currentUrl();
 			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="fa fa-double-angle-right"></i></a>';
 
 			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => $this->getMaxPage()]);
-$url = $this->request->currentURL();
+$url = $this->request->currentUrl();
 			$pages .= '<a href="'.$url.'?'.http_build_query($params).'"><i class="fa fa-arrow-right"></i></a>';
 		}
 

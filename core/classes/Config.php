@@ -158,7 +158,7 @@ class Config {
 		return $this->site_domain;
 	}
 
-	public function getSiteURL() {
+	public function getSiteUrl() {
 		return 'http://www.'.$this->site_domain;
 	}
 
