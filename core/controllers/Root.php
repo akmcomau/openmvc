@@ -44,7 +44,7 @@ class Root extends Controller {
 
 		try {
 			$template = $this->getTemplate("pages/misc/$page_name.php", $data);
-			$this->response->setContent($template->render());
+			$this->response->setContent('<div class="container">'.$template->render().'</div>');
 		}
 		catch (TemplateException $ex) {
 			$this->logger->debug('Misc page template not found');
