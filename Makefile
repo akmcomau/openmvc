@@ -1,3 +1,6 @@
+
+BASE=$(shell pwd)
+
 # update composer
 install-composer:
 	cd composer && curl -sS https://getcomposer.org/installer | php;
@@ -37,7 +40,8 @@ build-doxygen:
 
 # make database schema
 build-schemaspy-pgsql:
+	echo ${BASE}
 	cd composer/vendor/schemaspy/schemaspy && \
 		java net.sourceforge.schemaspy.Main -t pgsql \
-		-o docs/schemaspy -dp ../postgres/ \
+		-o ${BASE}/docs/schemaspy -dp ../postgres/ \
 		-host ${PGHOST} -db ${PGDATABASE} -u ${PGUSER} -p ${PGPASSWORD} -s ${PGSCHEMA}
