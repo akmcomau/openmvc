@@ -26,14 +26,9 @@ site-update-depends:
 create-database:
 	./bin/create_database.php
 
-# setup enviroment
-setup-env:
-	. ./bin/env.php
-
 # buid all docs
 build-docs:
-	. bin/env.php
-	make build-schemaspy-pgsql
+	. bin/env.sh && make build-schemaspy-pgsql
 	make build-doxygen
 
 # run doxygen

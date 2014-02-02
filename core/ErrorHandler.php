@@ -46,7 +46,12 @@ function shutdown_error_handler() {
 		log_display_exception($display_errors, $logger, $ex);
 	}
 	$script_time = number_format(microtime(TRUE) - $script_start, 6);
-	$logger->info("End Request: $script_time");
+	if (php_sapi_name() == 'cli') {
+		$logger->debug("End Request: $script_time");
+	}
+	else {
+		$logger->info("End Request: $script_time");
+	}
 }
 set_error_handler("exception_error_handler");
 register_shutdown_function("shutdown_error_handler");
