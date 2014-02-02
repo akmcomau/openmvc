@@ -33,28 +33,30 @@ function echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $c
 			<td class="subcategories"><?php echo isset($category['num_subcategories']) ? $category['num_subcategories'] : 0; ?></td>
 		<?php } ?>
 	</tr>
-	<tr id="subcategory-<?php echo $category['id'];?>" class="subcategory">
-		<td></td>
-		<td colspan="3">
-			<table class="table">
-				<?php
-				if (isset($category['subcategories'])) {
-					foreach ($category['subcategories'] as $sub_category) {
-						echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $sub_category, ++$depth);
-					}
-				}
-				?>
-				<?php if (!$readonly) { ?>
+	<?php if ($allow_subcategories) { ?>
+		<tr id="subcategory-<?php echo $category['id'];?>" class="subcategory">
+			<td></td>
+			<td colspan="3">
+				<table class="table">
+					<?php
+					  if (isset($category['subcategories'])) {
+						  foreach ($category['subcategories'] as $sub_category) {
+							  echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $sub_category, ++$depth);
+						  }
+					  }
+					?>
+					<?php if (!$readonly) { ?>
 					<tr>
 						<td></td>
 						<td colspan="2" id="add-subcategory-<?php echo $category['id'];?>"><a href="javascript:addSubcategory(<?php echo $category['id'];?>);"><?php echo $add_text; ?></a></td>
 						<td></td>
 					</tr>
-				<?php } ?>
-			</table>
-		</td>
-	</tr>
+					<?php } ?>
+				</table>
+			</td>
+		</tr>
 	<?php
+	}
 }
 ?>
 <div class="container">

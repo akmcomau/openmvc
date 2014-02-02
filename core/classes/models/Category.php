@@ -38,11 +38,12 @@ class Category extends Model {
 		// remove all link records
 		if ($this->link_type == 'link-table') {
 			$sql = "DELETE FROM ".$this->table."_link WHERE ".$this->primary_key."=".$this->id;
+			$this->database->executeQuery($sql);
 		}
 		elseif ($this->link_type == 'foreign-key') {
 			$sql = "UPDATE ".$this->link_from." SET ".$this->table."_id=NULL WHERE ".$this->primary_key."=".$this->id;
+			$this->database->executeQuery($sql);
 		}
-		$this->database->executeQuery($sql);
 
 		parent::delete();
 	}

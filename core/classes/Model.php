@@ -262,6 +262,15 @@ class Model {
 	}
 
 	/**
+	 * Set an element in the objects array
+	 * @param[in] key    The element's key
+	 * @param[in] object The object
+	 */
+	public function setObjectCache($key, $object) {
+		$this->objects[$key] = $object;
+	}
+
+	/**
 	 * Sets an element in the record array
 	 * @param[in] name  The column name
 	 * @param[in] value The value for the column
@@ -342,7 +351,7 @@ class Model {
 				$class = $module['namespace'].'\\'.$module['hooks']['models'][$name];
 				$this->logger->debug("Calling Hook: $class::$name");
 				$class = new $class($this->config, $this->database, NULL);
-				return call_user_func_array(array($class, $name), [$this]);
+				call_user_func_array(array($class, $name), [$this]);
 			}
 		}
 	}
@@ -823,7 +832,7 @@ class Model {
 	 * Drop the table this model is associated with
 	 */
 	public function dropTable() {
-		if (is_null($table)) return;
+		if (is_null($this->table)) return;
 
 		$sql = 'DROP TABLE '.$this->table;
 		return $this->database->executeQuery($sql);

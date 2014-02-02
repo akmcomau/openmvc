@@ -192,7 +192,7 @@ class Authentication {
 				$class = $module['namespace'].'\\'.$module['hooks']['authentication'][$name];
 				$this->logger->debug("Calling Hook: $class::$name");
 				$class = new $class($this->config, $this->database, $this->request);
-				return call_user_func_array(array($class, $name), $params);
+				call_user_func_array(array($class, $name), $params);
 			}
 		}
 	}
