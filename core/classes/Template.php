@@ -61,6 +61,7 @@ class Template {
 		$filename = $this->getAbsoluteFilename();
 
 		// default data for the template
+		$this->data['page_div_class'] = $this->config->siteConfig()->page_div_class;
 		$this->data['site_url'] = $this->config->getSiteUrl();
 		$this->data['static_prefix'] = '/'.$this->config->siteConfig()->static_prefix;
 		extract($this->data);

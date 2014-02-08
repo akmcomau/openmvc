@@ -1,4 +1,4 @@
-<div class="container">
+<div class="<?php echo $page_div_class; ?>">
 	<div class="row">
 		<div class="col-md-12">
 			<?php require('register_form.php'); ?>

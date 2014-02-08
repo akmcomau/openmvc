@@ -1,4 +1,4 @@
-<div class="container">
+<div class="<?php echo $page_div_class; ?>">
 	<div class="row">
 		<div class="col-md-12">
 			<form id="form-change-password" class="form-login-register" action="<?php echo $this->url->getUrl('Customer', 'change_password'); ?>" method="post">

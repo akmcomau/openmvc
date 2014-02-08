@@ -1,4 +1,4 @@
-<div class="container">
+<div class="<?php echo $page_div_class; ?>">
 	<div class="row">
 		<div class="col-md-12">
 			<form id="form-update-details" action="<?php echo $this->url->getUrl('Customer', 'contact_details'); ?>" method="post">
