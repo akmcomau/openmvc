@@ -769,9 +769,19 @@ class Model {
 			$ordering_sql = [];
 			foreach ($ordering as $column => $direction) {
 				$direction = (strtolower($direction) == 'asc') ? 'ASC' : 'DESC';
-				$column = $this->getColumnName($column);
-				if ($column) {
-					$ordering_sql[] = "$column $direction";
+				if ($column == 'random()') {
+					if ($this->database->getEngine() == 'mysql') {
+						$ordering_sql[] = "RAND()";
+					}
+					elseif ($this->database->getEngine() == 'pgsql') {
+						$ordering_sql[] = "RANDOM()";
+					}
+				}
+				else {
+					$column = $this->getColumnName($column);
+					if ($column) {
+						$ordering_sql[] = "$column $direction";
+					}
 				}
 			}
 			if (count($ordering_sql)) {
