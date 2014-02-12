@@ -73,7 +73,9 @@ class URL {
 		foreach ($url_config as $controller => $data) {
 			$this->url_map['forward'][$controller] = $data;
 
-			$this->url_map['reverse']['controllers'][$controller] = $controller;
+			if (count($data['aliases']) == 0) {
+				$this->url_map['reverse']['controllers'][$controller] = $controller;
+			}
 			foreach ($data['aliases'] as $language => $alias) {
 				$this->url_map['reverse']['controllers'][$alias] = $controller;
 			}
@@ -368,6 +370,14 @@ class URL {
 		if (isset($this->url_map['reverse']['methods'][$controller][$method])) {
 			return $this->url_map['reverse']['methods'][$controller][$method];
 		}
+
+		$controller = str_replace('/', '\\', $controller);
+		if (isset($this->url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
+			if (count($this->url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
+				return NULL;
+			}
+		}
+
 		return $method;
 	}
 }
