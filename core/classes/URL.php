@@ -187,7 +187,7 @@ class URL {
 		return NULL;
 	}
 
-	public function getMethodMetaTags($controller_name = NULL, $method_name = NULL, $postfix_site = TRUE) {
+	public function getMethodMetaTags($controller_name = NULL, $method_name = NULL, $postfix_site = TRUE, $recursive = FALSE) {
 		$meta_tags = [];
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
@@ -197,13 +197,17 @@ class URL {
 		}
 
 		if (!isset($meta_tags['title'])) {
-			$postfix = '';
+			if (!$recursive) {
+				$meta_tags = $this->getMethodMetaTags('Root', 'index', $postfix_site, TRUE);
+			}
+
 			if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
-				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language].$postfix;
+				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
 			}
 			else {
 				$meta_tags['title'] = $this->config->siteConfig()->name;
 			}
+
 		}
 
 		if ($postfix_site) $meta_tags['title'] .= ' :: '.$this->config->siteConfig()->name;

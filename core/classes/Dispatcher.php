@@ -63,7 +63,7 @@ class Dispatcher {
 		}
 		$controller = new $controller_class($this->config, $this->database, $request, $response);
 		$controller->setUrl($this->url);
-		$method_name = $request->getMethodName();
+		$full_method_name = $method_name = $request->getMethodName();
 		$methods = $controller->getAllMethods();
 		if (!in_array($method_name, $methods)) {
 			$this->logger->debug("Method Not found: $controller_class::".$request->getMethodName());
@@ -71,6 +71,7 @@ class Dispatcher {
 		}
 
 		if (preg_match('/^page\/(.*)$/', $method_name, $matches)) {
+			$full_method_name = $method_name;
 			$method_name = 'page';
 			$request->setMethodName('page');
 			$request->setMethodParams([$matches[1]]);
@@ -164,7 +165,7 @@ class Dispatcher {
 		if ($controller->getLayout()) {
 			$class = explode('\\', $controller_class);
 			$class = $class[count($class)-1];
-			$meta_tags = $this->url->getMethodMetaTags($class, $method_name);
+			$meta_tags = $this->url->getMethodMetaTags($class, $full_method_name);
 			$controller->getLayout()->addMetaTags($meta_tags);
 			$controller->getLayout()->setControllerMethod($this->url->getControllerClassName($request->getControllerName()), $request->getMethodName(), $sub_page);
 			$controller->getLayout()->render();
