@@ -61,8 +61,8 @@ class Config {
 
 		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
 
-		if (!in_array($module['name'], $_CONFIG['modules'])) {
-			$_CONFIG['modules'][] = $module['name'];
+		if (!in_array($module['namespace'], $_CONFIG['modules'])) {
+			$_CONFIG['modules'][] = $module['namespace'];
 		}
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
@@ -77,8 +77,8 @@ class Config {
 
 		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
 
-		if (in_array($module['name'], $_CONFIG['modules'])) {
-			$index = array_search($module['name'], $_CONFIG['modules']);
+		if (in_array($module['namespace'], $_CONFIG['modules'])) {
+			$index = array_search($module['namespace'], $_CONFIG['modules']);
 			array_splice($_CONFIG['modules'], $index, 1);
 		}
 
@@ -96,8 +96,8 @@ class Config {
 			$_CONFIG['sites'][$this->site_domain]['modules'] = [];
 		}
 
-		if (!in_array($module['name'], $_CONFIG['sites'][$this->site_domain]['modules'])) {
-			$_CONFIG['sites'][$this->site_domain]['modules'][$module['name']] = $module['default_config'];
+		if (!in_array($module['namespace'], $_CONFIG['sites'][$this->site_domain]['modules'])) {
+			$_CONFIG['sites'][$this->site_domain]['modules'][$module['namespace']] = $module['default_config'];
 		}
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
@@ -123,8 +123,8 @@ class Config {
 			$_CONFIG['sites'][$this->site_domain]['modules'] = [];
 		}
 
-		if (isset($_CONFIG['sites'][$this->site_domain]['modules'][$module['name']])) {
-			unset($_CONFIG['sites'][$this->site_domain]['modules'][$module['name']]);
+		if (isset($_CONFIG['sites'][$this->site_domain]['modules'][$module['namespace']])) {
+			unset($_CONFIG['sites'][$this->site_domain]['modules'][$module['namespace']]);
 		}
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');

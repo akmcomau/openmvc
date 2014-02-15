@@ -47,7 +47,7 @@ class Module {
 			require($filename);
 
 			if (!(isset($_MODULE['hidden']) && $_MODULE['hidden'])) {
-				$this->modules[$_MODULE['name']] = $_MODULE;
+				$this->modules[$_MODULE['namespace']] = $_MODULE;
 			}
 		}
 		foreach (glob($site_glob) as $filename) {
@@ -55,25 +55,25 @@ class Module {
 			require($filename);
 
 			if (!(isset($_MODULE['hidden']) && $_MODULE['hidden'])) {
-				$this->modules[$_MODULE['name']] = $_MODULE;
+				$this->modules[$_MODULE['namespace']] = $_MODULE;
 			}
 		}
 
 		// check if the module is installed into the site
 		foreach ($this->modules as &$module) {
-			if (in_array($module['name'], $this->config->modules)) {
+			if (in_array($module['namespace'], $this->config->modules)) {
 				$module['installed'] = TRUE;
 			}
 			else {
 				$module['installed'] = FALSE;
 			}
-			if ($site->modules && property_exists($site->modules, $module['name'])) {
+			if ($site->modules && property_exists($site->modules, $module['namespace'])) {
 				$module['enabled'] = TRUE;
 			}
 			else {
 				$module['enabled'] = FALSE;
 			}
-			$module['enabled_anywhere'] = isset($modules_enabled[$module['name']]);
+			$module['enabled_anywhere'] = isset($modules_enabled[$module['namespace']]);
 		}
 
 		$GLOBALS['cache']['modules'] = $this->modules;
@@ -93,11 +93,11 @@ class Module {
 		return $enabled;
 	}
 
-	public function isModuleEnabled($name) {
+	public function isModuleEnabled($namespace) {
 		$enabled = [];
 		$modules = $this->getModules();
-		foreach ($modules as $module_name => $module) {
-			if ($module['enabled'] && $module_name == $name) {
+		foreach ($modules as $module_namespace => $module) {
+			if ($module['enabled'] && $module_namespace == $namespace) {
 				return TRUE;
 			}
 		}
@@ -105,11 +105,12 @@ class Module {
 		return FALSE;
 	}
 
-	public function install($module_name, Database $database) {
-		if (!isset($this->getModules()[$module_name])) {
-			throw new ErrorException("No module named $module_name");
+	public function install($module_namespace, Database $database) {
+		if (!isset($this->getModules()[$module_namespace])) {
+			throw new ErrorException("No module named $module_namespace");
 		}
-		$module = $this->getModules()[$module_name];
+
+		$module = $this->getModules()[$module_namespace];
 
 		$installer_class = $module['namespace'].'\\Installer';
 		$installer = new $installer_class($this->config, $database);
@@ -118,11 +119,11 @@ class Module {
 		$this->config->installModule($module);
 	}
 
-	public function uninstall($module_name, Database $database) {
-		if (!isset($this->getModules()[$module_name])) {
-			throw new ErrorException("No module named $module_name");
+	public function uninstall($module_namespace, Database $database) {
+		if (!isset($this->getModules()[$module_namespace])) {
+			throw new ErrorException("No module named $module_namespace");
 		}
-		$module = $this->getModules()[$module_name];
+		$module = $this->getModules()[$module_namespace];
 
 		$installer_class = $module['namespace'].'\\Installer';
 		$installer = new $installer_class($this->config, $database);
@@ -131,11 +132,11 @@ class Module {
 		$this->config->uninstallModule($module);
 	}
 
-	public function enable($module_name, Database $database) {
-		if (!isset($this->getModules()[$module_name])) {
-			throw new ErrorException("No module named $module_name");
+	public function enable($module_namespace, Database $database) {
+		if (!isset($this->getModules()[$module_namespace])) {
+			throw new ErrorException("No module named $module_namespace");
 		}
-		$module = $this->getModules()[$module_name];
+		$module = $this->getModules()[$module_namespace];
 
 		$installer_class = $module['namespace'].'\\Installer';
 		$installer = new $installer_class($this->config, $database);
@@ -144,11 +145,11 @@ class Module {
 		$this->config->enableModule($module);
 	}
 
-	public function disable($module_name, Database $database) {
-		if (!isset($this->getModules()[$module_name])) {
-			throw new ErrorException("No module named $module_name");
+	public function disable($module_namespace, Database $database) {
+		if (!isset($this->getModules()[$module_namespace])) {
+			throw new ErrorException("No module named $module_namespace");
 		}
-		$module = $this->getModules()[$module_name];
+		$module = $this->getModules()[$module_namespace];
 
 		$installer_class = $module['namespace'].'\\Installer';
 		$installer = new $installer_class($this->config, $database);

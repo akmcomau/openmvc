@@ -29,10 +29,10 @@ class Modules extends Controller {
 		$all_modules = $modules->getModules();
 
 		foreach ($all_modules as &$module) {
-			$module['install_url'] = $this->url->getUrl('administrator/Modules', 'install', [$module['name']]);
-			$module['uninstall_url'] = $this->url->getUrl('administrator/Modules', 'uninstall', [$module['name']]);
-			$module['enable_url'] = $this->url->getUrl('administrator/Modules', 'enable', [$module['name']]);
-			$module['disable_url'] = $this->url->getUrl('administrator/Modules', 'disable', [$module['name']]);
+			$module['install_url'] = $this->url->getUrl('administrator/Modules', 'install', [$module['namespace']]);
+			$module['uninstall_url'] = $this->url->getUrl('administrator/Modules', 'uninstall', [$module['namespace']]);
+			$module['enable_url'] = $this->url->getUrl('administrator/Modules', 'enable', [$module['namespace']]);
+			$module['disable_url'] = $this->url->getUrl('administrator/Modules', 'disable', [$module['namespace']]);
 		}
 
 		$data = [
@@ -43,27 +43,27 @@ class Modules extends Controller {
 		$this->response->setContent($template->render());
 	}
 
-	public function install($module_name) {
+	public function install($module_namespace) {
 		$modules = new Module($this->config);
-		$modules->install($module_name, $this->database);
+		$modules->install($module_namespace, $this->database);
 		throw new RedirectException($this->url->getUrl('administrator/Modules'));
 	}
 
-	public function uninstall($module_name) {
+	public function uninstall($module_namespace) {
 		$modules = new Module($this->config);
-		$modules->uninstall($module_name, $this->database);
+		$modules->uninstall($module_namespace, $this->database);
 		throw new RedirectException($this->url->getUrl('administrator/Modules'));
 	}
 
-	public function enable($module_name) {
+	public function enable($module_namespace) {
 		$modules = new Module($this->config);
-		$modules->enable($module_name, $this->database);
+		$modules->enable($module_namespace, $this->database);
 		throw new RedirectException($this->url->getUrl('administrator/Modules'));
 	}
 
-	public function disable($module_name) {
+	public function disable($module_namespace) {
 		$modules = new Module($this->config);
-		$modules->disable($module_name, $this->database);
+		$modules->disable($module_namespace, $this->database);
 		throw new RedirectException($this->url->getUrl('administrator/Modules'));
 	}
 }
