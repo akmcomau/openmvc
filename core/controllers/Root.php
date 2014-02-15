@@ -12,6 +12,10 @@ use core\classes\FormValidator;
 
 class Root extends Controller {
 
+	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
+		return parent::getAllUrls(NULL, '/(page$|^error)/');
+	}
+
 	public function index() {
 		$template = $this->getTemplate('pages/homepage.php');
 		$this->response->setContent($template->render());

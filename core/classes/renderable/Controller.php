@@ -37,7 +37,12 @@ class Controller extends Renderable {
 
 		// Controller has been created for meta data, don't need much
 		if (is_null($request)) {
-			$this->config = $config;
+			$this->config   = $config;
+
+			if ($database) {
+				$this->url      = new URL($config);
+				$this->database = $database;
+			}
 			return;
 		}
 
@@ -195,8 +200,29 @@ class Controller extends Renderable {
 		return $controller_methods;
 	}
 
+	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
+		$urls = [];
+		$controller = $this->url->getControllerClassName('\\'.get_class($this));
+		foreach ($this->getAllMethods() as $method) {
+			if ($include_filter) {
+				if (!preg_match($include_filter, $method)) {
+					continue;
+				}
+			}
+			if ($exclude_filter) {
+				if (preg_match($exclude_filter, $method)) {
+					continue;
+				}
+			}
+			$urls[] = [
+				'url' => $this->config->getSiteUrl().$this->url->getUrl($controller, $method),
+			];
+		}
+		return $urls;
+	}
+
 	protected function allowedSiteIDs() {
-		if ($this->request->session->get('admin_site_id')) {
+		if ($this->request && $this->request->session->get('admin_site_id')) {
 			return [$this->request->session->get('admin_site_id')];
 		}
 		elseif ($this->config->siteConfig()->site_id) {

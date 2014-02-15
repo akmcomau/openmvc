@@ -20,6 +20,17 @@ class Customer extends Controller {
 		'contact_details' => ['customer'],
 	];
 
+	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
+		$controller = $this->url->getControllerClassName('\\'.get_class($this));
+		$urls = [
+			['url' => $this->config->getSiteUrl().$this->url->getUrl($controller, 'register')],
+			['url' => $this->config->getSiteUrl().$this->url->getUrl($controller, 'login')],
+			['url' => $this->config->getSiteUrl().$this->url->getUrl($controller, 'login_register')],
+			['url' => $this->config->getSiteUrl().$this->url->getUrl($controller, 'forgot')],
+		];
+		return $urls;
+	}
+
 	public function index() {
 		$template = $this->getTemplate('pages/not_implemented.php');
 		$this->response->setContent($template->render());

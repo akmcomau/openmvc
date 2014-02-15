@@ -5,7 +5,7 @@ namespace core\classes;
 use ErrorException;
 
 class URL {
-	protected $url_map = NULL;
+	protected static $url_map = NULL;
 
 	public function __construct(Config $config) {
 		$this->config = $config;
@@ -13,14 +13,11 @@ class URL {
 	}
 
 	public function getUrlMap() {
-		return $this->url_map;
+		return self::$url_map;
 	}
 
 	protected function generateUrlMap() {
-		if (isset($GLOBALS['cache']['url_map'])) {
-			$this->url_map = $GLOBALS['cache']['url_map'];
-		}
-		if ($this->url_map) return $this->url_map;
+		if (self::$url_map) return self::$url_map;
 
 		$controllers = $this->listAllControllers();
 		$language    = $this->config->siteConfig()->language;
@@ -69,32 +66,30 @@ class URL {
 			}
 		}
 
-		$this->url_map = ['reverse' => ['controllers'=>[], 'methods'=>[]]];
+		self::$url_map = ['reverse' => ['controllers'=>[], 'methods'=>[]]];
 		foreach ($url_config as $controller => $data) {
-			$this->url_map['forward'][$controller] = $data;
+			self::$url_map['forward'][$controller] = $data;
 
 			if (count($data['aliases']) == 0) {
-				$this->url_map['reverse']['controllers'][$controller] = $controller;
+				self::$url_map['reverse']['controllers'][$controller] = $controller;
 			}
 			foreach ($data['aliases'] as $language => $alias) {
-				$this->url_map['reverse']['controllers'][$alias] = $controller;
+				self::$url_map['reverse']['controllers'][$alias] = $controller;
 			}
 			foreach ($data['methods'] as $method => $data) {
 				if (isset($data['aliases'])) {
 					foreach ($data['aliases'] as $language => $alias) {
-						$this->url_map['reverse']['methods'][$controller][$alias] = $method;
+						self::$url_map['reverse']['methods'][$controller][$alias] = $method;
 					}
 				}
 			}
 		}
 
 		foreach ($controllers as $controller => $controller_class) {
-			$this->url_map['reverse']['controllers'][$controller_class] = $controller;
+			self::$url_map['reverse']['controllers'][$controller_class] = $controller;
 		}
 
-		$this->url_map['controllers'] = $controllers;
-
-		$GLOBALS['cache']['url_map'] = $this->url_map;
+		self::$url_map['controllers'] = $controllers;
 	}
 
 	public function listAllControllers() {
@@ -194,8 +189,8 @@ class URL {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 
-		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'])) {
-			$meta_tags = $this->url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'];
+		if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'])) {
+			$meta_tags = self::$url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'];
 		}
 
 		if (!isset($meta_tags['title'])) {
@@ -203,8 +198,8 @@ class URL {
 				$meta_tags = $this->getMethodMetaTags('Root', 'index', $postfix_site, TRUE);
 			}
 
-			if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
-				$meta_tags['title'] = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
+			if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
+				$meta_tags['title'] = self::$url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
 			}
 			else {
 				$meta_tags['title'] = $this->config->siteConfig()->name;
@@ -222,8 +217,8 @@ class URL {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 
-		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name])) {
-			return $this->url_map['forward'][$controller_name]['methods'][$method_name];
+		if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name])) {
+			return self::$url_map['forward'][$controller_name]['methods'][$method_name];
 		}
 
 		return NULL;
@@ -247,18 +242,18 @@ class URL {
 		}
 		if (strlen($params_string) > 0) $params_string = substr($params_string, 0, -1);
 
-		if (!isset($this->url_map['forward'][$controller_name])) {
+		if (!isset(self::$url_map['forward'][$controller_name])) {
 			$controller_name = str_replace('/', '\\', $controller_name);
 		}
 
 		// seo the url
 		$orig_method = $method_name;
 		$orig_controller = $controller_name;
-		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language])) {
-			$method_name = $this->url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language];
+		if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language])) {
+			$method_name = self::$url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language];
 		}
-		if (isset($this->url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language])) {
-			$controller_name = $this->url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language];
+		if (isset(self::$url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language])) {
+			$controller_name = self::$url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language];
 		}
 
 		$url = '/';
@@ -302,13 +297,13 @@ class URL {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 
-		if (!isset($this->url_map['forward'][$controller_name])) {
+		if (!isset(self::$url_map['forward'][$controller_name])) {
 			$controller_name = str_replace('/', '\\', $controller_name);
 		}
 
 		$text = $controller_name.'::'.$method_name;
-		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
-			$text = $this->url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
+		if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
+			$text = self::$url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
 		}
 		return $text;
 	}
@@ -317,66 +312,69 @@ class URL {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 
-		if (!isset($this->url_map['forward'][$controller_name])) {
+		if (!isset(self::$url_map['forward'][$controller_name])) {
 			$controller_name = str_replace('/', '\\', $controller_name);
 		}
 
 		$categ = NULL;
-		if (isset($this->url_map['forward'][$controller_name]['methods'][$method_name]['category'])) {
-			$categ = $this->url_map['forward'][$controller_name]['methods'][$method_name]['category'];
+		if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['category'])) {
+			$categ = self::$url_map['forward'][$controller_name]['methods'][$method_name]['category'];
 		}
 		return $categ;
 	}
 
 	public function seoController($controller) {
-		if (!isset($this->url_map['forward'][$controller])) {
+		if (!isset(self::$url_map['forward'][$controller])) {
 			$controller = str_replace('/', '\\', $controller);
 		}
-		if (isset($this->url_map['forward'][$controller]['aliases'][$this->config->siteConfig()->language])) {
-			return $this->url_map['forward'][$controller]['aliases'][$this->config->siteConfig()->language];
+		if (isset(self::$url_map['forward'][$controller]['aliases'][$this->config->siteConfig()->language])) {
+			return self::$url_map['forward'][$controller]['aliases'][$this->config->siteConfig()->language];
 		}
 		$controller = str_replace('\\', '/', $controller);
 		return $controller;
 	}
 
 	public function seoMethod($controller, $method) {
-		if (!isset($this->url_map['forward'][$controller])) {
+		if (!isset(self::$url_map['forward'][$controller])) {
 			$controller = str_replace('/', '\\', $controller);
 		}
-		if (isset($this->url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
-			return $this->url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language];
+		if (isset(self::$url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
+			return self::$url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language];
 		}
 		return $method;
 	}
 
 	public function getControllerClass($controller) {
-		if (isset($this->url_map['controllers'][$controller])) {
-			return $this->url_map['controllers'][$controller];
+		if (isset(self::$url_map['controllers'][$controller])) {
+			return self::$url_map['controllers'][$controller];
 		}
 		return NULL;
 	}
 
 	public function getControllerClassName($controller) {
-		if (!isset($this->url_map['reverse']['controllers'][$controller])) {
+		if (!isset(self::$url_map['reverse']['controllers'][$controller])) {
 			$controller = str_replace('\\', '/', $controller);
 		}
-		if (isset($this->url_map['reverse']['controllers'][$controller])) {
-			return $this->url_map['reverse']['controllers'][$controller];
+		if (!isset(self::$url_map['reverse']['controllers'][$controller])) {
+			$controller = str_replace('/', '\\', $controller);
+		}
+		if (isset(self::$url_map['reverse']['controllers'][$controller])) {
+			return self::$url_map['reverse']['controllers'][$controller];
 		}
 		return $controller;
 	}
 
 	public function getMethodName($controller, $method) {
-		if (!isset($this->url_map['reverse']['methods'][$controller][$method])) {
+		if (!isset(self::$url_map['reverse']['methods'][$controller][$method])) {
 			$controller = str_replace('\\', '/', $controller);
 		}
-		if (isset($this->url_map['reverse']['methods'][$controller][$method])) {
-			return $this->url_map['reverse']['methods'][$controller][$method];
+		if (isset(self::$url_map['reverse']['methods'][$controller][$method])) {
+			return self::$url_map['reverse']['methods'][$controller][$method];
 		}
 
 		$controller = str_replace('/', '\\', $controller);
-		if (isset($this->url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
-			if (count($this->url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
+		if (isset(self::$url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
+			if (count(self::$url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
 				return NULL;
 			}
 		}

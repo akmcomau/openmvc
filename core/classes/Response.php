@@ -26,6 +26,12 @@ class Response {
 		$this->content = $content;
 	}
 
+	public function setXmlContent($controller, $content) {
+		$controller->setLayout(NULL);
+		$this->addHeader('Content-Type', 'text/xml');
+		$this->content = $content;
+	}
+
 	public function arrayToCsv(array &$array) {
 		if (count($array) == 0) {
 			return null;

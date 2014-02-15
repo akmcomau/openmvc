@@ -160,7 +160,7 @@ class Model {
 	 * @endcode
 	 * @var array $site_models
 	 */
-	protected $site_models;
+	protected static $site_models;
 
 	/**
 	 * Constructor
@@ -181,15 +181,12 @@ class Model {
 	}
 
 	/**
-	 * Finds all the available models for this site and stores them in $this->site_models
+	 * Finds all the available models for this site and stores them in self::$site_models
 	 * @param[in] site  [Optional] Get models for a sepecific site, if NULL then
 	 *                  this will find all models for all sites.
 	 */
 	protected function findAllModels($site = NULL) {
-		if (isset($GLOBALS['cache']['site_models'])) {
-			$this->site_models = $GLOBALS['cache']['site_models'];
-			return;
-		}
+		if (self::$site_models) return self::$site_models;
 
 		$sites = $this->config->sites;
 		if ($site) {
@@ -226,15 +223,13 @@ class Model {
 			}
 		}
 
-		$this->site_models = [];
+		self::$site_models = [];
 		foreach ($site_models as $class => $value) {
 			$reflectionClass = new ReflectionClass($class);
 			if ($reflectionClass->IsInstantiable()) {
-				$this->site_models[] = $class;
+				self::$site_models[] = $class;
 			}
 		}
-
-		$GLOBALS['cache']['site_models'] = $this->site_models;
 	}
 
 	/**
@@ -250,7 +245,7 @@ class Model {
 	 * @return An array containing the available models
 	 */
 	public function getSiteModels() {
- 		return $this->site_models;
+ 		return self::$site_models;
 	}
 
 	/**
@@ -817,21 +812,21 @@ class Model {
 	 */
 	public function createDatabase() {
 		// Create the tables
-		foreach ($this->site_models as $model) {
+		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating table: $model");
 			$model = $this->getModel($model);
 			$model->createTable();
 		}
 
 		// Create the indexes
-		foreach ($this->site_models as $model) {
+		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating indexes: $model");
 			$model = $this->getModel($model);
 			$model->createIndexes();
 		}
 
 		// Create the foreign keys
-		foreach ($this->site_models as $model) {
+		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating foreign keys: $model");
 			$model = $this->getModel($model);
 			$model->createForeignKeys();

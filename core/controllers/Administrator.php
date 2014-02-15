@@ -18,6 +18,10 @@ class Administrator extends Controller {
 		'index' => ['administrator'],
 	];
 
+	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
+		return [];
+	}
+
 	public function index() {
 	}
 

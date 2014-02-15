@@ -12,17 +12,14 @@ class Module {
 	 */
 	protected $config;
 
-	protected $modules = NULL;
+	protected static $modules = NULL;
 
 	public function __construct(Config $config) {
 		$this->config = $config;
 	}
 
 	public function getModules() {
-		if (isset($GLOBALS['cache']['modules'])) {
-			$this->modules = $GLOBALS['cache']['modules'];
-		}
-		if ($this->modules) return $this->modules;
+		if (self::$modules) return self::$modules;
 
 		$modules_enabled = [];
 		foreach ($this->config->sites as $domain => $data) {
@@ -41,13 +38,13 @@ class Module {
 		$site_glob = $root_path.'modules'.DS.'*'.DS.'module.php';
 
 		// get the modules
-		$this->modules = [];
+		self::$modules = [];
 		foreach (glob($core_glob) as $filename) {
 			$_MODULE = NULL;
 			require($filename);
 
 			if (!(isset($_MODULE['hidden']) && $_MODULE['hidden'])) {
-				$this->modules[$_MODULE['namespace']] = $_MODULE;
+				self::$modules[$_MODULE['namespace']] = $_MODULE;
 			}
 		}
 		foreach (glob($site_glob) as $filename) {
@@ -55,12 +52,12 @@ class Module {
 			require($filename);
 
 			if (!(isset($_MODULE['hidden']) && $_MODULE['hidden'])) {
-				$this->modules[$_MODULE['namespace']] = $_MODULE;
+				self::$modules[$_MODULE['namespace']] = $_MODULE;
 			}
 		}
 
 		// check if the module is installed into the site
-		foreach ($this->modules as &$module) {
+		foreach (self::$modules as &$module) {
 			if (in_array($module['namespace'], $this->config->modules)) {
 				$module['installed'] = TRUE;
 			}
@@ -76,9 +73,7 @@ class Module {
 			$module['enabled_anywhere'] = isset($modules_enabled[$module['namespace']]);
 		}
 
-		$GLOBALS['cache']['modules'] = $this->modules;
-
-		return $this->modules;
+		return self::$modules;
 	}
 
 	public function getEnabledModules() {
