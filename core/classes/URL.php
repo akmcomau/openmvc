@@ -240,6 +240,9 @@ class URL {
 
 		$params_string = '';
 		foreach ($params as $value) {
+			// not allowed to have '/' characters in the value
+			$value = str_replace('/', '-', $value);
+
 			$params_string .= urlencode($value).'/';
 		}
 		if (strlen($params_string) > 0) $params_string = substr($params_string, 0, -1);
