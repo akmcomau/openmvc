@@ -9,8 +9,8 @@ trait Thumbnails {
 		$max_image_height = 150;
 		$thumb_beforeword = "tn-";
 		$arr_image_details = getimagesize("$updir" . "$img"); // pass id to thumb name
-		$original_width = $arr_image_details[0];
-		$original_height = $arr_image_details[1];
+		$new_width = $original_width = $arr_image_details[0];
+		$new_height = $original_height = $arr_image_details[1];
 		if ($original_width > $max_image_width || $original_height > $max_image_height) {
 			$ratio = 0;
 			$ratio_x = $max_image_width  / $original_width;
