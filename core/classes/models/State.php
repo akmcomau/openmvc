@@ -36,7 +36,7 @@ class State extends Model {
 		],
 	];
 	protected $indexes = [
-		'state_name',
+		'lower(state_name)',
 		'country_id',
 	];
 	protected $foreign_keys = [

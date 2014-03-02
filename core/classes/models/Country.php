@@ -27,7 +27,7 @@ class Country extends Model {
 		],
 	];
 	protected $indexes = [
-		'country_name',
+		'lower(country_name)',
 	];
 	protected $uniques = [
 		'country_name',

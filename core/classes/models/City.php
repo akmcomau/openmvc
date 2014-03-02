@@ -35,7 +35,7 @@ class City extends Model {
 		],
 	];
 	protected $indexes = [
-		'city_name',
+		'lower(city_name)',
 		'state_id',
 		'country_id',
 	];
@@ -43,5 +43,4 @@ class City extends Model {
 		'state_id'   => ['state',   'state_id'],
 		'country_id' => ['country', 'country_id'],
 	];
-
 }
