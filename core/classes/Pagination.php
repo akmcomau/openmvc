@@ -70,6 +70,35 @@ class Pagination {
 		return ceil($this->record_count/$this->records_per_page);
 	}
 
+	public function getStatus() {
+		$record_end = $this->current_page * $this->records_per_page;
+		if ($record_end > $this->record_count) {
+			$record_end = $this->record_count;
+		}
+
+		$url = $this->request->currentUrl();
+		$next_link = $prev_link = NULL;
+		if ($this->current_page > 1) {
+			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => $this->current_page-1]);
+			$prev_link = $url.'?'.http_build_query($params);
+		}
+		if ($this->current_page < $this->getMaxPage()) {
+			$params = array_merge($this->request->get_params, ['ordering' => $this->ordering, 'page' => $this->current_page+1]);
+			$next_link = $url.'?'.http_build_query($params);
+		}
+
+		return (object)[
+			'per_page'      => $this->records_per_page,
+			'total_records' => $this->record_count,
+			'current_page'  => $this->current_page,
+			'num_pages'     => $this->getMaxPage(),
+			'record_start'  => ($this->current_page-1)*$this->records_per_page,
+			'record_end'    => $record_end,
+			'next_link'     => $next_link,
+			'prev_link'     => $prev_link,
+		];
+	}
+
 	public function getPageLinks() {
 		$num_links  = $this->num_pagination_links;
 		$half_links = floor($num_links/2);

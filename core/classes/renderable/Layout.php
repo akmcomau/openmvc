@@ -38,7 +38,7 @@ class Layout extends Renderable {
 	}
 
 	public function setTemplateData(array $data) {
-		$this->template_data = $data;
+		$this->template_data = array_merge($this->template_data, $data);
 	}
 
 	public function setControllerMethod($controller, $method, $sub_page = NULL) {
