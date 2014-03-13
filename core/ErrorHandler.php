@@ -1,5 +1,7 @@
 <?php
 
+use core\classes\URL;
+
 $script_start = microtime(TRUE);
 $suppress_exceptions = NULL;
 $display_errors = TRUE;

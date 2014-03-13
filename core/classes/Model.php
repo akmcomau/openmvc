@@ -366,7 +366,7 @@ class Model {
 				$columns[] = $column;
 				$values[]  = 'NOW()';
 			}
-			elseif ($column != $primary_key && array_key_exists($column, $this->record)) {
+			elseif (array_key_exists($column, $this->record)) {
 				$columns[] = $column;
 				$values[]  = $this->database->quote($this->record[$column]);
 			}
@@ -375,12 +375,14 @@ class Model {
 		$sql = "INSERT INTO $table (".join(',', $columns).") VALUES (".join(',', $values).")";
 		$this->database->executeQuery($sql);
 
-		if ($this->database->getEngine() == 'pgsql') {
-			$sql = "SELECT currval(pg_get_serial_sequence('$table', '$primary_key'))";
-			$this->record[$primary_key] = $this->database->queryValue($sql);
-		}
-		else {
-			$this->record[$primary_key] = $this->lastInsertId();
+		if (!isset($this->record[$primary_key])) {
+			if ($this->database->getEngine() == 'pgsql') {
+				$sql = "SELECT currval(pg_get_serial_sequence('$table', '$primary_key'))";
+				$this->record[$primary_key] = $this->database->queryValue($sql);
+			}
+			else {
+				$this->record[$primary_key] = $this->lastInsertId();
+			}
 		}
 		$this->logger->debug("Inserted record in $table => ".$this->record[$primary_key]);
 
