@@ -54,9 +54,17 @@ class Language {
 	}
 
 	public function getFile($file, $path = NULL) {
-		$filename = $this->getAbsoluteFilename($file, $path);
+		$strings = [];
+		if ($this->config->siteConfig()->load_default_language_files) {
+			$filename = $this->getAbsoluteFilename($file, $path, TRUE);
+			require($filename);
+			$strings = $_LANGUAGE;
+		}
+		$filename = $this->getAbsoluteFilename($file, $path, FALSE);
 		require($filename);
-		return $_LANGUAGE;
+
+		$strings = array_merge($strings, $_LANGUAGE);
+		return $strings;
 	}
 
 	public function updateFile($file, array $strings) {
@@ -85,13 +93,21 @@ class Language {
 	public function loadLanguageFile($filename, $path = NULL) {
 		// load the language file
 		$file = $filename;
-		$filename = $this->getAbsoluteFilename($filename, $path);
+
+		if ($this->config->siteConfig()->load_default_language_files) {
+			$filename = $this->getAbsoluteFilename($file, $path, TRUE);
+			require($filename);
+			$this->strings = array_merge($this->strings, $_LANGUAGE);
+		}
+
+		$filename = $this->getAbsoluteFilename($file, $path, FALSE);
 		require($filename);
 		$this->strings = array_merge($this->strings, $_LANGUAGE);
+
 		$this->loaded_files[] = [$file, $path];
 	}
 
-	public function getAbsoluteFilename($filename, $path = NULL) {
+	public function getAbsoluteFilename($filename, $path = NULL, $force_default = FALSE) {
 		$filename = str_replace('\\', DS, $filename);
 		$site = $this->config->siteConfig();
 		$theme = $site->theme;
@@ -101,7 +117,7 @@ class Language {
 		$default_file = $root_path.$default_path.$filename;
 		$theme_path = 'sites'.DS.$site->namespace.DS.'language'.DS.$this->language.DS;
 		$theme_file = $root_path.$theme_path.$filename;
-		if (file_exists($theme_file)) {
+		if (!$force_default && file_exists($theme_file)) {
 			return $theme_file;
 		}
 		if (file_exists($default_file)) {
@@ -109,7 +125,7 @@ class Language {
 		}
 		if ($path) {
 			$theme_file = 'sites'.DS.$site->namespace.DS.'language'.DS.$this->language.DS.$path.DS.$filename;
-			if (file_exists($theme_file)) {
+			if (!$force_default && file_exists($theme_file)) {
 				return $theme_file;
 			}
 			$path_file = $root_path.$path.DS.'language'.DS.$this->language.DS.$filename;

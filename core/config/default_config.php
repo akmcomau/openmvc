@@ -19,6 +19,7 @@ $_DEFAULT_CONFIG = (object)[
 		'admin_layout_template' => 'layouts/admin.php',
 		'theme' => 'default',
 		'static_prefix' => 'static-1',
+		'load_default_language_files' => true,
 		'enable_analytics' => true,
 		'enable_latex' => false,
 		'enable_public' => true,
