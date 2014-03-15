@@ -37,6 +37,7 @@ class Customer extends Controller {
 	}
 
 	public function logout() {
+		$this->logger->info('Logout Customer');
 		$this->authentication->logoutCustomer();
 		throw new RedirectException($this->url->getUrl());
 	}
@@ -79,6 +80,7 @@ class Customer extends Controller {
 				'login' => $form_login->getValue('username'),
 			]);
 			if ($customer && Encryption::bcrypt_verify($form_login->getValue('password'), $customer->password)) {
+				$this->logger->info('Login Customer: '.$customer->id);
 				$this->authentication->loginCustomer($customer);
 
 				if ($controller) {
@@ -89,6 +91,7 @@ class Customer extends Controller {
 				}
 			}
 			else {
+				$this->logger->info('Login Failed for Customer: '.($customer ? $customer->id : 'Invalid login'));
 				$form_login->addError('login-failed', $this->language->get('login_failed'));
 			}
 		}
@@ -120,6 +123,8 @@ class Customer extends Controller {
 			$customer->last_name  = $form_register->getValue('last-name');
 			$customer->email      = $form_register->getValue('email');
 			$customer->insert();
+
+			$this->logger->info('New Customer Registration: '.$customer->id);
 
 			$data = [
 				'name' => $customer->getName(),
@@ -180,6 +185,8 @@ class Customer extends Controller {
 					$email->setHtmlTemplate($html);
 					$email->send();
 
+					$this->logger->info('Forgot Username for Customer: '.$customer->id);
+
 					$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('forgot_username_email_sent')).'");';
 				}
 				elseif ($this->request->requestParam('forgot-password')) {
@@ -198,6 +205,8 @@ class Customer extends Controller {
 					$email->setBodyTemplate($body);
 					$email->setHtmlTemplate($html);
 					$email->send();
+
+					$this->logger->info('Forgot Password for Customer: '.$customer->id);
 
 					$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('forgot_password_email_sent')).'");';
 				}
@@ -225,6 +234,8 @@ class Customer extends Controller {
 			throw new RedirectException($this->url->getUrl('Customer', 'login', ['invalid_token']));
 		}
 
+		$this->logger->info('Password Reset for Customer: '.$customer->id);
+
 		// login the customer
 		$this->authentication->loginCustomer($customer);
 		$this->authentication->forcePasswordChange(TRUE);
@@ -245,6 +256,9 @@ class Customer extends Controller {
 			$customer->email = $form->getValue('email');
 			$customer->phone = $form->getValue('phone');
 			$customer->update();
+
+			$this->logger->info('Update contact details for Customer: '.$customer->id);
+
 			throw new RedirectException($this->url->getUrl('Customer', 'contact_details', ['update-success']));
 		}
 		elseif ($form->isSubmitted()) {
@@ -282,6 +296,9 @@ class Customer extends Controller {
 			$customer->password = Encryption::bcrypt($form->getValue('password1'), $bcrypt_cost);
 			$customer->update();
 			$this->authentication->forcePasswordChange(FALSE);
+
+			$this->logger->info('Change password for Customer: '.$customer->id);
+
 			throw new RedirectException($this->url->getUrl('Customer', 'change_password', ['update-success']));
 		}
 

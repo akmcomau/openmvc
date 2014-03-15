@@ -27,6 +27,13 @@ try {
 	$config->setSiteDomain($_SERVER['HTTP_HOST']);
 	$display_errors = $config->siteConfig()->display_errors;
 
+	// log the referer if not from this domain
+	if (isset($_SERVER['HTTP_REFERER']) && strlen($_SERVER['HTTP_REFERER'])) {
+		if (!preg_match('/'.$config->getSiteDomain().'/', $_SERVER['HTTP_REFERER'])) {
+			$logger->info('Referer: '.$_SERVER['HTTP_REFERER']);
+		}
+	}
+
 	$database   = new Database(
 		$config->database->engine,
 		$config->database->hostname,

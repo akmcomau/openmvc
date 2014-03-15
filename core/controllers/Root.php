@@ -29,7 +29,7 @@ class Root extends Controller {
 
 		$page_data = $this->url->getMethodConfig('Root', "page/$page_name");
 		if (!$page_data) {
-			$this->logger->debug('Method config not found');
+			$this->logger->info('Method config not found');
 			throw new SoftRedirectException(__CLASS__, 'error404');
 		}
 
@@ -51,7 +51,7 @@ class Root extends Controller {
 			$this->response->setContent('<div class="'.$this->config->siteConfig()->page_div_class.'">'.$template->render().'</div>');
 		}
 		catch (TemplateException $ex) {
-			$this->logger->debug('Misc page template not found');
+			$this->logger->info('Misc page template not found');
 			throw new SoftRedirectException(__CLASS__, 'error404');
 		}
 	}
@@ -75,6 +75,7 @@ class Root extends Controller {
 		$form = $this->contactUsForm();
 
 		if ($form->validate()) {
+			$this->logger->info('Contact Us submitted from: '.$this->request->postParam('email'));
 			$data = [];
 			foreach ($site_params->contact_fields as $property => $stuff) {
 				$data['fields'][$this->language->get($property)] = $this->request->postParam($property);
@@ -114,6 +115,7 @@ class Root extends Controller {
 	}
 
 	public function error401() {
+		$this->logger->info('Return error 401');
 		$this->language->loadLanguageFile('error.php');
 		header("HTTP/1.1 401 Permission Denied");
 		$template = $this->getTemplate('pages/error_401.php');
@@ -121,6 +123,7 @@ class Root extends Controller {
 	}
 
 	public function error404() {
+		$this->logger->info('Return error 404');
 		$this->language->loadLanguageFile('error.php');
 		header("HTTP/1.1 404 Not Found");
 		$template = $this->getTemplate('pages/error_404.php');
@@ -128,6 +131,7 @@ class Root extends Controller {
 	}
 
 	public function error500() {
+		$this->logger->info('Return error 500');
 		$this->language->loadLanguageFile('error.php');
 		header("HTTP/1.1 500 Internal Server Error");
 		$template = $this->getTemplate('pages/error_500.php');

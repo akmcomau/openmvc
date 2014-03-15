@@ -26,6 +26,7 @@ class Administrator extends Controller {
 	}
 
 	public function logout() {
+		$this->logger->info('Logout Administrator');
 		$this->authentication->logoutAdministrator();
 		throw new RedirectException($this->url->getUrl());
 	}
@@ -47,10 +48,12 @@ class Administrator extends Controller {
 				'login' => $form_login->getValue('username'),
 			]);
 			if ($admin && Encryption::bcrypt_verify($form_login->getValue('password'), $admin->password)) {
+				$this->logger->info('Login Administrator: '.$admin->id);
 				$this->authentication->loginAdministrator($admin);
 				throw new RedirectException($this->url->getUrl('Administrator'));
 			}
 			else {
+				$this->logger->info('Login Failed for Administrator: '.($admin ? $admin->id : 'Invalid login'));
 				$form_login->addError('login-failed', $this->language->get('login_failed'));
 			}
 		}
