@@ -220,10 +220,6 @@ class Page {
 		if (!isset($url_map['forward'][$controller])) {
 			throw new \ErrorException('Controller map does not exist');
 		}
-		$controller_map = $url_map['forward'][$controller];
-		if (!$overwrite && isset($controller_map['methods'][$method])) {
-			return FALSE;
-		}
 
 		$method_map = [
 			'aliases'   => [$language => $data['method_alias']],
@@ -272,14 +268,25 @@ class Page {
 			}
 		}
 
-		$controller_map['aliases'][$language] = $data['controller_alias'];
-		$controller_map['methods'][$method] = $method_map;
-
-		// Update meta
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
 		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS;
 		$site_file = $site_path.$controller.'.php';
 
+		if (file_exists($site_file)) {
+			require($site_file);
+			$controller_map = $_URLS;
+		}
+		else {
+			$controller_map = ['methods'=>[]];
+		}
+		if (!$overwrite && isset($controller_map['methods'][$method])) {
+			return FALSE;
+		}
+
+		$controller_map['aliases'][$language] = $data['controller_alias'];
+		$controller_map['methods'][$method] = $method_map;
+
+		// Update meta
 		if (!is_dir($site_path)) {
 			mkdir($site_path, 0775, TRUE);
 		}
@@ -292,6 +299,8 @@ class Page {
 		if ($data['misc_page']) {
 			$theme_path = $root_path.'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS.'pages'.DS.'misc'.DS;
 			$theme_file = $theme_path.$data['method'].'.php';
+
+			$data['content'] = preg_replace('/(\n\r?)+/', "\n", $data['content']);
 
 			if (!is_dir($theme_path)) {
 				mkdir($theme_path, 0775, TRUE);
