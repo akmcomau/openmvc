@@ -19,13 +19,11 @@ $_URLS = [
 			'aliases' => ['en' => 'about-us'],
 			'link_text' => ['en' => 'About Us'],
 		],
-		'page/contact_us' => [
+		'contactUs' => [
 			'aliases' => ['en' => 'contact-us'],
 			'link_text' => ['en' => 'Contact Us'],
-			'language' => ['contact_us.php'],
-			'data' => ['form' => 'contactUsForm'],
 		],
-		'page/contact_us_sent' => [
+		'contactUsSent' => [
 			'aliases' => ['en' => 'contact-us-sent'],
 			'language' => ['contact_us.php'],
 		],

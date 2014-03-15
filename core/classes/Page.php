@@ -221,24 +221,42 @@ class Page {
 			throw new \ErrorException('Controller map does not exist');
 		}
 
-		$method_map = [
-			'aliases'   => [$language => $data['method_alias']],
-			'meta_tags' => []
-		];
-		if (!empty($data['link_text'])) {
-			$method_map['link_text'] = [$language => $data['link_text']];
+		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS;
+		$site_file = $site_path.$controller.'.php';
+
+		if (file_exists($site_file)) {
+			require($site_file);
+			$controller_map = $_URLS;
+		}
+		else {
+			$controller_map = ['methods'=>[]];
+		}
+		if (!$overwrite && isset($controller_map['methods'][$method])) {
+			return FALSE;
+		}
+
+		if (isset($controller_map['methods'][$method])) {
+			$method_map = $controller_map['methods'][$method];
+			$method_map['aliases'][$language] = $data['method_alias'];
+		}
+		else {
+			$method_map = [
+				'aliases'   => [$language => $data['method_alias']],
+				'meta_tags' => []
+			];
 		}
 		if (!empty($data['link_text'])) {
-			$method_map['link_text'] = [$language => $data['link_text']];
+			$method_map['link_text'][$language] = $data['link_text'];
 		}
 		if (!empty($data['meta_tags']['title'])) {
-			$method_map['meta_tags']['title'] = [$language => $data['meta_tags']['title']];
+			$method_map['meta_tags']['title'][$language] = $data['meta_tags']['title'];
 		}
 		if (!empty($data['meta_tags']['description'])) {
-			$method_map['meta_tags']['description'] = [$language => $data['meta_tags']['description']];
+			$method_map['meta_tags']['description'][$language] = $data['meta_tags']['description'];
 		}
 		if (!empty($data['meta_tags']['keywords'])) {
-			$method_map['meta_tags']['keywords'] = [$language => $data['meta_tags']['keywords']];
+			$method_map['meta_tags']['keywords'][$language] = $data['meta_tags']['keywords'];
 		}
 		if (empty($data['category'])) {
 			$model = new Model($this->config, $this->database);
@@ -266,21 +284,6 @@ class Page {
 				$page->page_category_id = (int)$data['category'];
 				$page->insert();
 			}
-		}
-
-		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
-		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS;
-		$site_file = $site_path.$controller.'.php';
-
-		if (file_exists($site_file)) {
-			require($site_file);
-			$controller_map = $_URLS;
-		}
-		else {
-			$controller_map = ['methods'=>[]];
-		}
-		if (!$overwrite && isset($controller_map['methods'][$method])) {
-			return FALSE;
 		}
 
 		$controller_map['aliases'][$language] = $data['controller_alias'];

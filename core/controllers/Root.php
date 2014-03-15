@@ -56,6 +56,19 @@ class Root extends Controller {
 		}
 	}
 
+	public function contactUs() {
+		$this->language->loadLanguageFile('contact_us.php');
+		$data['form'] = $this->contactUsForm();
+		$template = $this->getTemplate('pages/contact_us.php', $data);
+		$this->response->setContent($template->render());
+	}
+
+	public function contactUsSent() {
+		$this->language->loadLanguageFile('contact_us.php');
+		$template = $this->getTemplate('pages/contact_us_sent.php');
+		$this->response->setContent($template->render());
+	}
+
 	public function contactUsSend() {
 		$this->language->loadLanguageFile('contact_us.php');
 		$site_params = $this->config->siteConfig();
@@ -77,14 +90,14 @@ class Root extends Controller {
 			$email->setHtmlTemplate($html);
 
 			if ($email->send()) {
-				throw new RedirectException($this->url->getUrl('Root', 'page/contact_us_sent'));
+				throw new RedirectException($this->url->getUrl('Root', 'contactUsSent'));
 			}
 			else {
 				throw new RedirectException($this->url->getUrl('Error', 'error500'));
 			}
 		}
 
-		throw new SoftRedirectException(__CLASS__, 'page/contact_us');
+		throw new SoftRedirectException(__CLASS__, 'contactUs');
 	}
 
 	protected function contactUsForm() {
