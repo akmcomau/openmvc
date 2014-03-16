@@ -40,7 +40,7 @@ try {
 
 	// log the referer if not from this domain
 	if (isset($_SERVER['HTTP_REFERER']) && strlen($_SERVER['HTTP_REFERER'])) {
-		if (!preg_match('/'.$config->getSiteDomain().'/', $_SERVER['HTTP_REFERER'])) {
+		if (!preg_match('/'.$_SERVER['HTTP_HOST'].'/', $_SERVER['HTTP_REFERER'])) {
 			$logger->info('Referer: '.$_SERVER['HTTP_REFERER']);
 		}
 	}
