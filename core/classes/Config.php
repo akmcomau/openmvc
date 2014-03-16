@@ -46,6 +46,18 @@ class Config {
 				$this->configuration[$key] = $value;
 			}
 		}
+
+		// default value for is_robot
+		$this->configuration['is_robot'] = FALSE;
+	}
+
+	public function setRobot($value) {
+		if ($value) {
+			$this->configuration['is_robot'] = TRUE;
+		}
+		else {
+			$this->configuration['is_robot'] = FALSE;
+		}
 	}
 
 	public function __get($name) {

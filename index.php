@@ -21,11 +21,20 @@ $logger = Logger::getLogger('');
 $config = new Config();
 
 try {
-	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ':'.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
-	$logger->info('Start Request ['.$ip.'] ['.session_id().']: '.$config->getSiteDomain().' => '.json_encode($_GET));
+	// is this a bot?
+	if (preg_match('/bot|index|spider|crawl|wget|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
+		$config->setRobot(TRUE);
+	}
 
-	$config->setSiteDomain($_SERVER['HTTP_HOST']);
-	$display_errors = $config->siteConfig()->display_errors;
+	// log the start of the request
+	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ':'.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
+	$logger->info('Start Request ['.$ip.'] ['.session_id().']'.($config->is_robot ? ' [ROBOT] ' : '').': '.$config->getSiteDomain().' => '.json_encode($_GET));
+
+	// log the useragent if the session was just created
+	if (!isset($_SESSION['created'])) {
+		$_SESSION['created'] = date('c');
+		$logger->info('Language: '.$_SERVER['HTTP_ACCEPT_LANGUAGE'].' :: User Agent: '.$_SERVER['HTTP_USER_AGENT']);
+	}
 
 	// log the referer if not from this domain
 	if (isset($_SERVER['HTTP_REFERER']) && strlen($_SERVER['HTTP_REFERER'])) {
@@ -33,6 +42,10 @@ try {
 			$logger->info('Referer: '.$_SERVER['HTTP_REFERER']);
 		}
 	}
+
+	// set the sites domain
+	$config->setSiteDomain($_SERVER['HTTP_HOST']);
+	$display_errors = $config->siteConfig()->display_errors;
 
 	$database   = new Database(
 		$config->database->engine,
