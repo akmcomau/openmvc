@@ -94,7 +94,7 @@ class Root extends Controller {
 				throw new RedirectException($this->url->getUrl('Root', 'contactUsSent'));
 			}
 			else {
-				throw new RedirectException($this->url->getUrl('Error', 'error500'));
+				throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error500');
 			}
 		}
 

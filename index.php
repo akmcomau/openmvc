@@ -22,7 +22,7 @@ $config = new Config();
 
 try {
 	// is this a bot?
-	if (preg_match('/bot|index|spider|crawl|wget|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
+	if (preg_match('/bot|index|spider|crawl|wget|curl|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
 		$config->setRobot(TRUE);
 	}
 

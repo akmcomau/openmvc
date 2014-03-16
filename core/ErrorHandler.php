@@ -1,5 +1,6 @@
 <?php
 
+use core\classes\Dispatcher;
 use core\classes\URL;
 
 $script_start = microtime(TRUE);
@@ -14,6 +15,10 @@ function suppress_exceptions($value) {
 
 function log_display_exception($display_error, $logger, $ex) {
 	global $config;
+	global $database;
+	global $request;
+	global $response;
+
 	$logger->error("Error during dispatch: $ex");
 	if ($display_error && (php_sapi_name() === 'cli')) {
 		echo "\n".$ex."\n";
@@ -28,7 +33,15 @@ function log_display_exception($display_error, $logger, $ex) {
 	}
 	else {
 		$url = new URL($config);
-		header("Location: ".$url->getUrl('Root', 'error500'));
+		$request->setControllerClass($url->getControllerClass('Root'));
+		$request->setMethodName('error500');
+		$request->setMethodParams([]);
+
+		$dispatcher = new Dispatcher($config, $database);
+		$response = $dispatcher->dispatchRequest($request);
+
+		$response->sendHeaders();
+		$response->sendContent();
 	}
 }
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
