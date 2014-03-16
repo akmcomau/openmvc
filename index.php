@@ -28,13 +28,13 @@ try {
 
 	// log the start of the request
 	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ':'.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
-	$logger->info('Start Request ['.$ip.'] ['.session_id().']'.($config->is_robot ? ' [ROBOT] ' : '').': '.$config->getSiteDomain().' => '.json_encode($_GET));
+	$logger->info('Start Request ['.$ip.'] ['.session_id().']'.($config->is_robot ? ' [ROBOT]' : '').': '.$config->getSiteDomain().' => '.json_encode($_GET));
 
 	// log the useragent if the session was just created
 	if (!isset($_SESSION['created'])) {
 		$_SESSION['created'] = date('c');
-		$language = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'N/A';
-		$user_agent = $_SERVER['HTTP_USER_AGENT'] ? $_SERVER['HTTP_USER_AGENT'] : 'N/A';
+		$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'N/A';
+		$user_agent = $_SERVER['HTTP_USER_AGENT'];
 		$logger->info('Language: '.$language.' :: User Agent: '.$user_agent);
 	}
 
