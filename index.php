@@ -33,7 +33,9 @@ try {
 	// log the useragent if the session was just created
 	if (!isset($_SESSION['created'])) {
 		$_SESSION['created'] = date('c');
-		$logger->info('Language: '.$_SERVER['HTTP_ACCEPT_LANGUAGE'].' :: User Agent: '.$_SERVER['HTTP_USER_AGENT']);
+		$language = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'N/A';
+		$user_agent = $_SERVER['HTTP_USER_AGENT'] ? $_SERVER['HTTP_USER_AGENT'] : 'N/A';
+		$logger->info('Language: '.$language.' :: User Agent: '.$user_agent);
 	}
 
 	// log the referer if not from this domain
