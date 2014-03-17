@@ -22,7 +22,7 @@ $config = new Config();
 
 try {
 	// is this a bot?
-	if (preg_match('/bot|index|spider|crawl|wget|curl|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
+	if (!isset($_SERVER['HTTP_REFERER']) || preg_match('/bot|index|spider|crawl|wget|curl|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
 		$config->setRobot(TRUE);
 	}
 
@@ -34,7 +34,7 @@ try {
 	if (!isset($_SESSION['created'])) {
 		$_SESSION['created'] = date('c');
 		$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'N/A';
-		$user_agent = $_SERVER['HTTP_USER_AGENT'];
+		$user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'N/A';
 		$logger->info('Language: '.$language.' :: User Agent: '.$user_agent);
 	}
 
