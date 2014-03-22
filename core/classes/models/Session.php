@@ -41,6 +41,10 @@ class Session extends Model {
 			'data_type'      => 'int',
 			'null_allowed'   => FALSE,
 		],
+		'customer_id' => [
+			'data_type'      => 'int',
+			'null_allowed'   => TRUE,
+		],
 		'session_pages_viewed' => [
 			'data_type'      => 'int',
 			'null_allowed'   => FALSE,
@@ -100,6 +104,7 @@ class Session extends Model {
 		'session_pages_viewed',
 		'session_duration',
 		'session_last_session_id',
+		'customer_id',
 		'country_id',
 		'state_id',
 		'city_id',
@@ -110,8 +115,9 @@ class Session extends Model {
 	];
 
 	protected $foreign_keys = [
-		'state_id'   => ['city',    'city_id'],
-		'state_id'   => ['state',   'state_id'],
-		'country_id' => ['country', 'country_id'],
+		'state_id'    => ['city',    'city_id'],
+		'state_id'    => ['state',   'state_id'],
+		'country_id'  => ['country', 'country_id'],
+		'customer_id' => ['customer', 'customer_id'],
 	];
 }
