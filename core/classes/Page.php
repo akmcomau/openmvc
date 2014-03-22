@@ -235,7 +235,12 @@ class Page {
 
 		if (file_exists($site_file)) {
 			require($site_file);
-			$controller_map = array_merge($core_controller_map, $_URLS);
+			if ($core_controller_map) {
+				$controller_map = array_merge($core_controller_map, $_URLS);
+			}
+			else {
+				$controller_map = $_URLS;
+			}
 		}
 		else {
 			if ($core_controller_map) {
