@@ -222,16 +222,30 @@ class Page {
 		}
 
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$core_path = $root_path.'core'.DS.'meta'.DS;
+		$core_file = $core_path.$controller.'.php';
 		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS;
 		$site_file = $site_path.$controller.'.php';
 
+		$core_controller_map = NULL;
+		if (file_exists($core_file)) {
+			require($core_file);
+			$core_controller_map = $_URLS;
+		}
+
 		if (file_exists($site_file)) {
 			require($site_file);
-			$controller_map = $_URLS;
+			$controller_map = array_merge($core_controller_map, $_URLS);
 		}
 		else {
-			$controller_map = ['methods'=>[]];
+			if ($core_controller_map) {
+				$controller_map = $core_controller_map;
+			}
+			else {
+				$controller_map = ['methods'=>[]];
+			}
 		}
+
 		if (!$overwrite && isset($controller_map['methods'][$method])) {
 			return FALSE;
 		}
