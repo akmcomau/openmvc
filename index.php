@@ -9,6 +9,7 @@ use core\classes\Config;
 use core\classes\Database;
 use core\classes\Dispatcher;
 use core\classes\Logger;
+use core\classes\Model;
 use core\classes\Request;
 use core\classes\URL;
 
@@ -21,6 +22,19 @@ $logger = Logger::getLogger('');
 $config = new Config();
 
 try {
+	// set the sites domain
+	$config->setSiteDomain($_SERVER['HTTP_HOST']);
+	$display_errors = $config->siteConfig()->display_errors;
+
+	$database   = new Database(
+		$config->database->engine,
+		$config->database->hostname,
+		$config->database->username,
+		$config->database->database,
+		$config->database->password
+	);
+	$model = new Model($config, $database);
+
 	// is this a bot?
 	if (!isset($_SERVER['HTTP_USER_AGENT']) || preg_match('/bot|index|spider|crawl|wget|curl|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
 		$config->setRobot(TRUE);
@@ -33,9 +47,34 @@ try {
 	// log the useragent if the session was just created
 	if (!isset($_SESSION['created'])) {
 		$_SESSION['created'] = date('c');
-		$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'N/A';
-		$user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'N/A';
-		$logger->info('Language: '.$language.' :: User Agent: '.$user_agent);
+		$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL;
+		$user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : NULL;
+		$logger->info('Language: '.($language ? $language : 'N/A').' :: User Agent: '.($user_agent ? $user_agent : 'N/A'));
+
+		if ($config->siteConfig()->enable_analytics) {
+			if ($language) {
+				$language = explode(',', $language, 2);
+				$language = $language[0];
+			}
+			$session = $model->getModel('\core\classes\models\Session');
+			$session->site_id          = $config->siteConfig()->site_id;
+			$session->session_id       = session_id();
+			$session->ip               = $_SERVER['REMOTE_ADDR'];
+			$session->start            = date('c');
+			$session->end              = date('c');
+			$session->duration         = 0;
+			$session->pages_viewed     = 0;
+			$session->user_agent       = $user_agent;
+			$session->last_session_id  = isset($_COOKIE['last_session']) ? $_COOKIE['last_session'] : NULL;
+			$session->language         = $language;
+			$session->insert();
+
+			// set the session_id in the session so we can look it up quickly
+			$_SESSION['db_session_id'] = $session->id;
+
+			// update last session cookie
+			setcookie('last_session', session_id(), time()+(365*24*60*60));
+		}
 	}
 
 	// log the referer if not from this domain
@@ -45,17 +84,6 @@ try {
 		}
 	}
 
-	// set the sites domain
-	$config->setSiteDomain($_SERVER['HTTP_HOST']);
-	$display_errors = $config->siteConfig()->display_errors;
-
-	$database   = new Database(
-		$config->database->engine,
-		$config->database->hostname,
-		$config->database->username,
-		$config->database->database,
-		$config->database->password
-	);
 	$request    = new Request($config, $database);
 
 	$dispatcher = new Dispatcher($config, $database);
