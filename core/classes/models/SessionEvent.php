@@ -36,7 +36,7 @@ class SessionEvent extends Model {
 		'session_event_sub_type' => [
 			'data_type'      => 'text',
 			'data_length'    => '255',
-			'null_allowed'   => FALSE,
+			'null_allowed'   => TRUE,
 		],
 		'session_event_value' => [
 			'data_type'      => 'text',
