@@ -126,22 +126,6 @@ class Customer extends Controller {
 
 			$this->logger->info('New Customer Registration: '.$customer->id);
 
-			// insert the registration event
-			if (!$this->config->is_robot && $this->config->siteConfig()->enable_analytics && isset($_SESSION['db_session_id'])) {
-				$model = new Model($this->config, $this->database);
-				$session = $model->getModel('\core\classes\models\Session')->get(['id' => $_SESSION['db_session_id']]);
-				if ($session) {
-					$session_event = $model->getModel('\core\classes\models\SessionEvent');
-					$session_event->session_id = $session->id;
-					$session_event->time       = date('c');
-					$session_event->category   = 'auth';
-					$session_event->type       = 'register';
-					$session_event->sub_type   = 'customer';
-					$session_event->value      = $customer->id;
-					$session_event->insert();
-				}
-			}
-
 			$data = [
 				'name' => $customer->getName(),
 				'username' => $customer->login,

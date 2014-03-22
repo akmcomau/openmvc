@@ -109,22 +109,6 @@ class Authentication {
 			$customer->clearToken();
 		}
 
-		// update the customer on the analytics session record
-		if (!$this->config->is_robot && $this->config->siteConfig()->enable_analytics && isset($_SESSION['db_session_id'])) {
-			$model = new Model($this->config, $this->database);
-			$session = $model->getModel('\core\classes\models\Session')->get(['id' => $_SESSION['db_session_id']]);
-			if ($session) {
-				$session_event = $model->getModel('\core\classes\models\SessionEvent');
-				$session_event->session_id = $session->id;
-				$session_event->time       = date('c');
-				$session_event->category   = 'auth';
-				$session_event->type       = 'login';
-				$session_event->sub_type   = 'customer';
-				$session_event->value      = $customer->id;
-				$session_event->insert();
-			}
-		}
-
 		$this->callHook('after_loginCustomer', [$customer]);
 		return TRUE;
 	}
@@ -143,22 +127,6 @@ class Authentication {
 		$this->request->session->set(['authentication', 'administrator'], $admin->getRecord());
 		$this->administrator_data = $admin->getRecord();
 		$this->logger->info("Administrator logged in: ".$this->getAdministratorID());
-
-		// update the customer on the analytics session record
-		if (!$this->config->is_robot && $this->config->siteConfig()->enable_analytics && isset($_SESSION['db_session_id'])) {
-			$model = new Model($this->config, $this->database);
-			$session = $model->getModel('\core\classes\models\Session')->get(['id' => $_SESSION['db_session_id']]);
-			if ($session) {
-				$session_event = $model->getModel('\core\classes\models\SessionEvent');
-				$session_event->session_id = $session->id;
-				$session_event->time       = date('c');
-				$session_event->category   = 'auth';
-				$session_event->type       = 'login';
-				$session_event->sub_type   = 'admin';
-				$session_event->value      = $admin->id;
-				$session_event->insert();
-			}
-		}
 
 		$this->callHook('after_loginAdministrator', [$admin]);
 		return TRUE;
