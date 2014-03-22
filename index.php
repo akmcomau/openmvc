@@ -51,7 +51,7 @@ try {
 		$user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : NULL;
 		$logger->info('Language: '.($language ? $language : 'N/A').' :: User Agent: '.($user_agent ? $user_agent : 'N/A'));
 
-		if ($config->siteConfig()->enable_analytics) {
+		if (!$config->is_robot && $config->siteConfig()->enable_analytics) {
 			if ($language) {
 				$language = explode(',', $language, 2);
 				$language = $language[0];

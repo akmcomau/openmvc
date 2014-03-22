@@ -70,7 +70,7 @@ function shutdown_error_handler() {
 		$logger->info("End Request: $script_time");
 	}
 
-	if ($config->siteConfig()->enable_analytics && isset($_SESSION['db_session_id'])) {
+	if (!$config->is_robot && $config->siteConfig()->enable_analytics && isset($_SESSION['db_session_id'])) {
 		// update the session record
 		$session = $model->getModel('\core\classes\models\Session')->get(['id' => $_SESSION['db_session_id']]);
 		if ($session) {
