@@ -22,12 +22,12 @@ $config = new Config();
 
 try {
 	// is this a bot?
-	if (!isset($_SERVER['HTTP_REFERER']) || preg_match('/bot|index|spider|crawl|wget|curl|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
+	if (!isset($_SERVER['HTTP_USER_AGENT']) || preg_match('/bot|index|spider|crawl|wget|curl|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
 		$config->setRobot(TRUE);
 	}
 
 	// log the start of the request
-	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ':'.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
+	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ' FORWARDED: '.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
 	$logger->info('Start Request ['.$ip.'] ['.session_id().']'.($config->is_robot ? ' [ROBOT]' : '').': '.$config->getSiteDomain().' => '.json_encode($_GET));
 
 	// log the useragent if the session was just created

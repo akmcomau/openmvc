@@ -9,7 +9,7 @@ $_LOG4PHP = [
 			"layout" => [
 				"class" => "LoggerLayoutPattern",
 				"params" => [
-					"conversionPattern" => "%d{m/d/y H:i:s,u} [%t] %c %x - %p %m%n"
+					"conversionPattern" => "%d{m/d/y H:i:s,u} %c %x - %p %m%n"
 				]
 			],
 			"threshold" => "info"
@@ -34,7 +34,7 @@ $_LOG4PHP = [
 			"layout" => [
 				"class" => "LoggerLayoutPattern",
 				"params" => [
-					"conversionPattern" => "%d{m/d/y H:i:s,u} [%t] %p %m%n"
+					"conversionPattern" => "%d{m/d/y H:i:s,u} [%sid] %p %m%n"
 				]
 			],
 			"params" => [
