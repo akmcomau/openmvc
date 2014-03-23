@@ -21,6 +21,7 @@ $_DEFAULT_CONFIG = (object)[
 		'static_prefix' => 'static-1',
 		'load_default_language_files' => true,
 		'enable_analytics' => true,
+		'enable_analytics_ecommerce' => true,
 		'enable_latex' => false,
 		'enable_public' => true,
 		'enable_admin' => true,
