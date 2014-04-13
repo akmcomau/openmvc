@@ -172,7 +172,13 @@ class Menu {
 		unset($item['text_tag']);
 	}
 
-	public function echoBootstrapMenu() {
+	public function echoBootstrapMenu($ul_class = NULL) {
+		$orig_ul_class = NULL;
+		if (!is_null($ul_class)) {
+			$orig_ul_class = $this->ul_class;
+			$this->ul_class = $ul_class;
+		}
+
 		$template = $this->template->render();
 		$template_dropdown = $this->template_dropdown->render();
 
@@ -210,6 +216,10 @@ class Menu {
 			print '</li>';
 		}
 		print '</ul>';
+
+		if (!is_null($ul_class)) {
+			$this->ul_class = $orig_ul_class;
+		}
 	}
 
 	protected function recursiveBootstrapMenu(array $menu, $depth) {

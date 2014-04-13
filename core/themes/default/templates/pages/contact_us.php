@@ -1,5 +1,4 @@
 <div class="<?php echo $page_div_class; ?>">
-	<br />
 	<div class="row">
 		<div class="col-md-12">
 			<form id="form-contact-us" action="<?php echo $this->url->getUrl('Root', 'contactUsSend'); ?>" method="post">

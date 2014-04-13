@@ -1,7 +1,8 @@
 <?php
 
-namespace core\classes\models;
+namespace core\classes\models;;
 
+use core\classes\Menu;
 use core\classes\Model;
 
 class Category extends Model {
@@ -119,6 +120,54 @@ class Category extends Model {
 			return $by_parent[NULL];
 		}
 		return [];
+	}
+
+	public function getAsMenu($template, $language, $controller, $method, $method_params = [], $site_id = NULL) {
+		if (!$site_id) $site_id = $this->config->siteConfig()->site_id;
+		if (is_array($site_id)) $site_id = ['type'=>'in', 'value'=>$site_id];
+		$params = ['site_id' => $site_id];
+		$categories = $this->getMulti($params, ['name' => 'asc']);
+		$by_parent = [];
+		$by_id = [];
+		foreach ($categories as $category) {
+			$by_parent[$category->parent_id][] = [
+				'controller'  => $controller,
+				'method'      => $method,
+				'params'      => array_merge($method_params, [$category->id, $category->name]),
+				'text'        => $category->name,
+				'id'          => $category->id,
+				'parent'      => $category->parent_id,
+			];
+			$by_id[$category->id] = &$by_parent[$category->parent_id][count($by_parent[$category->parent_id])-1];
+		}
+
+		foreach ($by_parent as $parent_id => &$categ) {
+			if ($parent_id != '') {
+				$by_id[$parent_id]['children'][] = $categ;
+			}
+		}
+
+		$options = [];
+		if (isset($by_parent[NULL])) {
+			$this->getAsMenuRecursive($options, $by_parent[NULL]);
+		}
+
+		$menu = new Menu($this->config, $language);
+		$menu->setTemplate($template);
+		$menu->setMenuData($options);
+		return $menu;
+	}
+
+	protected function getAsMenuRecursive(&$options, $categories, $level = 0) {
+		foreach ($categories as $category) {
+			$options[$category['id']] = $category;
+			if (isset($category['children'])) {
+				unset($options[$category['id']]['children']);
+				foreach ($category['children'] as $sub_category) {
+					$this->getAsMenuRecursive($options[$category['id']], $sub_category, ++$level);
+				}
+			}
+		}
 	}
 
 	public function getCanonicalName() {
