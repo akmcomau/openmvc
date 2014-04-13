@@ -87,6 +87,7 @@ class Menu {
 				}
 				if (!isset($array[$element]['children'])) {
 					$this->logger->error("Menu item does not exist ($element): ".print_r($after, TRUE));
+					return;
 				}
 				$array = &$array[$element]['children'];
 			}
