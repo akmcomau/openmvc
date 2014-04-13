@@ -19,6 +19,12 @@ class Menu {
 	protected $language;
 
 	/**
+	 * The logger object
+	 * @var Logger $logger
+	 */
+	protected $logger;
+
+	/**
 	 * The authentication object
 	 * @var Authentication $authentication
 	 */
@@ -42,6 +48,7 @@ class Menu {
 		$this->language = $language;
 		$this->authentication = $authentication;
 		$this->url = new URL($config);
+		$this->logger = Logger::getLogger(get_class($this));
 	}
 
 	public function loadMenu($filename) {
@@ -79,7 +86,7 @@ class Menu {
 					break;
 				}
 				if (!isset($array[$element]['children'])) {
-					throw new ErrorException("Menu item does not exist ($element): ".print_r($after, TRUE));
+					$this->logger->error("Menu item does not exist ($element): ".print_r($after, TRUE));
 				}
 				$array = &$array[$element]['children'];
 			}
