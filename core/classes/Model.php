@@ -765,6 +765,7 @@ class Model {
 		if ($ordering && count($ordering)) {
 			$ordering_sql = [];
 			foreach ($ordering as $column => $direction) {
+				$orig_direction = $direction;
 				$direction = (strtolower($direction) == 'asc') ? 'ASC' : 'DESC';
 				if ($column == 'random()') {
 					if ($this->database->getEngine() == 'mysql') {
@@ -775,9 +776,13 @@ class Model {
 					}
 				}
 				else {
+					$orig_column = $column;
 					$column = $this->getColumnName($column);
 					if ($column) {
 						$ordering_sql[] = "$column $direction";
+					}
+					elseif ($orig_direction == 'SQL') {
+						$ordering_sql[] = $orig_column;
 					}
 				}
 			}
