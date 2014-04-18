@@ -97,6 +97,45 @@
 	<div id="notifications_area" class="container">
 	</div>
 
+
+	<div id="modern-browsers" class="container"><noscript>
+		<div class="row-fluid modern-browsers">
+			<hr />
+			<h2>You require a modern browser with JavaScript enabled to view this site</h2>
+			<h4>If you are using Internet Explorer 9 or higher, please disable Compatibility View.</h4>
+			<h4>Or download and install one of these browsers:</h4>
+			<div class="row modern-browsers">
+				<div class="col-md-1"></div>
+				<div class="col-md-2 col-sm-6 align-center">
+					<a href="http://www.google.com/chrome">
+						<img src="<?php echo $static_prefix; ?>/core/themes/default/images/browsers/chrome.jpg" />
+						<h5>Google Chome</h5>
+					</a>
+				</div>
+				<div class="col-md-2 col-sm-6 align-center">
+					<a href="http://www.mozilla.org/firefox">
+						<img src="<?php echo $static_prefix; ?>/core/themes/default/images/browsers/firefox.jpg" />
+						<h5>Mozilla Firefox</h5>
+						<br />
+					</a>
+				</div>
+				<div class="col-md-2 col-sm-6 align-center">
+					<a href="http://www.apple.com/safari/">
+						<img src="<?php echo $static_prefix; ?>/core/themes/default/images/browsers/safari.jpg" />
+						<h5>Safari</h5>
+					</a>
+				</div>
+				<div class="col-md-2 col-sm-6 align-center">
+					<a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">
+						<img src="<?php echo $static_prefix; ?>/core/themes/default/images/browsers/ie.jpg" />
+						<h5>Internet Explorer</h5>
+					</a>
+				</div>
+			</div>
+		</div>
+		<hr />
+	</noscript></div>
+
 	<div id="main-content">
 		<?php echo $page_content; ?>
 	</div>
@@ -161,6 +200,18 @@
 				$(target).toggleClass('show-hide-'+ state);
 				$(this).toggleClass(state);
 			});
+		});
+
+		$(document).ready(function(){
+			var test_canvas = document.createElement("canvas");
+			var canvascheck = (test_canvas.getContext)? true : false;
+			if (!canvascheck || !supports_html5_storage()) {
+				$('#modern-browsers').html($('#modern-browsers noscript').text());
+				$('#navigation a').each(function() {
+					$(this).attr('href', '#').unbind('click').removeAttr('data-toggle');
+				});
+				return;
+			}
 		});
 
 		<?php if ($this->config->siteConfig()->enable_latex) { ?>

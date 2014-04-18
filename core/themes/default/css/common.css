@@ -590,3 +590,9 @@ input[type="text"].small-text {
 	-moz-border-radius: 6px 0 6px 6px;
 	border-radius: 6px 0 6px 6px;
 }
+.modern-browsers img {
+	width: 75%;
+	height: 75%;
+	max-width: 200px;
+	max-height: 200px;
+}
