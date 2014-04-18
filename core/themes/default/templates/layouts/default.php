@@ -24,9 +24,10 @@
 		</script>
 	<?php } ?>
 
-	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
-		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/html5shiv/dist/html5shiv.min.js"></script>
+		<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/Respond/dest/respond.min.js"></script>
 	<![endif]-->
 
 	<link rel="shortcut icon" href="/core/themes/default/images/favicon.ico" />

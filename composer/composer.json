@@ -84,9 +84,9 @@
 			"type":"package",
 			"package": {
 				"name": "jquery/jquery",
-				"version": "2.0.3",
+				"version": "1.11.0",
 				"dist": {
-					"url": "http://code.jquery.com/jquery-2.0.3.min.js",
+					"url": "http://code.jquery.com/jquery-1.11.0.min.js",
 					"type": "file"
 				}
 			}
@@ -98,6 +98,17 @@
 				"version": "1.10.3",
 				"dist": {
 					"url": "http://jqueryui.com/resources/download/jquery-ui-1.10.3.zip",
+					"type": "zip"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "remysh/html5shiv",
+				"version": "1.0.0",
+				"dist": {
+					"url": "https://github.com/aFarkas/html5shiv/zipball/master",
 					"type": "zip"
 				}
 			}
@@ -153,6 +164,18 @@
 		{
 			"type":"package",
 			"package": {
+				"name": "scottjehl/Respond",
+				"version": "1.4.2",
+				"source": {
+					"url": "https://github.com/scottjehl/Respond.git",
+					"type": "git",
+					"reference":"1.4.2"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
 				"name": "schemaspy/schemaspy",
 				"version": "5.0.0",
 				"dist": {
@@ -182,13 +205,16 @@
 		"ckeditor/onchange": "1.8",
 		"twbs/bootstrap": "v3.0.3",
 		"FortAwesome/Font-Awesome": "v4.0.3",
-		"jquery/jquery": "2.0.3",
+		"jquery/jquery": "1.11.0",
 		"jquery/jquery-ui": "1.10.3",
 		"malsup/form": "3.25.0",
 		"arnklint/jquery-contextMenu": "1.0.4",
 		"trentrichardson/jQuery-Impromptu": "v5.0",
 		"Mottie/tablesorter": "v2.11.1",
+		"scottjehl/Respond": "1.4.2",
+		"remysh/html5shiv": "1.0.0",
 		"schemaspy/schemaspy": "5.0.0",
 		"schemaspy/postgres": "9.3.1100.3"
 	}
 }
+
