@@ -642,6 +642,10 @@ class Model {
 				$where[] = '('.$this->generateWhereClause($value, FALSE).')';
 				continue;
 			}
+			elseif ($column == 'SQL') {
+				$where[] = $value;
+				continue;
+			}
 			else {
 				$found = FALSE;
 				foreach ($this->relationships as $table => $data) {

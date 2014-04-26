@@ -115,10 +115,10 @@ class Category extends Model {
 		}
 	}
 
-	public function getAsMenuArray($controller, $method, $method_params = [], $include_children = TRUE, $li_class = '', $site_id = NULL) {
+	public function getAsMenuArray($controller, $method, $method_params = [], $include_children = TRUE, $params = [], $li_class = '', $site_id = NULL) {
 		if (!$site_id) $site_id = $this->config->siteConfig()->site_id;
 		if (is_array($site_id)) $site_id = ['type'=>'in', 'value'=>$site_id];
-		$params = ['site_id' => $site_id];
+		$params['site_id'] = $site_id;
 		$categories = $this->getMulti($params, ['name' => 'asc']);
 		$by_parent = [];
 		$by_id = [];
@@ -145,8 +145,8 @@ class Category extends Model {
 		return [];
 	}
 
-	public function getAsMenu($template, $language, $controller, $method, $method_params = [], $include_children, $li_class = '', $site_id = NULL) {
-		$options = $this->getAsMenuArray($controller, $method, $method_params, $include_children, $li_class, $site_id);
+	public function getAsMenu($template, $language, $controller, $method, $method_params = [], $include_children, $params = [], $li_class = '', $site_id = NULL) {
+		$options = $this->getAsMenuArray($controller, $method, $method_params, $include_children, $params, $li_class, $site_id);
 		$menu = new Menu($this->config, $language);
 		$menu->setTemplate($template);
 		$menu->setMenuData($options);
