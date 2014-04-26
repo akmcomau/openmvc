@@ -72,10 +72,10 @@ class Category extends Model {
 		parent::delete();
 	}
 
-	public function getAsOptions($site_id = NULL) {
+	public function getAsOptions($site_id = NULL, $params = []) {
 		if (!$site_id) $site_id = $this->config->siteConfig()->site_id;
 		if (is_array($site_id)) $site_id = ['type'=>'in', 'value'=>$site_id];
-		$params = ['site_id' => $site_id];
+		$params['site_id'] = $site_id;
 		$categories = $this->getMulti($params, ['name' => 'asc']);
 		$by_parent = [];
 		$by_id = [];
