@@ -16,6 +16,7 @@ class Category extends Model {
 		$this->children[] = $category;
 	}
 
+	// TODO Make this use getByParent
 	public function getAllByParent($site_id = NULL, $by_field = NULL, $field_callback = NULL) {
 		if (!$site_id) $site_id = $this->config->siteConfig()->site_id;
 		if (is_array($site_id)) $site_id = ['type'=>'in', 'value'=>$site_id];
@@ -42,6 +43,42 @@ class Category extends Model {
 				'image'     => $category->hasImage() ? $category->getImageUrl() : NULL,
 				'thumbnail' => $category->hasImage() ? $category->getImageThumbnailUrl() : NULL,
 			];
+			if ($by_field) {
+				$parent_field = $category->parent_id ? $parents[$category->parent_id]->$by_field : NULL;
+				$child_field  = $category->$by_field;
+				if ($field_callback) {
+					$parent_field = $field_callback($parent_field);
+					$child_field  = $field_callback($child_field);
+				}
+				$categ_data[$parent_field][$child_field] = $categ;
+			}
+			else {
+				$categ_data[$category->parent_id][] = $categ;
+			}
+		}
+		return $categ_data;
+	}
+
+	public function getByParent($site_id = NULL, $by_field = NULL, $field_callback = NULL) {
+		if (!$site_id) $site_id = $this->config->siteConfig()->site_id;
+		if (is_array($site_id)) $site_id = ['type'=>'in', 'value'=>$site_id];
+		$params = ['site_id' => $site_id];
+
+		$categories = $this->getMulti($params, ['name' => 'asc']);
+
+		// if we are getting by field we also need the parents by id
+		$parents = [];
+		if ($by_field) {
+			foreach ($categories as $category) {
+				if ($category->parent_id == NULL) {
+					$parents[$category->id] = $category;
+				}
+			}
+		}
+
+		$categ_data = [];
+		foreach ($categories as $category) {
+			$categ = $category;
 			if ($by_field) {
 				$parent_field = $category->parent_id ? $parents[$category->parent_id]->$by_field : NULL;
 				$child_field  = $category->$by_field;
