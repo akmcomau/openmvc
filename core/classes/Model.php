@@ -685,10 +685,12 @@ class Model {
 
 					case 'notin':
 						if ($value['value']) {
-							foreach ($value['value'] as &$val) {
-								$val = $this->database->quote($val);
+							if ($value['value'] && is_array($value['value'])) {
+								foreach ($value['value'] as &$val) {
+									$val = $this->database->quote($val);
+								}
+								$where[] = $column.' NOT IN ('.join(',', $value['value']).')';
 							}
-							$where[] = $column.' NOT IN ('.join(',', $value['value']).')';
 						}
 						break;
 

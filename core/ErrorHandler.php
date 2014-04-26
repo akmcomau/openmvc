@@ -46,6 +46,9 @@ function log_display_exception($display_error, $logger, $ex) {
 }
 function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 	global $suppress_exceptions;
+	if (strpos($errstr, 'iconv(): Detected an illegal character in input string') === 0) {
+		return;
+	}
 	if (!$suppress_exceptions || !preg_match($suppress_exceptions, $errstr)) {
 		throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
 	}

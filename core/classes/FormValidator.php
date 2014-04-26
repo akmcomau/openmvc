@@ -150,6 +150,12 @@ class FormValidator {
 						}
 						break;
 
+					case 'float':
+						if (!$this->isFloat($value)) {
+							$is_this_valid = FALSE;
+						}
+						break;
+
 					case 'date':
 						if (!$this->isDate($value)) {
 							$is_this_valid = FALSE;
@@ -257,7 +263,7 @@ class FormValidator {
 		return $form_valid;
 	}
 
-	public function isNumber ($string) {
+	public function isFloat ($string) {
 		if (preg_match('/^-?[0-9]+(\.[0-9]+)?$/', $string)) {
 			return TRUE;
 		}

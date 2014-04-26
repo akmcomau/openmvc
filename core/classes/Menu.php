@@ -210,6 +210,7 @@ class Menu {
 			else {$html = $template;
 				$html = $template;
 			}
+
 			foreach ($item as $key => $value) {
 				$html = preg_replace('/\[%\s*'.$key.'\s*%\]/', htmlspecialchars($value), $html);
 			}

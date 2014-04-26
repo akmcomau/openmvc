@@ -3,7 +3,7 @@ $.extend(FormValidator, {
 	_forms: [],
 	_validators: [],
 
-	isNumber: function (string) {
+	isFloat: function (string) {
 		if (/^-?[0-9]+(\.[0-9]+)?$/.test(string)){
 			return true;
 		}
@@ -106,6 +106,12 @@ $.extend(FormValidator, {
 				switch (element.type) {
 					case 'integer':
 						if (!this.isInteger(element_value)) {
+							is_this_valid = false;
+						}
+						break;
+
+					case 'float':
+						if (!this.isFloat(element_value)) {
 							is_this_valid = false;
 						}
 						break;
