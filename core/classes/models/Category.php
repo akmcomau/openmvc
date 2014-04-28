@@ -139,14 +139,15 @@ class Category extends Model {
 	}
 
 	protected function getAsOptionRecursive(&$options, $categories, $level = 0) {
+		$level++;
 		foreach ($categories as $category) {
 			$prefix = '';
-			for ($i=0; $i<$level; $i++) {$prefix .= '&nbsp;&nbsp;';}
+			for ($i=0; $i<$level-1; $i++) {$prefix .= '&nbsp;&nbsp;';}
 
 			$options[$category['id']] = $prefix.$category['name'];
 			if (isset($category['children'])) {
 				foreach ($category['children'] as $sub_category) {
-					$this->getAsOptionRecursive($options, $sub_category, ++$level);
+					$this->getAsOptionRecursive($options, $sub_category, $level);
 				}
 			}
 		}
