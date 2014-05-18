@@ -100,15 +100,17 @@ class URL {
 		$base_core_path = $root_path.'core'.DS.'controllers'.DS;
 		$base_site_path = $root_path.'sites'.DS.$site->namespace.DS.'controllers'.DS;
 
+		$regex_DS = (DS == '/') ? '\\/' : '\\\\';
+
 		// find all the core and site controller paths
 		$dirs = [''];
 		foreach (glob("$base_core_path*", GLOB_ONLYDIR) as $dir) {
-			if (preg_match('/\/([\w]+)$/', $dir, $matches)) {
+			if (preg_match('/'.$regex_DS.'([\w]+)$/', $dir, $matches)) {
 				$dirs[] = $matches[1];
 			}
 		}
 		foreach (glob("$base_site_path*", GLOB_ONLYDIR) as $dir) {
-			if (preg_match('/\/([\w]+)$/', $dir, $matches)) {
+			if (preg_match('/'.$regex_DS.'([\w]+)$/', $dir, $matches)) {
 				if (!in_array($matches[1], $dirs)) {
 					$dirs[] = $matches[1];
 				}
@@ -123,13 +125,13 @@ class URL {
 			$site_path = $base_site_path.$path_prefix;
 
 			foreach (glob("$site_path*.php") as $filename) {
-				if (preg_match('/\/([\w]+)\.php$/', $filename, $matches)) {
+				if (preg_match('/'.$regex_DS.'([\w]+)\.php$/', $filename, $matches)) {
 					$site_controllers[$class_prefix.$matches[1]] = '\\sites\\'.$site->namespace.'\\controllers\\'.$class_prefix.$matches[1];
 				}
 			}
 
 			foreach (glob("$core_path*.php") as $filename) {
-				if (preg_match('/\/([\w]+)\.php$/', $filename, $matches)) {
+				if (preg_match('/'.$regex_DS.'([\w]+)\.php$/', $filename, $matches)) {
 					$core_controllers[$class_prefix.$matches[1]] = '\\core\\controllers\\'.$class_prefix.$matches[1];
 				}
 			}

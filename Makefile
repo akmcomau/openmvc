@@ -7,15 +7,13 @@ install-composer:
 
 # update dependancies
 update-depends:
-	rm -f composer/vendor/ckeditor/ckeditor/plugins/mathjax
-	rm -f composer/vendor/ckeditor/ckeditor/plugins/onchange
-	rm -f composer/vendor/ckeditor/ckeditor/plugins/font
+	rm -rf composer/vendor/ckeditor/ckeditor/plugins/onchange
+	rm -rf composer/vendor/ckeditor/ckeditor/plugins/font
 
 	cd composer && php composer.phar update;
 
-	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ../../../../../core/themes/default/packages/ck_mathjax ./mathjax
-	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ../../../../../composer/vendor/ckeditor/onchange ./onchange
-	cd composer/vendor/ckeditor/ckeditor/plugins && ln -s ../../../../../composer/vendor/ckeditor/font ./font
+	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/onchange ./onchange
+	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/font ./font
 
 # update composer
 site-update-composer:

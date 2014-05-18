@@ -193,6 +193,8 @@ class Model {
 			$sites = [ $site ];
 		}
 
+		$regex_DS = (DS == '/') ? '/' : '\\\\';
+
 		$site_models = [];
 		foreach ($sites as $site) {
 			$config = clone $this->config;
@@ -201,6 +203,7 @@ class Model {
 			$site_controllers = [];
 			$core_controllers = [];
 			$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+			$root_path_regex = preg_replace("/$regex_DS/", addslashes($regex_DS), $root_path);
 
 			$dirs = [];
 			$dirs[] = $root_path.'core'.DS.'classes'.DS.'models'.DS;
@@ -215,7 +218,7 @@ class Model {
 
 			foreach ($dirs as $dir) {
 				foreach (glob("$dir*.php") as $filename) {
-					if (preg_match('|^'.$root_path.'(.*?)'.DS.'([\w]+)\.php$|', $filename, $matches)) {
+					if (preg_match('|^'.$root_path_regex.'(.*?)'.$regex_DS.'([\w]+)\.php$|', $filename, $matches)) {
 						$class = str_replace('/', '\\', $matches[1]).'\\'.$matches[2];
 						$site_models[$class] = 1;
 					}
