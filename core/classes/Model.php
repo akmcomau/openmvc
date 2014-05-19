@@ -193,7 +193,7 @@ class Model {
 			$sites = [ $site ];
 		}
 
-		$regex_DS = (DS == '/') ? '/' : '\\\\';
+		$regex_DS = (DS == '/') ? '\\/' : '\\\\';
 
 		$site_models = [];
 		foreach ($sites as $site) {
@@ -218,7 +218,7 @@ class Model {
 
 			foreach ($dirs as $dir) {
 				foreach (glob("$dir*.php") as $filename) {
-					if (preg_match('|^'.$root_path_regex.'(.*?)'.$regex_DS.'([\w]+)\.php$|', $filename, $matches)) {
+					if (preg_match('/^'.$root_path_regex.'(.*?)'.$regex_DS.'([\w]+)\.php$/', $filename, $matches)) {
 						$class = str_replace('/', '\\', $matches[1]).'\\'.$matches[2];
 						$site_models[$class] = 1;
 					}
