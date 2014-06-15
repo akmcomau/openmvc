@@ -230,9 +230,6 @@ class URL {
 			if (isset($meta_tags['description'])) {
 				$meta_tags['og:description'] = $meta_tags['description'];
 			}
-			if (isset($meta_tags['keywords'])) {
-				$meta_tags['og:keywords'] = $meta_tags['keywords'];
-			}
 
 			if (!isset($meta_tags['og:image'])) {
 				$root_meta = $this->getMethodMetaTags('Root', 'index', $postfix_site, TRUE);
