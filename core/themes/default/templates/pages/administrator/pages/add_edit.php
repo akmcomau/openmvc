@@ -78,7 +78,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_title; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="meta_title" value="<?php echo htmlspecialchars($meta_tags['title']); ?>" />
+								<input type="text" class="form-control" name="meta_title" value="<?php echo htmlspecialchars(isset($meta_tags['title']) ? $meta_tags['title'] : ''); ?>" />
 								<?php echo $form->getHtmlErrorDiv('meta_title'); ?>
 							</div>
 						</div>
@@ -86,7 +86,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_description; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<textarea class="form-control" name="meta_description"><?php echo htmlspecialchars($meta_tags['description']); ?></textarea>
+								<textarea class="form-control" name="meta_description"><?php echo htmlspecialchars(isset($meta_tags['description']) ? $meta_tags['description'] : ''); ?></textarea>
 								<?php echo $form->getHtmlErrorDiv('meta_description'); ?>
 							</div>
 						</div>
@@ -94,8 +94,16 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_keywords; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="meta_keywords" value="<?php echo htmlspecialchars($meta_tags['keywords']); ?>" />
+								<input type="text" class="form-control" name="meta_keywords" value="<?php echo htmlspecialchars(isset($meta_tags['keywords']) ? $meta_tags['keywords'] : ''); ?>" />
 								<?php echo $form->getHtmlErrorDiv('meta_keywords'); ?>
+							</div>
+						</div>
+						<hr class="separator-2column" />
+						<div class="row">
+							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_ogimage; ?></div>
+							<div class="col-md-9 col-sm-9 ">
+								<input type="text" class="form-control" name="meta_og:image" value="<?php echo htmlspecialchars(isset($meta_tags['og:image']) ? $meta_tags['og:image'] : ''); ?>" />
+								<?php echo $form->getHtmlErrorDiv('meta_og:image'); ?>
 							</div>
 						</div>
 						<hr class="separator-2column" />

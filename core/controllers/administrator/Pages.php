@@ -155,6 +155,8 @@ class Pages extends Controller {
 		$data['meta_tags']['title'] = $form_page->getValue('meta_title');
 		$data['meta_tags']['description'] = $form_page->getValue('meta_description');
 		$data['meta_tags']['keywords'] = $form_page->getValue('meta_keywords');
+		$data['meta_tags']['og:image'] = $form_page->getValue('meta_og:image');
+
 		$data['controller_alias'] = $form_page->getValue('controller_alias');
 		if ($form_page->getValue('method_name')) {
 			$data['method'] = $form_page->getValue('method_name');

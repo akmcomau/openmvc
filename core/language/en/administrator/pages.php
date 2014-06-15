@@ -6,6 +6,7 @@ $_LANGUAGE = [
 	'title' => 'Title',
 	'description' => 'Description',
 	'keywords' => 'Keywords',
+	'ogimage' => 'og:image',
 	'permissions' => 'Permissions',
 	'edit' => 'Edit',
 	'meta_data' => 'Meta Data',

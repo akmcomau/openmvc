@@ -268,15 +268,16 @@ class Page {
 		if (!empty($data['link_text'])) {
 			$method_map['link_text'][$language] = $data['link_text'];
 		}
-		if (!empty($data['meta_tags']['title'])) {
-			$method_map['meta_tags']['title'][$language] = $data['meta_tags']['title'];
+
+		foreach ($data['meta_tags'] as $property => $value) {
+			if (!empty($value)) {
+				$method_map['meta_tags'][$property][$language] = $value;
+			}
+			elseif (isset($method_map['meta_tags'][$property][$language])) {
+				unset($method_map['meta_tags'][$property][$language]);
+			}
 		}
-		if (!empty($data['meta_tags']['description'])) {
-			$method_map['meta_tags']['description'][$language] = $data['meta_tags']['description'];
-		}
-		if (!empty($data['meta_tags']['keywords'])) {
-			$method_map['meta_tags']['keywords'][$language] = $data['meta_tags']['keywords'];
-		}
+
 		if (empty($data['category'])) {
 			$model = new Model($this->config, $this->database);
 			$page  = $model->getModel('\\core\\classes\\models\\PageCategoryLink')->get([

@@ -47,14 +47,25 @@ class URL {
 						if (!isset($_URLS['methods'][$method]['meta_tags'])) {
 							$_URLS['methods'][$method]['meta_tags'] = [];
 						}
+
+						// add all the meta tags from the default list
 						foreach ($_DEFAULT_METHOD['meta_tags'] as $property => $prop_data) {
 							if (isset($_URLS['methods'][$method]['meta_tags'][$property][$language])) {
 								$meta_tags[$property] = $_URLS['methods'][$method]['meta_tags'][$property][$language];
+								unset($_URLS['methods'][$method]['meta_tags'][$property]);
 							}
 							elseif (!isset($meta_tags[$property]) && !is_null($prop_data[$language])) {
 								$meta_tags[$property] = $prop_data[$language];
 							}
 						}
+
+						// add any other meta in the array
+						foreach ($_URLS['methods'][$method]['meta_tags'] as $property => $prop_data) {
+							if (isset($prop_data[$language])) {
+								$meta_tags[$property] = $prop_data[$language];
+							}
+						}
+
 						$_URLS['methods'][$method]['meta_tags'] = $meta_tags;
 					}
 					$url_config[$controller] = $_URLS;
@@ -188,28 +199,49 @@ class URL {
 
 	public function getMethodMetaTags($controller_name = NULL, $method_name = NULL, $postfix_site = TRUE, $recursive = FALSE) {
 		$meta_tags = [];
+		$used_default = FALSE;
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
+		if ($controller_name == 'Root' && $method_name == 'index') {
+			$used_default = TRUE;
+		}
 
 		if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'])) {
 			$meta_tags = self::$url_map['forward'][$controller_name]['methods'][$method_name]['meta_tags'];
 		}
 
-		if (!isset($meta_tags['title'])) {
-			if (!$recursive) {
-				$meta_tags = $this->getMethodMetaTags('Root', 'index', $postfix_site, TRUE);
-			}
-
-			if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language])) {
-				$meta_tags['title'] = self::$url_map['forward'][$controller_name]['methods'][$method_name]['link_text'][$this->config->siteConfig()->language];
-			}
-			else {
-				$meta_tags['title'] = $this->config->siteConfig()->name;
-			}
-
+		if (count($meta_tags) == 0 && !$recursive) {
+			$used_default = TRUE;
+			$meta_tags = $this->getMethodMetaTags('Root', 'index', $postfix_site, TRUE);
 		}
 
-		if ($postfix_site) $meta_tags['title'] .= ' :: '.$this->config->siteConfig()->name;
+		if (!isset($meta_tags['title'])) {
+			$meta_tags['title'] = $this->config->siteConfig()->name;
+		}
+
+		if (!$used_default && !$recursive && $postfix_site) {
+			$meta_tags['title'] .= ' :: '.$this->config->siteConfig()->name;
+		}
+
+		// create the open graph meta tags
+		if (!$recursive && $this->config->siteConfig()->og_meta_tags) {
+			$meta_tags['og:type'] = $this->config->siteConfig()->og_type;
+			$meta_tags['og:title'] = $meta_tags['title'];
+			if (isset($meta_tags['description'])) {
+				$meta_tags['og:description'] = $meta_tags['description'];
+			}
+			if (isset($meta_tags['keywords'])) {
+				$meta_tags['og:keywords'] = $meta_tags['keywords'];
+			}
+
+			if (!isset($meta_tags['og:image'])) {
+				$root_meta = $this->getMethodMetaTags('Root', 'index', $postfix_site, TRUE);
+				if (isset($root_meta['og:image'])) {
+					$meta_tags['og:image'] = $root_meta['og:image'];
+				}
+			}
+		}
+
 
 		return $meta_tags;
 	}
