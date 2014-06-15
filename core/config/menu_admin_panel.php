@@ -21,7 +21,7 @@ $_MENU = [
 			'controller' => 'administrator/Pages',
 			'method' => 'edit',
 			'text_tag' => 'admin_edit_page',
-			'icon' => 'fa fa-anchor',
+			'icon' => 'fa fa-pencil',
 		],
 		'logout' => [
 			'controller' => 'Administrator',

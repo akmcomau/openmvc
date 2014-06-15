@@ -149,8 +149,14 @@ class Controller extends Renderable {
 
 				$admin_panel = new Menu($this->config, $this->language);
 				$admin_panel->loadMenu('menu_admin_panel.php');
-				$menu_data = $admin_panel->getMenuData();
 
+				if ($this->layout->getTemplateData('admin_panel_extra')) {
+					foreach ($this->layout->getTemplateData('admin_panel_extra') as $key => $value) {
+						$admin_panel->insert_menu($value['after'], $key, $value);
+					}
+				}
+
+				$menu_data = $admin_panel->getMenuData();
 				if (isset($menu_data['language'])) {
 					$language_files = [];
 					foreach ($this->language->getLoadedFiles() as $file) {

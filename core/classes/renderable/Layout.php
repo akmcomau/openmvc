@@ -37,6 +37,20 @@ class Layout extends Renderable {
 		$this->authentication = $auth;
 	}
 
+	public function getTemplateData($key = NULL) {
+		if (is_null($key)) {
+			return $this->template_data;
+		}
+		else {
+			if (isset($this->template_data[$key])) {
+				return $this->template_data[$key];
+			}
+			else {
+				return NULL;
+			}
+		}
+	}
+
 	public function setTemplateData(array $data) {
 		$this->template_data = array_merge($this->template_data, $data);
 	}
