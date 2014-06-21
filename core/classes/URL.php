@@ -479,7 +479,12 @@ class URL {
 						$params = [];
 						if (isset($redirect['params'])) {
 							foreach ($redirect['params'] as $index) {
-								$params[] = isset($matches[$index]) ? $matches[$index] : NULL;
+								if (is_integer($index)) {
+									$params[] = isset($matches[$index]) ? $matches[$index] : NULL;
+								}
+								else {
+									$params[] = $index;
+								}
 							}
 						}
 						$request->setMethodParams($params);
