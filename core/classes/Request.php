@@ -15,6 +15,7 @@ class Request {
 	protected $controller_class = NULL;
 	protected $method_name = NULL;
 	protected $method_params = NULL;
+	protected $database = NULL;
 
 	protected $authentication;
 	protected $url;
@@ -28,12 +29,17 @@ class Request {
 		$this->server_params = &$_SERVER;
 		$this->file_params = &$_FILES;
 		$this->session = new Session();
+		$this->database = $database;
 		$this->authentication = new Authentication($config, $database, $this);
 		$this->url = new URL($config);
 	}
 
 	public function getConfig() {
 		return $this->config;
+	}
+
+	public function getDatabase() {
+		return $this->database;
 	}
 
 	public function getAuthentication() {
@@ -130,7 +136,9 @@ class Request {
 			$params = $this->method_params;
 		}
 		$controller_class = $this->url->getControllerClassName($this->controller_class);
-		return $this->url->getUrl($controller_class, $this->method_name, $params);
+		$query_string = $this->serverParam('QUERYSTRING');
+		$query_string = $query_string ? '?'.$query_string : '';
+		return $this->url->getUrl($controller_class, $this->method_name, $params).$query_string;
 	}
 
 	public function clearDispatcherParams() {

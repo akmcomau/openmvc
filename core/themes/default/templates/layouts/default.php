@@ -15,6 +15,9 @@
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
 	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
+
+	<link rel="canonical" href="<?php echo $this->config->getSiteUrl().$request->currentUrl(); ?>" />
+
 	<?php if ($this->config->siteConfig()->enable_latex) { ?>
 		<script src="<?php echo $this->config->siteConfig()->enable_latex; ?>"></script>
 		<script type="text/javascript">

@@ -41,15 +41,16 @@ class Dispatcher {
 	}
 
 	public function dispatch(Request $request) {
-		$controller_class = $this->getControllerClass($request);
-		$request->setControllerClass($controller_class);
+		if (!$this->url->routeRequest($request)) {
+			$controller_class = $this->getControllerClass($request);
+			$request->setControllerClass($controller_class);
 
-		$method_name = $this->getMethodName($request);
-		$request->setMethodName($method_name);
+			$method_name = $this->getMethodName($request);
+			$request->setMethodName($method_name);
 
-		$method_params = $this->getMethodParams($request);
-		$request->setMethodParams($method_params);
-
+			$method_params = $this->getMethodParams($request);
+			$request->setMethodParams($method_params);
+		}
 		return $this->dispatchRequest($request);
 	}
 

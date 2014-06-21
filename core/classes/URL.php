@@ -6,10 +6,12 @@ use ErrorException;
 
 class URL {
 	protected static $url_map = NULL;
+	protected $logger = NULL;
 
 	public function __construct(Config $config) {
 		$this->config = $config;
 		$this->generateUrlMap();
+		$this->logger = Logger::getLogger(__CLASS__);
 	}
 
 	public function getUrlMap() {
@@ -101,6 +103,8 @@ class URL {
 		}
 
 		self::$url_map['controllers'] = $controllers;
+
+		self::$url_map['router'] = $this->getRouterConfig();
 	}
 
 	public function listAllControllers() {
@@ -166,6 +170,33 @@ class URL {
 		}
 
 		return $controllers;
+	}
+
+	protected function getRouterConfig() {
+		$site = $this->config->siteConfig();
+		$language = $site->language;
+
+		$filename = 'router.php';
+		$root_path = __DIR__.DS.'..'.DS.'..';
+		$default_path = 'core'.DS.'config'.DS;
+		$default_file = $root_path.DS.$default_path.$filename;
+		$site_path = 'sites'.DS.$site->namespace.DS.'config'.DS;
+		$site_file = $root_path.DS.$site_path.$filename;
+
+		$filename = NULL;
+		if (file_exists($site_file)) {
+			$filename = $site_file;
+		}
+		elseif (file_exists($default_file)) {
+			$filename = $default_file;
+		}
+
+		if ($filename == NULL) {
+			return [];
+		}
+
+		require($filename);
+		return $_ROUTER;
 	}
 
 	protected function getUrlsFilename($controller, $class) {
@@ -255,6 +286,13 @@ class URL {
 		return NULL;
 	}
 
+	public function canonical($string) {
+		$string = str_replace(' ', '-', $string);
+		$string = str_replace('/-', '-', $string);
+		$string = preg_replace('/-+/', '-', $string);
+		return $string;
+	}
+
 	public function getUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
@@ -277,27 +315,30 @@ class URL {
 			$controller_name = str_replace('/', '\\', $controller_name);
 		}
 
-		// seo the url
-		$orig_method = $method_name;
-		$orig_controller = $controller_name;
-		if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language])) {
-			$method_name = self::$url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language];
-		}
-		if (isset(self::$url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language])) {
-			$controller_name = self::$url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language];
-		}
+		$url = $this->rewriteUrl($controller_name, $method_name, $params);
+		if (!$url) {
+			// seo the url
+			$orig_method = $method_name;
+			$orig_controller = $controller_name;
+			if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language])) {
+				$method_name = self::$url_map['forward'][$controller_name]['methods'][$method_name]['aliases'][$this->config->siteConfig()->language];
+			}
+			if (isset(self::$url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language])) {
+				$controller_name = self::$url_map['forward'][$controller_name]['aliases'][$this->config->siteConfig()->language];
+			}
 
-		$url = '/';
-		if ($orig_controller != 'Root') {
-			$url .= $controller_name.'/';
-		}
-		if ($orig_method != 'index' || count($params) > 0) {
-			$url .= $method_name.'/';
-		}
+			$url = '/';
+			if ($orig_controller != 'Root') {
+				$url .= $controller_name.'/';
+			}
+			if ($orig_method != 'index' || count($params) > 0) {
+				$url .= $method_name.'/';
+			}
 
-		// add parameters
-		if (count($params) > 0) {
-			$url .= $params_string;
+			// add parameters
+			if (count($params) > 0) {
+				$url .= $params_string;
+			}
 		}
 
 		// remove trailing slash
@@ -411,5 +452,68 @@ class URL {
 		}
 
 		return $method;
+	}
+
+	public function routeRequest(Request $request) {
+		foreach (self::$url_map['router']['forward'] as $regex => $redirect) {
+			if (preg_match($regex, $_SERVER['REQUEST_URI'], $matches)) {
+				if (is_callable($redirect)) {
+					$result = $redirect($request, $matches);
+					$request->setControllerClass($this->getControllerClass($result['controller']));
+					$request->setMethodName($result['method']);
+					$request->setMethodParams($result['params']);
+
+					// log it and return
+					if ($this->logger->isDebugEnabled()) {
+						$this->logger->debug('Routed request: '.json_encode($redirect).' <== '.json_encode($matches));
+					}
+					return TRUE;
+				}
+				elseif (is_array($redirect)) {
+					if (preg_match($regex, $_SERVER['REQUEST_URI'], $matches)) {
+						// set the controller and method
+						$request->setControllerClass($this->getControllerClass($redirect['controller']));
+						$request->setMethodName($redirect['method']);
+
+						// get the params
+						$params = [];
+						if (isset($redirect['params'])) {
+							foreach ($redirect['params'] as $index) {
+								$params[] = isset($matches[$index]) ? $matches[$index] : NULL;
+							}
+						}
+						$request->setMethodParams($params);
+
+						// log it and return
+						if ($this->logger->isDebugEnabled()) {
+							$this->logger->debug('Routed request: '.json_encode($redirect).' <== '.json_encode($matches));
+						}
+						return TRUE;
+					}
+				}
+				else {
+					throw new ErrorException('Invalid type for rediect '.$regex.' => '.gettype($redirect));
+				}
+			}
+		}
+
+		return FALSE;
+	}
+
+	protected function rewriteUrl($controller, $method, $params) {
+		if (isset(self::$url_map['router']['reverse'][$controller][$method])) {
+			$rewrite = self::$url_map['router']['reverse'][$controller][$method];
+			if (is_callable($rewrite)) {
+				return $rewrite($params);
+			}
+			elseif (is_string($rewrite)) {
+				return $rewrite;
+			}
+			else {
+				throw new ErrorException("Invalid type for rewrite $controller :: $method => ".gettype($rewrite));
+			}
+		}
+
+		return FALSE;
 	}
 }
