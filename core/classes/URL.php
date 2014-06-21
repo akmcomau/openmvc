@@ -287,10 +287,10 @@ class URL {
 	}
 
 	public function canonical($string) {
-		$string = str_replace(' ', '-', $string);
-		$string = str_replace('/-', '-', $string);
+		$string = preg_replace('/[\'"\{\}\[\]\(\)*&\^%\$#@!~`<>*+]/', '', $string);
+		$string = preg_replace('|[ /,.;:-]|', '-', $string);
 		$string = preg_replace('/-+/', '-', $string);
-		return $string;
+		return strtolower($string);
 	}
 
 	public function getUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
