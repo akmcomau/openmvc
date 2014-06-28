@@ -21,7 +21,7 @@ class Root extends Controller {
 		$this->response->setContent($template->render());
 	}
 
-	public function page($page_name = NULL) {
+	public function page($page_name = NULL, $extra_data = NULL) {
 		// go to homepage if there is no page
 		if (!$page_name) {
 			throw new SoftRedirectException(__CLASS__, 'error404');
@@ -40,6 +40,7 @@ class Root extends Controller {
 		}
 
 		$data = [];
+		if (is_array($extra_data)) $data = $extra_data;
 		if (isset($page_data['data'])) {
 			foreach ($page_data['data'] as $property => $method) {
 				$data[$property] = $this->$method();
