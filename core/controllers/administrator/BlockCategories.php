@@ -14,6 +14,12 @@ class BlockCategories extends CategoryManager {
 	];
 
 	public function index($message = NULL) {
+		if ($this->config->database->engine == 'none') {
+			$template = $this->getTemplate('pages/administrator/database_required.php');
+			$this->response->setContent($template->render());
+			return;
+		}
+
 		$this->category_manager($message, '\core\classes\models\BlockCategory', FALSE);
 	}
 }

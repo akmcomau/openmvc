@@ -30,7 +30,7 @@ class Database extends PDO {
 		$this->password   = $password;
 		$this->persistant = $persistant;
 
-		if ($this->engine != 'mysql' && $this->engine != 'pgsql') {
+		if ($this->engine != 'mysql' && $this->engine != 'pgsql' && $this->engine != 'none') {
 			throw new DatabaseException('Invalid database engine: '.$this->engine);
 		}
 
@@ -39,6 +39,10 @@ class Database extends PDO {
 		$options = [];
 		if ($this->persistant) {
 			$options = [PDO::ATTR_PERSISTENT => true];
+		}
+
+		if ($this->engine == 'none') {
+			return;
 		}
 
         $dns = $this->engine.':dbname='.$this->database.";host=".$this->hostname;
@@ -71,6 +75,10 @@ class Database extends PDO {
 	}
 
 	public function quote($value, $parameter_type = NULL) {
+		if ($this->engine == 'none') {
+			return '';
+		}
+
 		if (is_bool($value)) {
 			return $value ? 'TRUE' : 'FALSE';
 		}
@@ -87,6 +95,10 @@ class Database extends PDO {
 	 *
 	 */
 	public function executeQuery($sql) {
+		if ($this->engine == 'none') {
+			return NULL;
+		}
+
 		$this->logger->debug("Executing SQL: $sql");
 		$statement = $this->query($sql);
 		if (!$statement) {
@@ -102,6 +114,10 @@ class Database extends PDO {
 	 * the first field from the first row from the result set. Used for SELECT queries only.
 	 */
 	public function queryValue($sql) {
+		if ($this->engine == 'none') {
+			return NULL;
+		}
+
 		$statement = $this->executeQuery($sql);
 		$returnArray = $statement->fetch(PDO::FETCH_NUM);
 		return $returnArray[0];
@@ -112,6 +128,10 @@ class Database extends PDO {
 	 * the first row from the result set. Used for SELECT queries only.
 	 */
 	public function querySingle($sql) {
+		if ($this->engine == 'none') {
+			return NULL;
+		}
+
 		$statement = $this->executeQuery($sql);
 		return $statement->fetch(PDO::FETCH_ASSOC);
 	}
@@ -121,6 +141,10 @@ class Database extends PDO {
 	 * the result set. Used for SELECT queries only.
 	 */
 	public function queryMulti($sql) {
+		if ($this->engine == 'none') {
+			return [];
+		}
+
 		$statement = $this->executeQuery($sql);
 		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 		if (!$result) return [];
@@ -132,6 +156,10 @@ class Database extends PDO {
 	 * the result set. Used for SELECT queries only.
 	 */
 	public function queryMultiKeyed($sql, $field) {
+		if ($this->engine == 'none') {
+			return [];
+		}
+
 		$this->executeQuery($sql);
 		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 		if (!$result) return [];
@@ -147,6 +175,10 @@ class Database extends PDO {
 	 *
 	 */
 	public function queryList($sql) {
+		if ($this->engine == 'none') {
+			return [];
+		}
+
 		$this->executeQuery($sql);
 		$result = $statement->fetchAll(PDO::FETCH_NUM);
 		if (!$result) return [];
@@ -162,6 +194,10 @@ class Database extends PDO {
 	 *
 	 */
 	public function queryKeyValue($sql) {
+		if ($this->engine == 'none') {
+			return [];
+		}
+
 		$this->executeQuery($sql);
 		$result = $statement->fetchAll(PDO::FETCH_NUM);
 		if (!$result) return [];

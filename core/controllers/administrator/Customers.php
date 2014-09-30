@@ -24,6 +24,12 @@ class Customers extends Controller {
 	];
 
 	public function index($message = NULL) {
+		if ($this->config->database->engine == 'none') {
+			$template = $this->getTemplate('pages/administrator/database_required.php');
+			$this->response->setContent($template->render());
+			return;
+		}
+
 		$this->language->loadLanguageFile('administrator/customers.php');
 		$form_search = $this->getCustomerSearchForm();
 
@@ -73,6 +79,12 @@ class Customers extends Controller {
 	}
 
 	public function add() {
+		if ($this->config->database->engine == 'none') {
+			$template = $this->getTemplate('pages/administrator/database_required.php');
+			$this->response->setContent($template->render());
+			return;
+		}
+
 		$this->language->loadLanguageFile('administrator/customers.php');
 
 		$model = new Model($this->config, $this->database);

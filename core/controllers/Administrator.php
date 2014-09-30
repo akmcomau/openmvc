@@ -43,10 +43,39 @@ class Administrator extends Controller {
 		$form_login    = $this->getLoginForm();
 
 		if ($form_login->validate()) {
-			$admin = $model->getModel('core\classes\models\Administrator');
-			$admin = $admin->get([
-				'login' => $form_login->getValue('username'),
-			]);
+			// use the config file to look up the admin user
+			if ($this->config->database->engine == 'none') {
+				$site = $this->config->siteConfig();
+				$theme = $site->theme;
+
+				$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+				$default_path = 'core'.DS.'config'.DS;
+				$default_file = $root_path.$default_path.'admin_users.php';
+				$theme_path = 'sites'.DS.$site->namespace.DS.'config'.DS;
+				$theme_file = $root_path.$theme_path.'admin_users.php';
+
+				$admin = NULL;
+				if (file_exists($theme_file) || file_exists($default_file)) {
+					if (file_exists($theme_file)) {
+						require($theme_file);
+					}
+					elseif (file_exists($default_file)) {
+						require($default_file);
+					}
+					if (isset($_ADMIN_USERS[$form_login->getValue('username')])) {
+						$record = $_ADMIN_USERS[$form_login->getValue('username')];
+						$admin = $model->getModel('core\classes\models\Administrator', $record);
+					}
+				}
+			}
+			// look up the admin user in the database
+			else {
+				$admin = $model->getModel('core\classes\models\Administrator');
+				$admin = $admin->get([
+					'login' => $form_login->getValue('username'),
+				]);
+			}
+
 			if ($admin && Encryption::bcrypt_verify($form_login->getValue('password'), $admin->password)) {
 				$this->logger->info('Login Administrator: '.$admin->id);
 				$this->authentication->loginAdministrator($admin);

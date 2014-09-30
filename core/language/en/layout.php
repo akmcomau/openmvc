@@ -8,6 +8,7 @@ $_LANGUAGE = [
 	'admin_language' => 'Language',
 	'admin_edit_page' => 'Edit Page',
 	'admin_logout' => 'Logout',
+	'admin_meta_data' => 'Meta Data',
 	'search' => 'Search',
 	'search_button' => 'Search',
 	'my_account' => 'My Account',

@@ -3,6 +3,7 @@ robots.txt
 google*.html
 core/config/log4php.php
 core/config/config.php
+core/config/config-*.php
 composer/composer.lock
 composer/composer.phar
 composer/vendor/

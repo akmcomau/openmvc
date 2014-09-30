@@ -26,6 +26,12 @@ class Blocks extends Controller {
 	];
 
 	public function index($message = NULL) {
+		if ($this->config->database->engine == 'none') {
+			$template = $this->getTemplate('pages/administrator/database_required.php');
+			$this->response->setContent($template->render());
+			return;
+		}
+
 		$this->language->loadLanguageFile('administrator/blocks.php');
 		$form_search = $this->getBlockSearchForm();
 
@@ -86,6 +92,12 @@ class Blocks extends Controller {
 	}
 
 	public function add() {
+		if ($this->config->database->engine == 'none') {
+			$template = $this->getTemplate('pages/administrator/database_required.php');
+			$this->response->setContent($template->render());
+			return;
+		}
+
 		$this->language->loadLanguageFile('administrator/blocks.php');
 		$form_block = $this->getBlockForm();
 
