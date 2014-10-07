@@ -15,7 +15,7 @@ $_MENU = [
 		],
 		'contact_us' => [
 			'controller' => 'Root',
-			'method' => 'page/contact_us',
+			'method' => 'contactUs',
 		],
 	],
 ];
