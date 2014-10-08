@@ -35,6 +35,10 @@ class FormValidator {
 		return $this->form_errors;
 	}
 
+	public function setErrors(array $errors) {
+		$this->form_errors = $errors;
+	}
+
 	public function addError($name, $message) {
 		$this->form_errors[$name] = $message;
 	}

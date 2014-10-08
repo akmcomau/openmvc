@@ -62,9 +62,16 @@ class Root extends Controller {
 		}
 	}
 
-	public function contactUs() {
+	public function contactUs($errors = '[]') {
+		try {
+			$errors = json_decode($errors, TRUE);
+		}
+		catch (Exception $ex) {
+			$errors = [];
+		}
 		$this->language->loadLanguageFile('contact_us.php');
 		$data['form'] = $this->contactUsForm();
+		$data['form']->setErrors($errors);
 		$template = $this->getTemplate('pages/contact_us.php', $data);
 		$this->response->setContent($template->render());
 	}
@@ -104,7 +111,7 @@ class Root extends Controller {
 			}
 		}
 
-		throw new SoftRedirectException(__CLASS__, 'contactUs');
+		throw new SoftRedirectException(__CLASS__, 'contactUs', [json_encode($form->getErrors())]);
 	}
 
 	protected function contactUsForm() {
