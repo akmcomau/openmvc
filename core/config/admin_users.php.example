@@ -1,0 +1,10 @@
+<?php
+
+$_ADMIN_USERS = [
+	'martin' => [
+		'administrator_id' => 1,
+		'administrator_first_name' => 'Admin',
+		'administrator_last_name' => 'User',
+		'administrator_password' => '',
+	],
+];
