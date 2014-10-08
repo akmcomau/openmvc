@@ -49,7 +49,12 @@ class Root extends Controller {
 
 		try {
 			$template = $this->getTemplate("pages/misc/$page_name.php", $data);
-			$this->response->setContent('<div class="'.$this->config->siteConfig()->page_div_class.'">'.$template->render().'</div>');
+			if ($this->config->siteConfig()->page_div_class === FALSE) {
+				$this->response->setContent($template->render());
+			}
+			else {
+				$this->response->setContent('<div class="'.$this->config->siteConfig()->page_div_class.'">'.$template->render().'</div>');
+			}
 		}
 		catch (TemplateException $ex) {
 			$this->logger->info('Misc page template not found');
