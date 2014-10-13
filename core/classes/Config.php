@@ -190,6 +190,7 @@ class Config {
 	}
 
 	public function setSiteDomain($host, $redirect = TRUE) {
+		$default_site = NULL;
 		$sites = $this->sites;
 		foreach ($sites as $domain => $site) {
 			if ($redirect && $domain == $host) {
@@ -203,6 +204,15 @@ class Config {
 
 				return;
 			}
+
+			if (!$default_site && $site->default_site) {
+				$default_site = $site;
+			}
+		}
+
+		// redirect to the first default site in the list
+		if ($default_site) {
+			throw new DomainRedirectException('www.'.$default_site->domain);
 		}
 
 		throw new ErrorException("HTTP_HOST does not reference a site: $host");
