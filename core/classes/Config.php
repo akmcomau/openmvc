@@ -246,10 +246,36 @@ class Config {
 	}
 
 	/**
+	 * Checks if the current connection is over https
+	 * @return \b boolean TRUE if the connection is https, FLASE otherwise
+	 */
+	public function isHttps() {
+		if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) {
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	/**
 	 * Gets the current sites base URL
+	 * @param[in] $ssl_override \b boolean Create SSL url is connection is over HTTPS
 	 * @return \b string The sites base URL
 	 */
-	public function getSiteUrl() {
+	public function getSiteUrl($ssl_override = FALSE) {
+		if ($ssl_override && $this->isHttps()) {
+			return $this->getSecureSiteUrl();
+		}
+		return 'http://www.'.$this->site_domain;
+	}
+
+	/**
+	 * Gets the current sites base HTTPS URL
+	 * @return \b string The sites base URL
+	 */
+	public function getSecureSiteUrl() {
+		if ($this->config->siteConfig()->enable_ssl) {
+			return 'https://www.'.$this->site_domain;
+		}
 		return 'http://www.'.$this->site_domain;
 	}
 

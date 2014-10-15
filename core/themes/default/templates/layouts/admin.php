@@ -8,17 +8,17 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome.min.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery-ui/themes/base/jquery-ui.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/font-awesome/css/font-awesome.min.css'); ?>" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery-ui/themes/base/jquery-ui.css'); ?>" rel="stylesheet" media="screen" />
 
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/bootstrap.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/common.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/admin.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/bootstrap.css'); ?>" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/common.css'); ?>" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/admin.css'); ?>" rel="stylesheet" media="screen" />
 
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery-ui/ui/jquery-ui.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery.min.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery-ui/ui/jquery-ui.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/bootstrap/js/bootstrap.min.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/js/form_validator.js'); ?>"></script>
 
 	<?php if ($this->config->siteConfig()->enable_latex) { ?>
 		<script src="<?php echo $this->config->siteConfig()->enable_latex; ?>"></script>
@@ -30,17 +30,17 @@
 		  });
 		</script>
 	<?php } ?>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/ckeditor/ckeditor.js"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/ckeditor/ckeditor.js'); ?>"></script>
 
 	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 	<!--[if lt IE 9]>
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 
-	<link rel="shortcut icon" href="/core/themes/default/images/favicon.ico" />
-	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/core/themes/default/images/icon_logo_114.gif" />
-	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/core/themes/default/images/icon_logo_72.gif" />
-	<link rel="apple-touch-icon-precomposed" href="/core/themes/default/images/icon_logo_57.gif" />
+	<link rel="shortcut icon" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/favicon.ico'); ?>" />
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/icon_logo_114.gif'); ?>" />
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/icon_logo_72.gif'); ?>" />
+	<link rel="apple-touch-icon-precomposed" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/icon_logo_57.gif'); ?>" />
 
 	<?php foreach ($meta_tags as $property => $value) {
 		echo '<meta property="'.$property.'" content="'.htmlspecialchars($value).'" />';

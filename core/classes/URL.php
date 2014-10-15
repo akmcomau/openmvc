@@ -293,7 +293,28 @@ class URL {
 		return strtolower($string);
 	}
 
+	/**
+	 * Gets a static URL, if the connection is SSL, then a SSL URL will be returned
+	 * @param[in] $force_ssl \b boolean Get a SSL URL regardless of current connection
+	 * @return \b string The sites base URL
+	 */
+	public function getStaticUrl($url, $force_ssl = FALSE) {
+		$url = $this->config->siteConfig()->static_prefix.$url;
+		if ($this->config->isHttps() || $force_ssl) {
+			return $this->config->getSecureSiteUrl().$url;
+		}
+		return $this->config->getSiteUrl().$url;
+	}
+
 	public function getUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+		return $this->config->getSiteUrl().$this->getRelativeUrl($controller_name, $method_name, $params, $get_params);
+	}
+
+	public function getSecureUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+		return $this->config->getSecureSiteUrl().$this->getRelativeUrl($controller_name, $method_name, $params, $get_params);
+	}
+
+	public function getRelativeUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 		if (!$params)          $params          = [];
@@ -352,10 +373,6 @@ class URL {
 		}
 
 		return $url;
-	}
-
-	public function getSecureUrl($controller = NULL, $method = NULL, array $params = NULL) {
-		throw new \Exception('TODO');
 	}
 
 	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {

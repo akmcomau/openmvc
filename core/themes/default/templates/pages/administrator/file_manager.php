@@ -1,6 +1,6 @@
-<link rel="stylesheet" type="text/css" href="<?php echo $static_prefix; ?>/core/themes/default/packages/file_manager/jqueryFileTree.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.contextMenu/jquery.contextMenu.css" />
-<link rel="stylesheet" type="text/css" href="<?php echo $static_prefix; ?>/core/themes/default/packages/file_manager/file_manager.css" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/file_manager/jqueryFileTree.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery.contextMenu/jquery.contextMenu.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/file_manager/file_manager.css'); ?>" />
 
 <div class="container">
 	<form id="uploader" method="post">
@@ -37,11 +37,11 @@
 	<script type="text/javascript">
 		var file_manager_site_url = '<?php echo $site_url; ?>';
 	</script>
-	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/packages/file_manager/jquery.form.js"></script>
-	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/packages/file_manager/jquery.splitter.js"></script>
-	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/packages/file_manager/jqueryFileTree.js"></script>
-	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.contextMenu/jquery.contextMenu.js"></script>
-	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.impromptu/jquery-impromptu.js"></script>
-	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.tablesorter/js/jquery.tablesorter.min.js"></script>
-	<script type="text/javascript" src="<?php echo $static_prefix; ?>/core/themes/default/packages/file_manager/filemanager.min.js"></script>
+	<script type="text/javascript" src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/file_manager/jquery.form.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/file_manager/jquery.splitter.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/file_manager/jqueryFileTree.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery.contextMenu/jquery.contextMenu.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery.impromptu/jquery-impromptu.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery.tablesorter/js/jquery.tablesorter.min.js'); ?>"></script>
+	<script type="text/javascript" src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/file_manager/filemanager.min.js'); ?>"></script>
 </div>

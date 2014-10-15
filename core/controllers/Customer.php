@@ -23,10 +23,10 @@ class Customer extends Controller {
 	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
 		$controller = $this->url->getControllerClassName('\\'.get_class($this));
 		$urls = [
-			['url' => $this->config->getSiteUrl().$this->url->getUrl($controller, 'register')],
-			['url' => $this->config->getSiteUrl().$this->url->getUrl($controller, 'login')],
-			['url' => $this->config->getSiteUrl().$this->url->getUrl($controller, 'login_register')],
-			['url' => $this->config->getSiteUrl().$this->url->getUrl($controller, 'forgot')],
+			['url' => $this->url->getUrl($controller, 'register')],
+			['url' => $this->url->getUrl($controller, 'login')],
+			['url' => $this->url->getUrl($controller, 'login_register')],
+			['url' => $this->url->getUrl($controller, 'forgot')],
 		];
 		return $urls;
 	}
@@ -193,7 +193,7 @@ class Customer extends Controller {
 					$token = $customer->generateToken();
 					$enc_customer_id = Encryption::obfuscate($customer->id, $this->config->siteConfig()->secret);
 					$data = [
-						'url' => $this->config->getSiteUrl().$this->url->getUrl('Customer', 'reset', [$enc_customer_id, $token]),
+						'url' => $this->url->getUrl('Customer', 'reset', [$enc_customer_id, $token]),
 						'name' => $customer->getName(),
 						'username' => $customer->login,
 					];

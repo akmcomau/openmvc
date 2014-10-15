@@ -221,7 +221,7 @@ class Controller extends Renderable {
 				}
 			}
 			$urls[] = [
-				'url' => $this->config->getSiteUrl().$this->url->getUrl($controller, $method),
+				'url' => $this->url->getUrl($controller, $method),
 			];
 		}
 		return $urls;

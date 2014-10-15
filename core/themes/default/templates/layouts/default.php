@@ -6,17 +6,17 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/packages/font-awesome/css/font-awesome.min.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/font-awesome/css/font-awesome.min.css'); ?> rel="stylesheet" media="screen" />
 
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/bootstrap.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/common.css" rel="stylesheet" media="screen" />
-	<link href="<?php echo $static_prefix; ?>/core/themes/default/css/theme.css" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/bootstrap.css'); ?>" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/common.css'); ?>" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/theme.css'); ?>" rel="stylesheet" media="screen" />
 
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/jquery.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/bootstrap/js/bootstrap.min.js"></script>
-	<script src="<?php echo $static_prefix; ?>/core/themes/default/js/form_validator.js"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery.min.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/bootstrap/js/bootstrap.min.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/js/form_validator.js'); ?>"></script>
 
-	<link rel="canonical" href="<?php echo $this->config->getSiteUrl().$request->currentUrl(); ?>" />
+	<link rel="canonical" href="<?php echo $request->currentUrl(); ?>" />
 
 	<?php if ($this->config->siteConfig()->enable_latex) { ?>
 		<script src="<?php echo $this->config->siteConfig()->enable_latex; ?>"></script>
@@ -29,14 +29,14 @@
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
-		<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/html5shiv/dist/html5shiv.min.js"></script>
-		<script src="<?php echo $static_prefix; ?>/core/themes/default/packages/Respond/dest/respond.min.js"></script>
+		<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/html5shiv/dist/html5shiv.min.js'); ?>"></script>
+		<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/Respond/dest/respond.min.js'); ?>"></script>
 	<![endif]-->
 
-	<link rel="shortcut icon" href="/core/themes/default/images/favicon.ico" />
-	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/core/themes/default/images/icon_logo_114.gif" />
-	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/core/themes/default/images/icon_logo_72.gif" />
-	<link rel="apple-touch-icon-precomposed" href="/core/themes/default/images/icon_logo_57.gif" />
+	<link rel="shortcut icon" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/favicon.ico'); ?>" />
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/icon_logo_114.gif'); ?>" />
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/icon_logo_72.gif'); ?>" />
+	<link rel="apple-touch-icon-precomposed" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/icon_logo_57.gif'); ?>" />
 
 	<?php foreach ($meta_tags as $property => $value) {
 		echo '<meta property="'.$property.'" content="'.htmlspecialchars($value).'" />';
@@ -112,26 +112,26 @@
 				<div class="col-md-1"></div>
 				<div class="col-md-2 col-sm-6 align-center">
 					<a href="http://www.google.com/chrome">
-						<img src="<?php echo $static_prefix; ?>/core/themes/default/images/browsers/chrome.jpg" />
+						<img src="<?php echo $this->url->getStaticUrl('/core/themes/default/images/browsers/chrome.jpg'); ?>" />
 						<h5>Google Chome</h5>
 					</a>
 				</div>
 				<div class="col-md-2 col-sm-6 align-center">
 					<a href="http://www.mozilla.org/firefox">
-						<img src="<?php echo $static_prefix; ?>/core/themes/default/images/browsers/firefox.jpg" />
+						<img src="<?php echo $this->url->getStaticUrl('/core/themes/default/images/browsers/firefox.jpg'); ?>" />
 						<h5>Mozilla Firefox</h5>
 						<br />
 					</a>
 				</div>
 				<div class="col-md-2 col-sm-6 align-center">
 					<a href="http://www.apple.com/safari/">
-						<img src="<?php echo $static_prefix; ?>/core/themes/default/images/browsers/safari.jpg" />
+						<img src="<?php echo $this->url->getStaticUrl('/core/themes/default/images/browsers/safari.jpg'); ?>" />
 						<h5>Safari</h5>
 					</a>
 				</div>
 				<div class="col-md-2 col-sm-6 align-center">
 					<a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">
-						<img src="<?php echo $static_prefix; ?>/core/themes/default/images/browsers/ie.jpg" />
+						<img src="<?php echo $this->url->getStaticUrl('/core/themes/default/images/browsers/ie.jpg'); ?>" />
 						<h5>Internet Explorer</h5>
 					</a>
 				</div>

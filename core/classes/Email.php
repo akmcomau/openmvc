@@ -19,7 +19,19 @@ class Email {
 	 * The email address to send this email to
 	 * @var string $to_email
 	 */
-	protected $to_email;
+	protected $to_email = '';
+
+	/**
+	 * The email address to CC this email to
+	 * @var string $to_email
+	 */
+	protected $cc_email = '';
+
+	/**
+	 * The email address to BCC this email to
+	 * @var string $to_email
+	 */
+	protected $bcc_email = '';
 
 	/**
 	 * The email address this email is from
@@ -31,19 +43,19 @@ class Email {
 	 * The subject of this email
 	 * @var string $subject
 	 */
-	protected $subject;
+	protected $subject = '';
 
 	/**
 	 * The template to use for the text body of this email
 	 * @var string $body_template
 	 */
-	protected $body_template;
+	protected $body_template = NULL;
 
 	/**
 	 * The template to use for the HTLM body of this email
 	 * @var string $html_template
 	 */
-	protected $html_template;
+	protected $html_template = NULL;
 
 	/**
 	 * Holds all the attachments on the email
@@ -62,11 +74,79 @@ class Email {
 	}
 
 	/**
+	 * Create an RFC2822 email address
+	 * @param[in] $email \b string The receipient's email address
+	 * @param[in] $name  \b string The receipient's name
+	 */
+	public function createEmailAddress($email, $name) {
+		// @TODO Make the email address compliant
+		return "$name <$email>";
+	}
+
+	/**
 	 * Set receipient of the email
-	 * @param[in] $to_email \b string The TO email address
+	 * @param[in] $to_email \b mixed The TO email address or an array or email addresses
 	 */
 	public function setToEmail($to_email) {
-		$this->to_email = $to_email;
+		if (is_array($to_email)) {
+			$this->to_email = join(',', $to_email);
+		}
+		else {
+			$this->to_email = $to_email;
+		}
+	}
+
+	/**
+	 * Add a receipient of the email
+	 * @param[in] $to_email \b string The TO email address
+	 */
+	public function addToEmail($to_email) {
+		if (strlen($this->to_email) > 0) $this->to_email .= ',';
+		$this->to_email .= $to_email;
+	}
+
+	/**
+	 * Set CC of the email
+	 * @param[in] $cc_email \b mixed The CC email address or an array or email addresses
+	 */
+	public function setCcEmail($cc_email) {
+		if (is_array($cc_email)) {
+			$this->cc_email = join(',', $cc_email);
+		}
+		else {
+			$this->cc_email = $cc_email;
+		}
+	}
+
+	/**
+	 * Add a receipient of the email
+	 * @param[in] $cc_email \b string The CC email address
+	 */
+	public function addCcEmail($cc_email) {
+		if (strlen($this->cc_email) > 0) $this->cc_email .= ',';
+		$this->cc_email .= $cc_email;
+	}
+
+	/**
+	 * Set receipient of the email
+	 * @param[in] $bcc_email \b mixed The BCC email address or an array or email addresses
+	 */
+	public function setBccEmail($bcc_email) {
+		if (is_array($bcc_email)) {
+			$this->bcc_email = join(',', $bcc_email);
+		}
+		else {
+			$this->bcc_email = $bcc_email;
+		}
+	}
+
+	/**
+	 * Add a receipient of the email
+	 * @param[in] $bcc_email \b string The BCC email address
+	 */
+	public function addBccEmail($bcc_email) {
+		if (strlen($this->bcc_email) > 0) $this->bcc_email .= ',';
+		$this->bcc_email .= $bcc_email;
 	}
 
 	/**
@@ -122,7 +202,12 @@ class Email {
 	 */
 	public function send() {
 		$random_hash = md5(date('r', time()));
-		$headers  = "From: ".$this->from_email."\r\n";
+
+		$headers = '';
+		if ($this->cc_email)  $headers .= 'CC: '.  $this->cc_email  . "\r\n";
+		if ($this->bcc_email) $headers .= 'BCC: '. $this->bcc_email . "\r\n";
+
+		$headers .= "From: ".$this->from_email."\r\n";
 		$headers .= "Reply-To: ".$this->from_email."\r\n";
 		$headers .= "Content-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
 
