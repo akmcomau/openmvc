@@ -77,7 +77,7 @@ catch (DomainRedirectException $ex) {
 	}
 	$controller = isset($_GET['controller']) ?  $_GET['controller'] : NULL;
 	$method = isset($_GET['method']) ?  $_GET['method'] : NULL;
-	header('Location: http://'.$ex->getDomain().$url->getUrl($controller, $method, $params));
+	header('Location: '.$url->getUrl($controller, $method, $params));
 }
 catch (Exception $ex) {
 	log_display_exception($display_errors, $logger, $ex);
