@@ -113,7 +113,11 @@ class Request {
 		}
 	}
 
-	public function fileParam($name) {
+	public function fileParam($name, $value = NULL) {
+		if ($value) {
+			$this->file_params[$name] = $value;
+		}
+
 		if (isset($this->file_params[$name])) {
 			return $this->file_params[$name];
 		}

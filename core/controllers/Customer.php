@@ -145,7 +145,7 @@ class Customer extends Controller {
 				throw new RedirectException($this->url->getUrl($controller, $method, $params));
 			}
 			else {
-				throw new RedirectException($this->url->getUrl('Customer'));
+				throw new RedirectException($this->url->getUrl('Customer', 'index', ['registered']));
 			}
 		}
 

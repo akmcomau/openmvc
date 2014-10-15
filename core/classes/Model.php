@@ -384,7 +384,7 @@ class Model {
 				$this->record[$primary_key] = $this->database->queryValue($sql);
 			}
 			else {
-				$this->record[$primary_key] = $this->lastInsertId();
+				$this->record[$primary_key] = $this->database->lastInsertId();
 			}
 		}
 		$this->logger->debug("Inserted record in $table => ".$this->record[$primary_key]);

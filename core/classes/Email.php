@@ -20,6 +20,7 @@ class Email {
 	protected $subject;
 	protected $body_template;
 	protected $html_template;
+	protected $attachments = [];
 
 	public function __construct(Config $config) {
 		$this->config = $config;
@@ -47,13 +48,26 @@ class Email {
 		$this->html_template = $html_template;
 	}
 
+	public function attach($file_name, $file_path, $file_type) {
+		$attachment = chunk_split(base64_encode(file_get_contents($file_path)));
+		$this->attachments[] = [
+			'content' => $attachment,
+			'type'    => $file_type,
+			'name'    => $file_name,
+		];
+	}
+
 	public function send() {
 		$random_hash = md5(date('r', time()));
 		$headers = "From: ".$this->from_email."\r\nReply-To: ".$this->from_email;
-		$headers .= "\r\nContent-Type: multipart/alternative; boundary=\"PHP-alt-".$random_hash."\"";
+		$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
 
 		ob_start();
 ?>
+--PHP-mixed-<?php echo $random_hash; ?>
+
+Content-Type: multipart/alternative; boundary="PHP-alt-<?php echo $random_hash; ?>"
+
 --PHP-alt-<?php echo $random_hash; ?>
 
 Content-Type: text/plain; charset="iso-8859-1"
@@ -70,6 +84,26 @@ Content-Transfer-Encoding: 7bit
 
 --PHP-alt-<?php echo $random_hash; ?>--
 <?php
+
+		if (count($this->attachments)) {
+			foreach ($this->attachments as $attachment) {
+?>
+
+--PHP-mixed-<?php echo $random_hash; ?>
+
+Content-Type: <?php echo $attachment['type']; ?>; name="<?php echo $attachment['name']; ?>"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment
+
+<?php echo $attachment['content']; ?>
+<?php
+			}
+		}
+
+?>
+--PHP-mixed-<?php echo $random_hash; ?>--
+<?php
+
 		$message = ob_get_clean();
 
 		if (mail($this->to_email, $this->subject, $message, $headers)) {

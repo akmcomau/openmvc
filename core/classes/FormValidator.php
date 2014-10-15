@@ -217,6 +217,16 @@ class FormValidator {
 						}
 						break;
 
+					case 'file':
+						$file = $this->request->fileParam($name);
+						if (!$file) {
+							$is_this_valid = FALSE;
+						}
+						elseif ($file['error'] != UPLOAD_ERR_OK) {
+							$is_this_valid = FALSE;
+						}
+						break;
+
 					default:
 						throw new FormException("Invalid form element type [$name]: ".$data['type']);
 						break;
