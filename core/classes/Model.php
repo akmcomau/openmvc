@@ -164,8 +164,8 @@ class Model {
 
 	/**
 	 * Constructor
-	 * @param[in] config   The configuration object
-	 * @param[in] database The database object
+	 * @param[in] $config   The configuration object
+	 * @param[in] $database The database object
 	 */
 	public function __construct(Config $config, Database $database) {
 		$this->config   = $config;
@@ -182,7 +182,7 @@ class Model {
 
 	/**
 	 * Finds all the available models for this site and stores them in self::$site_models
-	 * @param[in] site  [Optional] Get models for a sepecific site, if NULL then
+	 * @param[in] $site  [Optional] Get models for a sepecific site, if NULL then
 	 *                  this will find all models for all sites.
 	 */
 	protected function findAllModels($site = NULL) {
@@ -237,7 +237,7 @@ class Model {
 
 	/**
 	 * Get the record array
-	 * @return The record array
+	 * @return \b array The record array
 	 */
 	public function getRecord() {
  		return $this->record;
@@ -245,7 +245,7 @@ class Model {
 
 	/**
 	 * Get the available models
-	 * @return An array containing the available models
+	 * @return \b array The available models
 	 */
 	public function getSiteModels() {
  		return self::$site_models;
@@ -253,7 +253,7 @@ class Model {
 
 	/**
 	 * Set the record array
-	 * @param[in] record The array to set as the record array
+	 * @param[in] $record The array to set as the record array
 	 */
 	public function setRecord(array $record) {
 		$this->record = $record;
@@ -261,8 +261,8 @@ class Model {
 
 	/**
 	 * Set an element in the objects array
-	 * @param[in] key    The element's key
-	 * @param[in] object The object
+	 * @param[in] $key    The element's key
+	 * @param[in] $object The object
 	 */
 	public function setObjectCache($key, $object) {
 		$this->objects[$key] = $object;
@@ -270,8 +270,9 @@ class Model {
 
 	/**
 	 * Sets an element in the record array
-	 * @param[in] name  The column name
-	 * @param[in] value The value for the column
+	 * @param[in] $name  The column name
+	 * @param[in] $value The value for the column
+	 * @throws ModelException if the property does not exist
 	 */
 	public function __set($name, $value) {
 		if (isset($this->columns[$this->table.'_'.$name])) {
@@ -287,8 +288,9 @@ class Model {
 
 	/**
 	 * Gets an element from the record array
-	 * @param[in] name The column name
-	 * @return The value of the column
+	 * @param[in] $name The column name
+	 * @return \b mixed The value of the column
+	 * @throws ModelException if the property does not exist
 	 */
 	public function __get($name) {
 		if (isset($this->columns[$this->table.'_'.$name])) {
@@ -314,8 +316,8 @@ class Model {
 
 	/**
 	 * Translate a column name to the database column name.
-	 * @param[in] name The column name
-	 * @return The database column name or NULL if it could not be translated
+	 * @param[in] $name The column name
+	 * @return \b string The database column name or NULL if it could not be translated
 	 */
 	public function getColumnName($name) {
 		if (isset($this->columns[$this->table.'_'.$name])) {
@@ -338,8 +340,7 @@ class Model {
 
 	/**
 	 * Call a database model hook, if one is set
-	 * @param[in] name The name of the hook
-	 * @return The return value of the hook
+	 * @param[in] $name The name of the hook
 	 */
 	protected function callHook($name) {
 		$name = $this->table.'_'.$name;
@@ -356,7 +357,7 @@ class Model {
 
 	/**
 	 * Insert this model into the database
-	 * @return The primary key's value
+	 * @return \b mixed The primary key's value
 	 */
 	public function insert() {
 		$table       = $this->table;
@@ -396,6 +397,7 @@ class Model {
 
 	/**
 	 * Update this model in the database
+	 * @throws ModelException If the model does not have a primary key set
 	 */
 	public function update() {
 		$table       = $this->table;
@@ -420,6 +422,7 @@ class Model {
 
 	/**
 	 * Delete this model from the database
+	 * @throws ModelException If the model does not have a primary key set
 	 */
 	public function delete() {
 		$table       = $this->table;
@@ -437,9 +440,9 @@ class Model {
 
 	/**
 	 * Get a model from the database.  The first record is used to create the model.
-	 * @param[in] params   The params to lookup the record, see generateWhereClause()
-	 * @param[in] ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
-	 * @return The model object
+	 * @param[in] $params   The params to lookup the record, see generateWhereClause()
+	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @return \b Model The model object
 	 */
 	public function get(array $params, array $ordering = NULL) {
 		// check for a cached object
@@ -474,8 +477,8 @@ class Model {
 
 	/**
 	 * Get a record count from the database
-	 * @param[in] params The params to lookup the record, see generateWhereClause() method
-	 * @return The number of records found
+	 * @param[in] $params The params to lookup the record, see generateWhereClause() method
+	 * @return \b integer The number of records found
 	 */
 	public function getCount(array $params = NULL) {
 		$table = $this->table;
@@ -491,11 +494,11 @@ class Model {
 
 	/**
 	 * Get multiple model objects
-	 * @param[in] params The params to lookup the record, see generateWhereClause() method
-	 * @param[in] ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
-	 * @param[in] pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
-	 * @param[in] grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
-	 * @return An array of model objects
+	 * @param[in] $params The params to lookup the record, see generateWhereClause() method
+	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @param[in] $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
+	 * @param[in] $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
+	 * @return \b array An array of model objects
 	 */
 	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
 		$table = $this->table;
@@ -519,12 +522,12 @@ class Model {
 
 	/**
 	 * Get multiple model objects as an associative array
-	 * @param[in] key        The column name of the column to use as the key
-	 * @param[in] params     The params to lookup the record, see generateWhereClause() method
-	 * @param[in] ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
-	 * @param[in] pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
-	 * @param[in] grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
-	 * @return An associative array of the models keyed on $key
+	 * @param[in] $key        The column name of the column to use as the key
+	 * @param[in] $params     The params to lookup the record, see generateWhereClause() method
+	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @param[in] $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
+	 * @param[in] $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
+	 * @return \b array An associative array of the models keyed on $key
 	 */
 	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
 		$table = $this->table;
@@ -548,9 +551,9 @@ class Model {
 
 	/**
 	 * Generate the FROM clause for a SQL statement
-	 * @param[in] params     The params to lookup the record, see generateWhereClause() method
-	 * @param[in] ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
-	 * @return A SQL fragment
+	 * @param[in] $params     The params to lookup the record, see generateWhereClause() method
+	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @return \b string A SQL fragment
 	 */
 	protected function generateFromClause(array $params = NULL, array $ordering = NULL) {
 		if (!$params) $params = [];
@@ -597,34 +600,34 @@ class Model {
 	 *        isnotnull | Format 4 | column IS NOT NULL
 	 *        upper=    | Format 2 | UPPER(column) = strtoupper(value)
 	 *        lower=    | Format 2 | LOWER(column) = strtolower(value)
-	 * @param[in] params The params to lookup the record, is an array of the form:
-	 *                   @code{.php}
-	 *                   $param = [
-	 *                      // Format 1 ... column = value
-	 *                      '*column_name1*' => 'some value',
+	 * @param[in] $params The params to lookup the record, is an array of the form:
+	 *                    @code{.php}
+	 *                    $param = [
+	 *                       // Format 1 ... column = value
+	 *                       '*column_name1*' => 'some value',
 	 *
-	 *                      // Format 2 ... non-equal operator, scalar value
-	 *                      '*column_name2*'  => [
-	 *                          'type' => '*type*',
-	 *                          'value' => '*some value*'
-	 *                      ],
+	 *                       // Format 2 ... non-equal operator, scalar value
+	 *                       '*column_name2*'  => [
+	 *                           'type' => '*type*',
+	 *                           'value' => '*some value*'
+	 *                       ],
 	 *
-	 *                      // Format 3 ... non-equal operator, array value
-	 *                      '*column_name3*  => [
-	 *                          'type' => '*type*',
-	 *                          'value' => ['*value1*', '*value2*, ...],
-	 *                      ],
+	 *                       // Format 3 ... non-equal operator, array value
+	 *                       '*column_name3*  => [
+	 *                           'type' => '*type*',
+	 *                           'value' => ['*value1*', '*value2*, ...],
+	 *                       ],
 	 *
-	 *                      // Format 4 ... non-equal operator, no value
-	 *                      '*column_name4*  => [
-	 *                          'type' => '*type*',
-	 *                      ],
-	 *                   ];
-	 *                   WHERE *type* is one of the types above
-	 *                   @endcode
-	 * @param[in] and    If TRUE the clauses should be ANDed together,
-	 *                   otherwise the clauses will be ORed together.
-	 * @return A SQL fragment
+	 *                       // Format 4 ... non-equal operator, no value
+	 *                       '*column_name4*  => [
+	 *                           'type' => '*type*',
+	 *                       ],
+	 *                    ];
+	 *                    WHERE *type* is one of the types above
+	 *                    @endcode
+	 * @param[in] $and    If TRUE the clauses should be ANDed together,
+	 *                    otherwise the clauses will be ORed together.
+	 * @return \b string A SQL fragment
 	 */
 	protected function generateWhereClause(array $params, $and = TRUE) {
 		$where = [];
@@ -758,10 +761,10 @@ class Model {
 
 	/**
 	 * Generate SQL for the LIMIT/OFFSET, ORDER BY and GROUP BY clauses
-	 * @param[in] ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
-	 * @param[in] pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
-	 * @param[in] grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
-	 * @return An SQL fragment
+	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @param[in] $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
+	 * @param[in] $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
+	 * @return \b string An SQL fragment
 	 */
 	protected function getOrderGroupSQL(array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
 		$sql = '';
@@ -808,9 +811,9 @@ class Model {
 
 	/**
 	 * Get a specific model object
-	 * @param[in] class  The full class name of the model
-	 * @param[in] record The record array
-	 * @return The model object with record array set
+	 * @param[in] $class  The full class name of the model
+	 * @param[in] $record The record array
+	 * @return \b string The model object with record array set
 	 */
 	public function getModel($class, array $record = NULL) {
 		$model = new $class($this->config, $this->database);
@@ -903,7 +906,7 @@ class Model {
 
 	/**
 	 * Translate an element of the $columns array to a data type clause
-	 * @param data An element from $this->columns
+	 * @param $data An element from $this->columns
 	 * @return An SQL fragment
 	 */
 	protected function getDataType($data) {
@@ -977,8 +980,9 @@ class Model {
 
 	/**
 	 * Translate an element of the $columns array to a MySQL data type clause
-	 * @param data An element from $this->columns
-	 * @return An SQL fragment
+	 * @param $data An element from $this->columns
+	 * @return \b string An SQL fragment
+	 * @throws ModelException If there is an invalid data_type
 	 */
 	protected function getDataTypeMySQL($data) {
 		$type = '';
@@ -1137,8 +1141,9 @@ class Model {
 
 	/**
 	 * Translate an element of the $columns array to a PostgreSQL data type clause
-	 * @param data An element from $this->columns
-	 * @return An SQL fragment
+	 * @param $data An element from $this->columns
+	 * @return \b string An SQL fragment
+	 * @throws ModelException If there is an invalid data_type
 	 */
 	protected function getDataTypePgSQL($data) {
 		$type = '';

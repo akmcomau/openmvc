@@ -193,7 +193,7 @@ class Customer extends Controller {
 					$token = $customer->generateToken();
 					$enc_customer_id = Encryption::obfuscate($customer->id, $this->config->siteConfig()->secret);
 					$data = [
-						'url' => $this->config->getUrl().$this->url->getUrl('Customer', 'reset', [$enc_customer_id, $token]),
+						'url' => $this->config->getSiteUrl().$this->url->getUrl('Customer', 'reset', [$enc_customer_id, $token]),
 						'name' => $customer->getName(),
 						'username' => $customer->login,
 					];

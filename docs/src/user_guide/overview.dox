@@ -1,20 +1,20 @@
 /**
- * @defgroup openmvc_ug_overview Overview
- * @brief Features of OpenMVC
- *
- * Overview
- *   - MVC based system.  Which can be extended with either site specific code and/or with modules.
- *   - Configurable logging levels, using Log4php (https://logging.apache.org/log4php/)
- *   - Responsive design, using Twitter Bootstrap (http://getbootstrap.com)
- *   - Supports either PostgreSQL or MySQL backend.
- *   - Contains WYSIWYG editor, CKEditor (http://ckeditor.com/).
- *     This editor contains LaTeX support, though the use of MathJax (http://www.mathjax.org/).
- *   - Contains a web based file manager for uploading/removing files, such as images and PDFs
- *   - Uses SEOed URLs, which can be modified to be whatever you want
- *   - It is possible to move the Administrator section of the website to a different domain to increase security
- *   - Contains two main types of access levels, Administrator and Customer, each with an unlimited number of sub-access levels
- *   - All HTML is completely separated from PHP code, making it easier for designers to style.
- *   - Two main types of content, page templates and block content.
- *   - All page templates are stored in files under version control not in the database, this allows for easier live site updates.
- *   - All block content is stored in the database and is search-able. This dynamic content such as news articles
+@defgroup openmvc_ug_overview Overview
+@brief Features of OpenMVC
+
+Overview
+  - MVC based system.  Which can be extended with either site specific code and/or with modules.
+  - Configurable logging levels, using Log4php (https://logging.apache.org/log4php/)
+  - Responsive design, using Twitter Bootstrap (http://getbootstrap.com)
+  - Supports either PostgreSQL or MySQL backend.
+  - Contains WYSIWYG editor, CKEditor (http://ckeditor.com/).
+    This editor contains LaTeX support, though the use of MathJax (http://www.mathjax.org/).
+  - Contains a web based file manager for uploading/removing files, such as images and PDFs
+  - Uses SEOed URLs, which can be modified to be whatever you want
+  - It is possible to move the Administrator section of the website to a different domain to increase security
+  - Contains two main types of access levels, Administrator and Customer, each with an unlimited number of sub-access levels
+  - All HTML is completely separated from PHP code, making it easier for designers to style.
+  - Two main types of content, page templates and block content.
+  - All page templates are stored in files under version control not in the database, this allows for easier live site updates.
+  - All block content is stored in the database and is search-able. This dynamic content such as news articles
 **/

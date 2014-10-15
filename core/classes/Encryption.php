@@ -29,7 +29,7 @@ class Encryption {
 		return $hexstr;
 	}
 
-	public static function  str_baseconvert($str, $frombase=10, $tobase=36) {
+	public static function str_baseconvert($str, $frombase=10, $tobase=36) {
 		$str = trim($str);
 		if (intval($frombase) != 10) {
 			$len = strlen($str);

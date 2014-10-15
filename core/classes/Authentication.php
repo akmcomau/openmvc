@@ -6,6 +6,9 @@ use core\classes\models\Administrator;
 use core\classes\models\Customer;
 use core\classes\exceptions\AuthenticationException;
 
+/**
+ * This handles customer and administrator authentication
+ */
 class Authentication {
 
 	/**
@@ -32,10 +35,30 @@ class Authentication {
 	 */
 	protected $request;
 
+	/**
+	 * Is the session logged in
+	 * @var boolean $logged_in
+	 */
 	protected $logged_in = FALSE;
+
+	/**
+	 * Holds the administrator's record
+	 * @var array $administrator_data
+	 */
 	protected $administrator_data = NULL;
+
+	/**
+	 * Holds the customers's record
+	 * @var array $customer_data
+	 */
 	protected $customer_data  = NULL;
 
+	/**
+	 * Constructor
+	 * @param[in] $config   \b Config The configuration object
+	 * @param[in] $database \b Database The database object
+	 * @param[in] $request  \b Request The request object
+	 */
 	public function __construct(Config $config, Database $database, Request $request) {
 		$this->config   = $config;
 		$this->database = $database;
@@ -52,6 +75,10 @@ class Authentication {
 		$this->callHook('init_authentication', [$this]);
 	}
 
+	/**
+	 * Check if the session is logged in as either an administrator or customer
+	 * @return \b boolean TRUE if the session is logged in, FALSE otherwise
+	 */
 	public function loggedIn() {
 		if ($this->customerLoggedIn() || $this->administratorLoggedIn()) {
 			return TRUE;
@@ -59,6 +86,10 @@ class Authentication {
 		return FALSE;
 	}
 
+	/**
+	 * Check if the session is logged in a  customer
+	 * @return \b boolean TRUE if the session is logged in, FALSE otherwise
+	 */
 	public function customerLoggedIn() {
 		if ($this->logged_in && $this->getCustomerID()) {
 			return $this->customer_data;
@@ -66,6 +97,10 @@ class Authentication {
 		return FALSE;
 	}
 
+	/**
+	 * Check if the session is logged in as either an administrator
+	 * @return \b boolean TRUE if the session is logged in, FALSE otherwise
+	 */
 	public function administratorLoggedIn() {
 		if ($this->logged_in && $this->getAdministratorID()) {
 			$data = $this->administrator_data;
@@ -75,6 +110,10 @@ class Authentication {
 		return FALSE;
 	}
 
+	/**
+	 * Gets the Customer ID
+	 * @return \b integer the Customer ID or NULL otherwise
+	 */
 	public function getCustomerID() {
 		if (isset($this->customer_data['customer_id'])) {
 			return $this->customer_data['customer_id'];
@@ -82,6 +121,10 @@ class Authentication {
 		return NULL;
 	}
 
+	/**
+	 * Gets the Administrator ID
+	 * @return \b integer the Administrator ID or NULL otherwise
+	 */
 	public function getAdministratorID() {
 		if (isset($this->administrator_data['administrator_id'])) {
 			return $this->administrator_data['administrator_id'];
@@ -89,6 +132,11 @@ class Authentication {
 		return NULL;
 	}
 
+	/**
+	 * Logs in a customer
+	 * @param[in] $customer \b Customer The customer to login
+	 * @throws AuthenticationException if the customer object does not contain a ID
+	 */
 	public function loginCustomer(Customer $customer) {
 		$this->callHook('before_loginCustomer', [$customer]);
 
@@ -110,9 +158,13 @@ class Authentication {
 		}
 
 		$this->callHook('after_loginCustomer', [$customer]);
-		return TRUE;
 	}
 
+	/**
+	 * Logs in an administrator
+	 * @param[in] $admin \b Administrator The administrator to login
+	 * @throws AuthenticationException if the administrator object does not contain an ID
+	 */
 	public function loginAdministrator(Administrator $admin) {
 		$this->callHook('before_loginAdministrator', [$admin]);
 
@@ -129,14 +181,19 @@ class Authentication {
 		$this->logger->info("Administrator logged in: ".$this->getAdministratorID());
 
 		$this->callHook('after_loginAdministrator', [$admin]);
-		return TRUE;
 	}
 
+	/**
+	 * Logs out the administrator and customer
+	 */
 	public function logout($call_hooks = TRUE) {
 		$this->logoutCustomer($call_hooks);
 		$this->logoutAdministrator($call_hooks);
 	}
 
+	/**
+	 * Logs out the customer
+	 */
 	public function logoutCustomer($call_hooks = TRUE) {
 		if ($this->customerLoggedIn()) {
 			$customer_id = $this->getCustomerID();
@@ -154,6 +211,9 @@ class Authentication {
 		}
 	}
 
+	/**
+	 * Logs out the administrator
+	 */
 	public function logoutAdministrator($call_hooks = TRUE) {
 		if ($this->administratorLoggedIn()) {
 			$admin_id = $this->getAdministratorID();
@@ -171,12 +231,20 @@ class Authentication {
 		}
 	}
 
+	/**
+	 * Checks for force password change is in effect
+	 * @return \b boolean TRUE is force password change is in effect, FALSE otherwise
+	 */
 	public function forcePasswordChangeEnabled() {
 		$enabled = $this->request->session->get('force_password_change');
 		return $enabled ? TRUE : FALSE;
 	}
 
-	public function forcePasswordChange($enable = NULL) {
+	/**
+	 * Sets the force password change flag
+	 * @param[in] $enable \b boolean TRUE to set the flag, FALSE to clear it
+	 */
+	public function forcePasswordChange($enable) {
 		if ($enable) {
 			$auth = $this->request->session->set('force_password_change',  TRUE);
 		}
@@ -185,6 +253,11 @@ class Authentication {
 		}
 	}
 
+	/**
+	 * Call the authentication hooks
+	 * @param[in] $name   \b string The authentication hook type to call
+	 * @param[in] $params \b array Parameters for the hook
+	 */
 	protected function callHook($name, array $params = []) {
 		$modules = (new Module($this->config))->getEnabledModules();
 		foreach ($modules as $module) {

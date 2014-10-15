@@ -3,7 +3,14 @@ namespace core\classes;
 
 use core\classes\exceptions\AutoLoaderException;
 
+/**
+ * To AutoLoad all classes
+ */
 class AutoLoader {
+
+	/**
+	 * Initialise the AutoLoader
+	 */
 	public static function init() {
 		$root_path = __DIR__.DS.'..'.DS.'..';
 

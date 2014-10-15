@@ -1,94 +1,94 @@
 /**
- * @defgroup openmvc_ug_installation Installation
- * @brief Installation instructions
- *
- * These instructions/dependances are only for the base OpenMVC system
- * see individual sites documentation for their dependances.
- *
- * Dependances (Non-Composer)
- *   - Git
- *     http://git-scm.com/
- *
- *   - Apache
- *     http://httpd.apache.org/
- *
- *   - PHP
- *     http://php.net/
- *
- *   - PostgreSQL
- *      http://www.postgresql.org/
- *
- *   - MySQL
- *     http://www.mysql.com/
- *
- * Site Setup
- *   - Install dependances (this is for debian systems)
- *     @code
- *       # Install Git
- *       sudo apt-get install git
- *
- *       # Install Apache
- *       sudo apt-get install apache2
- *
- *       # Install PHP
- *       sudo apt-get install php5
- *
- *       # Install PostgreSQL ... only if you are using PostgreSQL
- *       sudo apt-get install postgresql
- *
- *       # Install MySQL ... only if are using MySQL
- *       sudo apt-get install mysql-server
- *     @endcode
- *
- *   - Clone git Repos
- *     @code
- *       # clone the OpenMVC core
- *       cd /path/to/site
- *       git clone .... ./public_html
- *
- *       # [OPTIONAL] clone the OpenMVC vendor package
- *       # If you do not do this then you have to use composer
- *       # to fetch the dependances then build them, see below.
- *       cd public_html
- *       git submodule init
- *       git submodule update
- *
- *       # clone your sites
- *       cd /path/to/site/public_html
- *       cd sites
- *       git clone .... ./site
- *
- *       # clone your modules
- *       cd /path/to/site/public_html
- *       cd modules
- *       git clone .... ./module_name
- *     @endcode
- *
- *   - Create Site Configuration
- *     @code
- *     @endcode
- *
- *   - Create Database
- *     @code
- *     @endcode
- *
- *   - Apache Configuration
- *     @code
- *     @endcode
- *
- *   - [OPTIONAL] Composer Dependances
- *     If you would prefer to use composer and build dependances rather than the
- *     vendor submodule, you can fetch/build the dependances with the following commands:
- *     @code
- *       make update-composer
- *       make update-depends
- *       make build-depends
- *     @endcode
- *
- *   - [OPTIONAL] Build Documentation
- *     To re-build all documentation and re-run SchemaSpy, use the following command:
- *     @code
- *       make build-docs
- *     @endcode
- *
- */
+@defgroup openmvc_ug_installation Installation
+@brief Installation instructions
+
+These instructions/dependances are only for the base OpenMVC system
+see individual sites documentation for their dependances.
+
+Dependances (Non-Composer)
+  - Git
+    http://git-scm.com/
+
+  - Apache
+    http://httpd.apache.org/
+
+  - PHP
+    http://php.net/
+
+  - PostgreSQL
+     http://www.postgresql.org/
+
+  - MySQL
+    http://www.mysql.com/
+
+Site Setup
+  - Install dependances (this is for debian systems)
+    @code
+      # Install Git
+      sudo apt-get install git
+
+      # Install Apache
+      sudo apt-get install apache2
+
+      # Install PHP
+      sudo apt-get install php5
+
+      # Install PostgreSQL ... only if you are using PostgreSQL
+      sudo apt-get install postgresql
+
+      # Install MySQL ... only if are using MySQL
+      sudo apt-get install mysql-server
+    @endcode
+
+  - Clone git Repos
+    @code
+      # clone the OpenMVC core
+      cd /path/to/site
+      git clone .... ./public_html
+
+      # [OPTIONAL] clone the OpenMVC vendor package
+      # If you do not do this then you have to use composer
+      # to fetch the dependances then build them, see below.
+      cd public_html
+      git submodule init
+      git submodule update
+
+      # clone your sites
+      cd /path/to/site/public_html
+      cd sites
+      git clone .... ./site
+
+      # clone your modules
+      cd /path/to/site/public_html
+      cd modules
+      git clone .... ./module_name
+    @endcode
+
+  - Create Site Configuration
+    @code
+    @endcode
+
+  - Create Database
+    @code
+    @endcode
+
+  - Apache Configuration
+    @code
+    @endcode
+
+  - [OPTIONAL] Composer Dependances
+    If you would prefer to use composer and build dependances rather than the
+    vendor submodule, you can fetch/build the dependances with the following commands:
+    @code
+      make update-composer
+      make update-depends
+      make build-depends
+    @endcode
+
+  - [OPTIONAL] Build Documentation
+    To re-build all documentation and re-run SchemaSpy, use the following command:
+    @code
+      make build-docs
+    @endcode
+
+**/
