@@ -55,7 +55,6 @@ class Config {
 			}
 			$site_data->domain = $domain;
 		}
-		unset($_DEFAULT_CONFIG->default_site);
 
 		foreach ($_DEFAULT_CONFIG as $key => $value) {
 			if (!isset($this->configuration[$key])) {
