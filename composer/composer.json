@@ -72,11 +72,11 @@
 			"type":"package",
 			"package": {
 				"name": "FortAwesome/Font-Awesome",
-				"version": "v4.0.3",
+				"version": "v4.2.0",
 				"source": {
 					"url": "https://github.com/FortAwesome/Font-Awesome.git",
 					"type": "git",
-					"reference":"v4.0.3"
+					"reference":"v4.2.0"
 				}
 			}
 		},
@@ -204,7 +204,7 @@
 		"ckeditor/font": "4.2.1",
 		"ckeditor/onchange": "1.8",
 		"twbs/bootstrap": "v3.0.3",
-		"FortAwesome/Font-Awesome": "v4.0.3",
+		"FortAwesome/Font-Awesome": "v4.2.0",
 		"jquery/jquery": "1.11.0",
 		"jquery/jquery-ui": "1.10.3",
 		"malsup/form": "3.25.0",
