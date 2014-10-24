@@ -30,6 +30,7 @@ class Controller extends Renderable {
 	protected $url;
 	protected $authentication;
 	protected $language;
+	protected $model;
 
 	protected $permissions = [];
 
@@ -52,6 +53,7 @@ class Controller extends Renderable {
 		$this->response       = $response;
 		$this->url            = new URL($config);
 		$this->language       = new Language($config);
+		$this->model          = new Model($config, $database);
 		$this->authentication = $request->getAuthentication();
 
 		$menu = NULL;
@@ -182,6 +184,10 @@ class Controller extends Renderable {
 				]);
 			}
 		}
+	}
+
+	public function getWidget($widget) {
+		return new $widget($this->config, $this->database, $this->request, $this->language);
 	}
 
 	public function getAllMethods() {
