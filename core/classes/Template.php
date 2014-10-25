@@ -49,6 +49,10 @@ class Template {
 		return $this->data;
 	}
 
+	public function includeTemplate($filename) {
+		require($this->getAbsoluteFilename($filename));
+	}
+
 	public function setData($data) {
 		$this->data = $data;
 	}
@@ -77,8 +81,9 @@ class Template {
 		return $contents;
 	}
 
-	public function getAbsoluteFilename() {
-		if (!$this->filename) {
+	public function getAbsoluteFilename($filename = NULL) {
+		if (!$filename) $filename = $this->filename;
+		if (!$filename) {
 			throw new TemplateException('No template filename set');
 		}
 
@@ -87,14 +92,14 @@ class Template {
 
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
 		$default_path = 'core'.DS.'themes'.DS.'default'.DS.'templates'.DS;
-		$default_file = $root_path.$default_path.$this->filename;
+		$default_file = $root_path.$default_path.$filename;
 		$theme_path = 'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS;
-		$theme_file = $root_path.$theme_path.$this->filename;
+		$theme_file = $root_path.$theme_path.$filename;
 		if ($this->path) {
 			$path_path = $this->path.DS.'templates'.DS;
-			$path_file = $root_path.$path_path.$this->filename;
+			$path_file = $root_path.$path_path.$filename;
 
-			$theme_path_file = $root_path.$theme_path.$this->path.DS.$this->filename;
+			$theme_path_file = $root_path.$theme_path.$this->path.DS.$filename;
 		}
 		if (file_exists($theme_file)) {
 			return $theme_file;
@@ -109,6 +114,6 @@ class Template {
 			return $path_file;
 		}
 
-		throw new TemplateException("Could not find template file: {$this->filename}");
+		throw new TemplateException("Could not find template file: {$filename}");
 	}
 }

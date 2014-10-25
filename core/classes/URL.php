@@ -288,7 +288,7 @@ class URL {
 
 	public function canonical($string) {
 		$string = preg_replace('/[\'"\{\}\[\]\(\)*&\^%\$#@!~`<>*+]/', '', $string);
-		$string = preg_replace('|[ /,;:-]|', '-', $string);
+		$string = preg_replace('/[ \/\|,;:]/', '-', $string);
 		$string = preg_replace('/-+/', '-', $string);
 		return strtolower($string);
 	}
