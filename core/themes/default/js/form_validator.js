@@ -51,16 +51,18 @@ $.extend(FormValidator, {
 		}
 		return false;
 	},
-	displayPageNotification: function (type, message, no_scroll) {
+	displayPageNotification: function (type, message, no_scroll, timeout) {
 		var notification = $('<div class="'+type+'">'+message+'</div>');
-		$('#notifications_area').html(notification);
+		$('#notifications_area').html(notification).show();
 		if (typeof no_scroll == 'undefined') {
 			scroll = $("#notifications_area").position().top-80;
 			$(document).scrollTop(scroll);
 		}
-		setTimeout(function(){
-			notification.fadeOut(1000);
-		}, 5000);
+		if (typeof(timeout) != 'undefined' && timeout) {
+			setTimeout(function(){
+				notification.fadeOut(1000);
+			}, 5000);
+		}
 	},
 	clearPageNotification: function (message) {
 		$('#notifications_area').html('');

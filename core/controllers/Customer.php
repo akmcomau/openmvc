@@ -531,9 +531,11 @@ class Customer extends Controller {
 		$inputs = [
 			'username' => [
 				'type' => 'string',
+				'message' => $this->language->get('error_username'),
 			],
 			'password' => [
 				'type' => 'string',
+				'message' => $this->language->get('error_password'),
 			],
 		];
 

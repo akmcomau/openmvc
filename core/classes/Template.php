@@ -50,6 +50,11 @@ class Template {
 	}
 
 	public function includeTemplate($filename) {
+		extract($this->data);
+
+		$strings = $this->language->getStrings();
+		extract($strings, EXTR_PREFIX_ALL, 'text');
+
 		require($this->getAbsoluteFilename($filename));
 	}
 

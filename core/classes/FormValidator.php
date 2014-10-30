@@ -72,12 +72,14 @@ class FormValidator {
 		$js = "FormValidator.registerForm('".$this->name."', ".json_encode($this->inputs).", ".json_encode($this->validators).");";
 
 		// add an onclick event to the submit button
-		$js .= '$(document).ready(function() {$("#'.$this->name.' button[name=\''.$this->name.'-submit\']").click(function(event) {return FormValidator.validateForm("'.$this->name.'", event);});});';
+		$js .= '$("#'.$this->name.' button[name=\''.$this->name.'-submit\']").click(function(event) {return FormValidator.validateForm("'.$this->name.'", event);});';
 
 		// check for notification display
 		if ($this->notification_message && $this->notification_type) {
 			$js .= 'FormValidator.displayPageNotification("'.$this->notification_type.'", "'.htmlspecialchars($this->notification_message).'");';
 		}
+
+		$js = "$(document).ready(function() { $js });";
 
 		return $js;
 	}
