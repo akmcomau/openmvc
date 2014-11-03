@@ -1,6 +1,7 @@
 <?php
 
 namespace core\classes;
+use core\classes\exceptions\RedirectException;
 
 class Request {
 
@@ -68,6 +69,13 @@ class Request {
 
 	public function setMethodParams($method_params) {
 		$this->method_params = $method_params;
+	}
+
+	public function verifyMethodParams($method_params) {
+		if (count(array_diff($method_params, $this->method_params))) {
+			$this->method_params = $method_params;
+			throw new RedirectException($this->currentUrl());
+		}
 	}
 
 	public function getMethodParams() {
