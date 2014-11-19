@@ -23,9 +23,13 @@ site-update-composer:
 site-update-depends:
 	cd sites/${SITE} && make update-depends;
 
-# update dependancies
+# create database
 create-database:
 	./bin/create_database.php
+
+# update database
+update-database:
+	./bin/update_database.php
 
 # buid all docs
 build-docs:

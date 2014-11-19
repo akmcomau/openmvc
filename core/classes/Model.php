@@ -162,6 +162,8 @@ class Model {
 	 */
 	protected static $site_models;
 
+	protected $sql_helper;
+
 	/**
 	 * Constructor
 	 * @param[in] $config   The configuration object
@@ -178,6 +180,43 @@ class Model {
 		else {
 			$this->findAllModels();
 		}
+	}
+
+	/**
+	 *
+	 */
+	public function hasTable() {
+		return $this->table ? TRUE : FALSE;
+	}
+
+	/**
+	 *
+	 */
+	public function getTableData() {
+		return [
+			'table'        => $this->table,
+			'primary_key'  => $this->primary_key,
+			'columns'      => $this->columns,
+			'indexes'      => $this->indexes,
+			'uniques'      => $this->uniques,
+			'foreign_keys' => $this->foreign_keys,
+		];
+	}
+
+	/**
+	 *
+	 */
+	public function sqlHelper() {
+		if (!$this->sql_helper) {
+			if ($this->database->getEngine() == 'mysql') {
+				$this->sql_helper = new database_drivers\MySQL($this->config, $this->database, $this);
+			}
+			elseif ($this->database->getEngine() == 'pgsql') {
+				$this->sql_helper = new database_drivers\PgSQL($this->config, $this->database, $this);
+			}
+		}
+
+		return $this->sql_helper;
 	}
 
 	/**
@@ -834,389 +873,213 @@ class Model {
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating table: $model");
 			$model = $this->getModel($model);
-			$model->createTable();
+			if (!$model->hasTable()) continue;
+			$model->sqlHelper()->createTable();
 		}
 
 		// Create the indexes
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating indexes: $model");
 			$model = $this->getModel($model);
-			$model->createIndexes();
+			if (!$model->hasTable()) continue;
+			$model->sqlHelper()->createIndexes();
 		}
 
 		// Create the foreign keys
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating foreign keys: $model");
 			$model = $this->getModel($model);
-			$model->createForeignKeys();
+			if (!$model->hasTable()) continue;
+			$model->sqlHelper()->createForeignKeys();
 		}
 	}
 
 	/**
-	 * Drop the table this model is associated with
+	 * Create the database
 	 */
-	public function dropTable() {
+	public function checkDatabase() {
+		$updates = [];
+
+		// Create the tables
+		foreach (self::$site_models as $model_class) {
+			$this->logger->info("Checking table: $model_class");
+			$model = $this->getModel($model_class);
+			if (!$model->hasTable()) continue;
+			$table_updates = $model->checkTable();
+			if (count($table_updates)) {
+				$updates[$model_class] = $table_updates;
+			}
+		}
+
+		return $updates;
+	}
+
+	/**
+	 * Check the table this model is associated with
+	 */
+	public function checkTable() {
 		if (is_null($this->table)) return;
 
-		$sql = 'DROP TABLE '.$this->table;
-		return $this->database->executeQuery($sql);
-	}
+		$updates = [];
+		$schema = $this->sqlHelper()->getTableSchema();
 
-	/**
-	 * Create the table this model is associated with
-	 */
-	public function createTable() {
-		if (is_null($this->table)) return;
-
-		if ($this->database->getEngine() == 'mysql') {
-			return $this->createTableMySQL();
-		}
-		elseif ($this->database->getEngine() == 'pgsql') {
-			return $this->createTablePgSQL();
-		}
-	}
-
-	/**
-	 * Create the foreign keys for the table this model is associated with
-	 */
-	public function createForeignKeys() {
-		if (is_null($this->table)) return;
-
-		if ($this->database->getEngine() == 'mysql') {
-			return $this->createForeignKeysMySQL();
-		}
-		elseif ($this->database->getEngine() == 'pgsql') {
-			return $this->createForeignKeysPgSQL();
-		}
-	}
-
-	/**
-	 * Create the indexes for the table this model is associated with
-	 */
-	public function createIndexes() {
-		if (is_null($this->table)) return;
-
-		if ($this->database->getEngine() == 'mysql') {
-			return TRUE;
-		}
-		elseif ($this->database->getEngine() == 'pgsql') {
-			return $this->createIndexesPgSQL();
-		}
-	}
-
-	/**
-	 * Translate an element of the $columns array to a data type clause
-	 * @param $data An element from $this->columns
-	 * @return An SQL fragment
-	 */
-	protected function getDataType($data) {
-		if ($this->database->getEngine() == 'mysql') {
-			return $this->getDataTypeMySQL($data);
-		}
-		elseif ($this->database->getEngine() == 'pgsql') {
-			return $this->getDataTypePgSQL($data);
-		}
-	}
-
-	/**
-	 * Create the MySQL table this model is associated with
-	 */
-	protected function createTableMySQL() {
-		// create the table
-		$sql = 'CREATE TABLE '.$this->table." (\n";
-
-		// add the columns
-		foreach ($this->columns as $column => $data) {
-			$sql .= "\t$column ".$this->getDataType($data).",\n";
+		if (!$schema) {
+			return ['add_table' => TRUE];
 		}
 
-		// add the indexes
-		foreach ($this->indexes as $column) {
-			if (is_array($column)) {
-				$sql .= "\tINDEX (".join(',', $column)."),\n";
+		// look for new/changed columns
+		foreach ($this->columns as $name => $data) {
+			if (!isset($data['auto_increment'])) {
+				$data['auto_increment'] = FALSE;
 			}
-			else {
-				$sql .= "\tINDEX ($column),\n";
+			if (!isset($data['null_allowed'])) {
+				$data['null_allowed'] = FALSE;
+			}
+
+			// new column
+			if (!isset($schema['columns'][$name])) {
+				$updates['add_column'][$name] = $data;
+			}
+			// check for data type change
+			elseif ($data['data_type'] != $schema['columns'][$name]['data_type'] ||
+				$data['auto_increment'] != $schema['columns'][$name]['auto_increment'] ||
+				$data['null_allowed'] != $schema['columns'][$name]['null_allowed']
+			) {
+				$updates['alter_column'][$name] = $data;
+			}
+		}
+		// look for deleted columns
+		foreach ($schema['columns'] as $name => $data) {
+			// remove column
+			if (!isset($this->columns[$name])) {
+				$updates['drop_column'][] = $name;
 			}
 		}
 
-		// add the uniques
-		foreach ($this->uniques as $column) {
-			if (is_array($column)) {
-				$sql .= "\tUNIQUE INDEX (".join(',', $column)."),\n";
+		// look for new/changed indexes
+		foreach ($this->indexes as $name => $columns) {
+			// look over all the indexes looking for this one
+			$found = FALSE;
+			foreach ($schema['indexes'] as $curr_name => $curr_columns) {
+				if (!is_array($columns)) {
+					$columns = [$columns];
+				}
+
+				sort($curr_columns);
+				sort($columns);
+				$diff1 = array_diff($columns, $curr_columns);
+				$diff2 = array_diff($curr_columns, $columns);
+				if (count(array_merge($diff1, $diff2)) == 0) {
+					$found = TRUE;
+					break;
+				}
 			}
-			else {
-				$sql .= "\tUNIQUE INDEX ($column),\n";
+
+			// new index
+			if (!$found) {
+				$updates['add_index'][$name] = $columns;
 			}
 		}
-
-		// add the primary key
-		$sql .= "\tPRIMARY KEY (".$this->primary_key.")\n";
-
-		// make an InnoDB type database
-		$sql .= ") ENGINE=InnoDB DEFAULT CHARACTER SET = utf8;\n";
-
-		return $this->database->executeQuery($sql);
-	}
-
-	/**
-	 * Create the MySQL table foreign keys this model is associated with
-	 */
-	protected function createForeignKeysMySQL() {
-		// add the forign keys
-		$sql = '';
-		foreach ($this->foreign_keys as $column => $foreign) {
-			$foreign_table  = $foreign[0];
-			$foreign_column = $foreign[1];
-			$sql .= "ALTER TABLE ".$this->table." ADD CONSTRAINT FOREIGN KEY ($column) REFERENCES $foreign_table ($foreign_column);";
-		}
-
-		if ($sql != '') {
-			return $this->database->executeQuery($sql);
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * Translate an element of the $columns array to a MySQL data type clause
-	 * @param $data An element from $this->columns
-	 * @return \b string An SQL fragment
-	 * @throws ModelException If there is an invalid data_type
-	 */
-	protected function getDataTypeMySQL($data) {
-		$type = '';
-		switch ($data['data_type']) {
-			case 'smallint':
-				$type = 'SMALLINT';
-				break;
-
-			case 'int':
-				$type = 'INT';
-				break;
-
-			case 'bigint':
-				$type = 'BIGINT';
-				break;
-
-			case 'numeric':
-				$type = 'DECIMAL';
-				if (isset($data['data_length']) && $data['data_length']) {
-					$type.= '('.join(',', $data['data_length']).')';
-				}
-				break;
-
-			case 'date':
-				$type = 'DATE';
-				break;
-
-			case 'datetime':
-				$type = 'DATETIME';
-				break;
-
-			case 'bool':
-				$type = 'BOOL';
-				break;
-
-			case 'text':
-				if (!isset($data['data_length'])) {
-					$type = 'LONGTEXT';
-				}
-				elseif ((int)$data['data_length'] <= 128) {
-					$type = 'CHAR('.(int)$data['data_length'].')';
-				}
-				elseif ((int)$data['data_length'] <= 256) {
-					$type = 'VARCHAR('.(int)$data['data_length'].')';
-				}
-				elseif ((int)$data['data_length'] <= 65535) {
-					$type = 'TEXT';
-				}
-				elseif ((int)$data['data_length'] <= 16777215) {
-					$type = 'MEDIUMTEXT';
-				}
-				else {
-					$type = 'LONGTEXT';
-				}
-				break;
-
-			case 'blob':
-				if (!isset($data['data_length'])) {
-					$type = 'LONGBLOB';
-				}
-				elseif ((int)$data['data_length'] <= 256) {
-					$type = 'TINYBLOB';
-				}
-				elseif ((int)$data['data_length'] <= 65535) {
-					$type = 'BLOB';
-				}
-				elseif ((int)$data['data_length'] <= 16777215) {
-					$type = 'MEDIUMBLOB';
-				}
-				else {
-					$type = 'LONGBLOB';
-				}
-				break;
-
-			default:
-				throw new ModelException("Invalid data type: ".$data['data_type']);
-				break;
-		}
-
-		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
-			$type .= " NOT NULL";
-		}
-
-		if (isset($data['auto_increment']) && $data['auto_increment']) {
-			$type .= " AUTO_INCREMENT";
-		}
-
-		if (isset($data['default_value'])) {
-			$type .= " DEFAULT ".$data['default_value'];
-		}
-
-		return $type;
-	}
-
-	/**
-	 * Create the PostgreSQL table this model is associated with
-	 */
-	protected function createTablePgSQL() {
-		// create the table
-		$sql = 'CREATE TABLE '.$this->table." (\n";
-
-		// add the columns
-		foreach ($this->columns as $column => $data) {
-			$sql .= "\t$column ".$this->getDataType($data).",\n";
-		}
-
-		// add the uniques
-		foreach ($this->uniques as $column) {
-			if (is_array($column)) {
-				$sql .= "\tUNIQUE (".join(',', $column)."),\n";
+		// look for deleted indexes
+		foreach ($schema['indexes'] as $name => $columns) {
+			// skip primary key
+			if ($name == $schema['primary_key']['name']) {
+				continue;
 			}
-			else {
-				$sql .= "\tUNIQUE ($column),\n";
+
+			// look over all the indexes looking for this one
+			$found = FALSE;
+			foreach ($this->indexes as $curr_name => $curr_columns) {
+				if (!is_array($curr_columns)) {
+					$curr_columns = [$curr_columns];
+				}
+
+				sort($curr_columns);
+				sort($columns);
+				$diff1 = array_diff($columns, $curr_columns);
+				$diff2 = array_diff($curr_columns, $columns);
+				if (count(array_merge($diff1, $diff2)) == 0) {
+					$found = TRUE;
+					break;
+				}
+			}
+
+			// remove index
+			if (!$found) {
+				$updates['drop_index'] = $name;
 			}
 		}
 
-		// add the primary key
-		$sql .= "\tPRIMARY KEY (".$this->primary_key.")\n";
+		// look for new/changed uniques
+		foreach ($this->uniques as $name => $columns) {
+			// look over all the uniques looking for this one
+			$found = FALSE;
+			foreach ($schema['uniques'] as $curr_name => $curr_columns) {
+				if (!is_array($columns)) {
+					$columns = [$columns];
+				}
 
-		// make an InnoDB type database
-		$sql .= ");\n";
-
-		return $this->database->executeQuery($sql);
-	}
-
-	/**
-	 * Create the PostgreSQL table foreign keys this model is associated with
-	 */
-	protected function createForeignKeysPgSQL() {
-		// add the forign keys
-		foreach ($this->foreign_keys as $column => $foreign) {
-			$foreign_table  = $foreign[0];
-			$foreign_column = $foreign[1];
-			$sql = "ALTER TABLE ONLY ".$this->table." ADD CONSTRAINT ".$this->table."_".$column."_fk FOREIGN KEY ($column) REFERENCES $foreign_table ($foreign_column);";
-
-			$this->database->executeQuery($sql);
-		}
-	}
-
-	/**
-	 * Create the PostgreSQL table indexes this model is associated with
-	 */
-	protected function createIndexesPgSQL() {
-		// add the indexes
-		foreach ($this->indexes as $column) {
-			if (is_array($column)) {
-				$sql = "CREATE INDEX ON ".$this->table."(".join(',', $column).");\n";
-			}
-			else {
-				$sql = "CREATE INDEX ON ".$this->table."($column);\n";
+				sort($curr_columns);
+				sort($columns);
+				$diff1 = array_diff($columns, $curr_columns);
+				$diff2 = array_diff($curr_columns, $columns);
+				if (count(array_merge($diff1, $diff2)) == 0) {
+					$found = TRUE;
+					break;
+				}
 			}
 
-			$this->database->executeQuery($sql);
+			// new unique
+			if (!$found) {
+				$updates['add_unique'][$name] = $columns;
+			}
 		}
-	}
+		// look for deleted uniques
+		foreach ($schema['uniques'] as $name => $columns) {
+			// skip primary key
+			if ($name == $schema['primary_key']['name']) {
+				continue;
+			}
 
-	/**
-	 * Translate an element of the $columns array to a PostgreSQL data type clause
-	 * @param $data An element from $this->columns
-	 * @return \b string An SQL fragment
-	 * @throws ModelException If there is an invalid data_type
-	 */
-	protected function getDataTypePgSQL($data) {
-		$type = '';
-		switch ($data['data_type']) {
-			case 'smallint':
-				if (isset($data['auto_increment']) && $data['auto_increment']) {
-					$type = 'SERIAL';
+			// look over all the uniques looking for this one
+			$found = FALSE;
+			foreach ($this->uniques as $curr_name => $curr_columns) {
+				if (!is_array($curr_columns)) {
+					$curr_columns = [$curr_columns];
 				}
-				else {
-					$type = 'SMALLINT';
+
+				sort($curr_columns);
+				sort($columns);
+				$diff1 = array_diff($columns, $curr_columns);
+				$diff2 = array_diff($curr_columns, $columns);
+				if (count(array_merge($diff1, $diff2)) == 0) {
+					$found = TRUE;
+					break;
 				}
-				break;
+			}
 
-			case 'int':
-				if (isset($data['auto_increment']) && $data['auto_increment']) {
-					$type = 'SERIAL';
-				}
-				else {
-					$type = 'INT';
-				}
-				break;
-
-			case 'bigint':
-				if (isset($data['auto_increment']) && $data['auto_increment']) {
-					$type = 'SERIAL8';
-				}
-				else {
-					$type = 'BIGINT';
-				}
-				break;
-
-			case 'numeric':
-				$type = 'NUMERIC';
-				if (isset($data['data_length']) && $data['data_length']) {
-					$data['data_length'][0] += $data['data_length'][1];
-					$type.= '('.join(',', $data['data_length']).')';
-				}
-				break;
-
-			case 'date':
-				$type = 'DATE';
-				break;
-
-			case 'datetime':
-				$type = 'TIMESTAMP WITH time zone';
-				break;
-
-			case 'bool':
-				$type = 'BOOL';
-				break;
-
-			case 'text':
-				$type = 'TEXT';
-				break;
-
-			case 'blob':
-				$type = 'BYTEA';
-				break;
-
-			default:
-				throw new ModelException("Invalid data type: ".$data['data_type']);
-				break;
+			// remove unique
+			if (!$found) {
+				$updates['drop_unique'] = $name;
+			}
 		}
 
-		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
-			$type .= " NOT NULL";
+		// look for new/changed foreign_keys
+		foreach ($this->foreign_keys as $name => $data) {
+			// new foreign_key
+			if (!isset($schema['foreign_keys'][$name])) {
+				$updates['add_foreign_key'][$name] = $data;
+			}
+		}
+		// look for deleted foreign_keys
+		foreach ($schema['foreign_keys'] as $name => $data) {
+			// remove foreign_key
+			if (!isset($this->foreign_keys[$name])) {
+				$updates['drop_foreign_key'][] = $name;
+			}
 		}
 
-		if (isset($data['default_value'])) {
-			$type .= " DEFAULT ".$data['default_value'];
-		}
-
-		return $type;
+		return $updates;
 	}
 
 	/**
@@ -1237,5 +1100,84 @@ class Model {
 			}
 		}
 		catch (AutoLoaderException $ex) {}
+	}
+
+	public function updateDatabase(array $updates) {
+		foreach ($updates as $class => $updates) {
+			$model = $this->getModel($class);
+
+			// apply the updates
+			foreach ($updates as $type => $update) {
+				switch ($type) {
+					// create the table
+					case 'add_table':
+						$model->sqlHelper()->createTable();
+						break;
+
+					// add a column
+					case 'add_column':
+						foreach ($update as $name => $data) {
+							$this->sqlHelper()->addColumn($name, $data);
+						}
+						break;
+
+					// drop a column
+					case 'drop_column':
+						foreach ($update as $name => $data) {
+							$this->sqlHelper()->dropColumn($name);
+						}
+						break;
+
+					// alter a column
+					case 'alter_column':
+						foreach ($update as $name => $data) {
+							$this->sqlHelper()->alterColumn($name, $data);
+						}
+						break;
+
+					// add an index
+					case 'add_index':
+						foreach ($update as $name => $columns) {
+							$this->sqlHelper()->addIndex($name, $columns);
+						}
+						break;
+
+					// drop an index
+					case 'drop_index':
+						foreach ($update as $name => $columns) {
+							$this->sqlHelper()->dropIndex($name);
+						}
+						break;
+
+					// add an unique
+					case 'add_unique':
+						foreach ($update as $name => $columns) {
+							$this->sqlHelper()->addUnique($name, $columns);
+						}
+						break;
+
+					//  an unique
+					case 'drop_unique':
+						foreach ($update as $name => $columns) {
+							$this->sqlHelper()->dropUnique($name);
+						}
+						break;
+
+					// add a foreign key
+					case 'add_foreign_key':
+						foreach ($update as $name => $data) {
+							$this->sqlHelper()->addForeignKey($name, $data);
+						}
+						break;
+
+					// drop a foreign key
+					case 'drop_foreign_key':
+						foreach ($update as $name => $data) {
+							$this->sqlHelper()->dropForeignKey($name, $data);
+						}
+						break;
+				}
+			}
+		}
 	}
 }
