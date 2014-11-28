@@ -15,6 +15,8 @@ class FormValidator {
 	protected $notification_message = NULL;
 	protected $notification_type = NULL;
 
+	protected $suppress_submit_check = FALSE;
+
 	public function __construct($request, $name, array $inputs = NULL, array $validators  = NULL) {
 		$this->request = $request;
 		$this->name = $name;
@@ -24,6 +26,10 @@ class FormValidator {
 		if ($validators) {
 			$this->validators = $validators;
 		}
+	}
+
+	public function suppressSubmitCheck($value) {
+		$this->suppress_submit_check = $value ? TRUE : FALSE;
 	}
 
 	public function setNotification($type, $message) {
@@ -95,7 +101,7 @@ class FormValidator {
 
 	public function getValue($name) {
 		// Make sure the form has been submitted
-		if (is_null($this->request->requestParam($this->name.'-submit'))) {
+		if (!$this->suppress_submit_check && is_null($this->request->requestParam($this->name.'-submit'))) {
 			return NULL;
 		}
 		return $this->request->requestParam($name);
@@ -114,14 +120,14 @@ class FormValidator {
 
 	public function getEncodedValue($name) {
 		// Make sure the form has been submitted
-		if (is_null($this->request->requestParam($this->name.'-submit'))) {
+		if (!$this->suppress_submit_check && is_null($this->request->requestParam($this->name.'-submit'))) {
 			return '';
 		}
 		return htmlspecialchars($this->request->requestParam($name));
 	}
 
 	public function isSubmitted() {
-		if (is_null($this->request->requestParam($this->name.'-submit'))) {
+		if (!$this->suppress_submit_check && is_null($this->request->requestParam($this->name.'-submit'))) {
 			return FALSE;
 		}
 		return TRUE;
@@ -131,7 +137,7 @@ class FormValidator {
 		$this->form_errors = [];
 		$form_valid = TRUE;
 
-		if (is_null($this->request->requestParam($this->name.'-submit'))) {
+		if (!$this->suppress_submit_check && is_null($this->request->requestParam($this->name.'-submit'))) {
 			return FALSE;
 		}
 

@@ -49,21 +49,23 @@
 								<hr class="separator-2column visible-xs" />
 							</div>
 							<div class="col-md-6">
-								<div class="spacer-2column visible-sm"></div>
-								<div class="col-md-3 col-sm-3 title-2column">
+								<?php if ($search_types) { ?>
 									<div class="spacer-2column visible-sm"></div>
-									<?php echo $text_type; ?>
-								</div>
-								<div class="col-md-9 col-sm-9 ">
-									<div class="spacer-2column visible-sm"></div>
-									<select class="form-control" name="search_type">
-										<option value=""></option>
-										<?php foreach ($types as $value => $text) { ?>
-											<option value="<?php echo $value; ?>" <?php if ($form->getValue('search_type') == $value) echo 'selected="selected"'; ?>><?php echo $text; ?></option>
-										<?php } ?>
-									</select>
-									<?php echo $form->getHtmlErrorDiv('search_type'); ?>
-								</div>
+									<div class="col-md-3 col-sm-3 title-2column">
+										<div class="spacer-2column visible-sm"></div>
+										<?php echo $text_type; ?>
+									</div>
+									<div class="col-md-9 col-sm-9 ">
+										<div class="spacer-2column visible-sm"></div>
+										<select class="form-control" name="search_type">
+											<option value=""></option>
+											<?php foreach ($types as $value => $text) { ?>
+												<option value="<?php echo $value; ?>" <?php if ($form->getValue('search_type') == $value) echo 'selected="selected"'; ?>><?php echo $text; ?></option>
+											<?php } ?>
+										</select>
+										<?php echo $form->getHtmlErrorDiv('search_type'); ?>
+									</div>
+								<?php } ?>
 							</div>
 						</div>
 						<hr class="separator-2column" />
@@ -90,17 +92,17 @@
 						<table class="table">
 							<tr>
 								<th></th>
-								<th nowrap="nowrap"><?php echo $text_title; ?> <?php echo $pagination->getSortUrls('title'); ?></th>
-								<th nowrap="nowrap"><?php echo $text_tag; ?> <?php echo $pagination->getSortUrls('tag'); ?></th>
-								<th nowrap="nowrap"><?php echo $text_category; ?> <?php echo $pagination->getSortUrls('category_name'); ?></th>
+								<?php foreach ($table_headings as $title => $sort) { ?>
+									<th nowrap="nowrap"><?php echo $this->language->get($title); ?> <?php echo $pagination->getSortUrls($sort); ?></th>
+								<?php } ?>
 								<th></th>
 							</tr>
 							<?php foreach ($blocks as $block) { ?>
 							<tr>
 								<td class="select"><input type="checkbox" name="selected[]" value="<?php echo $block->id; ?>" /></td>
-								<td><?php echo $block->title; ?></td>
-								<td><?php echo $block->tag; ?></td>
-								<td><?php echo $block->getCategoryName(); ?></td>
+								<?php foreach ($table_data as $title => $callback) { ?>
+									<td nowrap="nowrap"><?php echo $callback($block); ?></td>
+								<?php } ?>
 								<td>
 									<a href="<?php echo $this->url->getUrl('administrator/Blocks', 'edit', [$block->tag]); ?>" class="btn btn-primary"><i class="fa fa-edit" title="<?php echo $text_edit; ?>"></i></a>
 								</td>

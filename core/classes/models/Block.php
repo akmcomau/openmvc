@@ -2,6 +2,8 @@
 
 namespace core\classes\models;
 
+use core\classes\Config;
+use core\classes\Database;
 use core\classes\Model;
 use core\classes\Module;
 
@@ -54,11 +56,27 @@ class Block extends Model {
 	];
 
 	protected $relationships = [
+		'block_type' => [
+			'where_fields'  => ['block_type_name'],
+			'join_clause'   => 'LEFT JOIN block_type USING (block_type_id)',
+		],
 		'block_category' => [
 			'where_fields'  => ['block_category_id'],
 			'join_clause'   => 'LEFT JOIN block_category_link USING (block_id) LEFT JOIN block_category USING (block_category_id)',
 		],
 	];
+
+	public function __construct(Config $config, Database $database) {
+		parent::__construct($config, $database);
+
+		$module = new Module($this->config);
+		$block_types = $module->getBlockTypes($database);
+		foreach ($block_types['id'] as $id => $block_type) {
+			if (isset($block_type['relationships'])) {
+				$this->relationships = array_merge($this->relationships, $block_type['relationships']);
+			}
+		}
+	}
 
 	public function render() {
 		$modules = (new Module($this->config))->getEnabledModules();
@@ -157,5 +175,42 @@ class Block extends Model {
 		$this->database->executeQuery($sql);
 
 		parent::delete();
+	}
+
+	public function getBlockType() {
+		if (!$this->type_id) {
+			return NULL;
+		}
+		if (isset($this->objects['block_type'])) {
+			return $this->objects['block_type'];
+		}
+
+		$model = $this->getModel('\core\classes\models\BlockType');
+		$this->objects['block_type'] = $model->get(['id' => $this->type_id]);
+		return $this->objects['block_type'];
+	}
+
+	public function getType() {
+		if (!$this->type_id) {
+			return NULL;
+		}
+		if (isset($this->objects['block_type_data'])) {
+			return $this->objects['block_type_data'];
+		}
+
+		$module = new Module($this->config);
+		$block_type_spec = $module->getBlockTypes($this->database);
+		$type_spec = NULL;
+		if (!isset($block_type_spec['id'][$this->type_id])) {
+			return NULL;
+		}
+
+		$type_spec = $block_type_spec['id'][$this->type_id];
+		$model = $this->getModel($type_spec['model']);
+		$type = $model->get(['block_id' => $this->id]);
+		$model->block_id = $this->id;
+
+		$this->objects['block_type_data'] = $type ? $type : $model;
+		return $this->objects['block_type_data'];
 	}
 }

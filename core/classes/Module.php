@@ -3,6 +3,7 @@
 namespace core\classes;
 
 use ErrorException;
+use core\classes\URL;
 
 class Module {
 
@@ -13,6 +14,8 @@ class Module {
 	protected $config;
 
 	protected static $modules = NULL;
+
+	protected static $block_types = NULL;
 
 	public function __construct(Config $config) {
 		$this->config = $config;
@@ -74,6 +77,56 @@ class Module {
 		}
 
 		return self::$modules;
+	}
+
+	public function getBlockTypes(Database $database) {
+		if (self::$block_types) {
+			return self::$block_types;
+		}
+
+		$url = new URL($this->config);
+
+		$model = new Model($this->config, $database);
+		$model = $model->getModel('\core\classes\models\BlockType');
+		$types = $model->getMulti();
+		$type_ids = [];
+		foreach ($types as $type) {
+			$type_ids[$type->name] = $type->id;
+		}
+
+		$model = new Model($this->config, $database);
+		$block_type = $model->getModel('\core\classes\models\BlockType');
+		$html_model = $block_type->get(['name' => 'HTML']);
+		$html_block = [
+			'name' => 'HTML',
+			'canonical' => 'html',
+			'id' => $html_model->id,
+			'model' => '\modules\block_events\classes\models\BlockEvent',
+			'controller' => 'administrator\BlockEvents',
+		];
+		self::$block_types = [
+			'id' => [$html_block['id'] => $html_block],
+			'name' => [$html_block['name'] => $html_block],
+			'canonical' => [$html_block['canonical'] => $html_block],
+		];
+
+		$modules = $this->getModules();
+		foreach ($modules as $module) {
+			if (isset($module['block_types'])) {
+				foreach ($module['block_types'] as $type => $data) {
+					$canonical = $url->canonical($type);
+					$data['id'] = $type_ids[$type];
+					$data['name'] = $type;
+					$data['canonical'] = $canonical;
+
+					self::$block_types['name'][$type] = &$data;
+					self::$block_types['canonical'][$canonical] = &$data;
+					self::$block_types['id'][$data['id']] = &$data;
+				}
+			}
+		}
+
+		return self::$block_types;
 	}
 
 	public function getEnabledModules() {

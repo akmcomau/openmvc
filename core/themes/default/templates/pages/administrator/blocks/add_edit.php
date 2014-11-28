@@ -1,7 +1,8 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<form method="post" id="form-block">
+			<form method="post" id="form-block" action="<?php echo $form_url; ?>">
+				<input type="hidden" name="change_type" id="change_type" value="0" />
 				<div class="widget">
 					<div class="widget-header">
 						<h3><?php
@@ -18,18 +19,22 @@
 							</div>
 						</div>
 						<hr class="separator-2column" />
-						<div class="row">
-							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_tag; ?></div>
-							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="tag" value="<?php echo htmlspecialchars($block->tag); ?>" />
-								<?php echo $form->getHtmlErrorDiv('tag'); ?>
+						<?php if ($autogen_tag) { ?>
+							<input type="hidden" name="tag" value="<?php echo $block->tag ? $block->tag : md5(time().rand()); ?>" />
+						<?php } else { ?>
+							<div class="row">
+								<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_tag; ?></div>
+								<div class="col-md-9 col-sm-9 ">
+									<input type="text" class="form-control" name="tag" value="<?php echo htmlspecialchars($block->tag); ?>" />
+									<?php echo $form->getHtmlErrorDiv('tag'); ?>
+								</div>
 							</div>
-						</div>
-						<hr class="separator-2column" />
+							<hr class="separator-2column" />
+						<?php } ?>
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_type; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<select name="type" class="form-control">
+								<select name="type" class="form-control" id="block_type">
 									<?php foreach ($types as $value => $text) { ?>
 										<option value="<?php echo $value; ?>" <?php if ($value == $block->type_id) echo 'selected="selected"'; ?>><?php echo $text; ?></option>
 									<?php } ?>
@@ -49,6 +54,7 @@
 							</div>
 						</div>
 						<hr class="separator-2column" />
+						<?php echo $block_type_fields; ?>
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column">
 								<?php echo $text_content; ?>
@@ -120,5 +126,19 @@
 		writer.lineBreakChars = '';
 	});
 	updatePreview($('textarea[name="content"]').val());
+
+	var block_types = <?php echo json_encode($block_type_spec); ?>;
+	$('#block_type').change(function() {
+		if (typeof(block_types.id[$(this).val()]) == 'undefined') {
+			$('#form-block').attr('action', '<?php echo $url; ?>');
+			$('#change_type').val(1);
+			$('#form-block').submit();
+		}
+		else {
+			$('#form-block').attr('action', '<?php echo $url; ?>/'+block_types.id[$(this).val()].canonical);
+			$('#change_type').val(1);
+			$('#form-block').submit();
+		}
+	});
 </script>
 
