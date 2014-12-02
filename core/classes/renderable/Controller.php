@@ -24,6 +24,8 @@ class Controller extends Renderable {
 
 	protected $show_admin_layout = FALSE;
 
+	protected $respond_to_all_methods = FALSE;
+
 	protected $request;
 	protected $response;
 	protected $layout;
@@ -88,6 +90,10 @@ class Controller extends Renderable {
 				$this->layout->loadLanguageFile('layout.php');
 			}
 		}
+	}
+
+	public function RespondToAllMethods() {
+		return $this->respond_to_all_methods;
 	}
 
 	public function setLanguage(Language $language) {

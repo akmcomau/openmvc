@@ -7,6 +7,26 @@ $script_start = microtime(TRUE);
 $suppress_exceptions = NULL;
 $display_errors = TRUE;
 
+function log_request_start($config, $logger) {
+	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ' FORWARDED: '.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
+	$logger->info('Start Request ['.$ip.'] '.($config->is_robot ? ' [ROBOT]' : '').': '.$_SERVER['REQUEST_URI'].' => '.json_encode($_GET));
+
+	// log the useragent if the session was just created
+	if (!isset($_SESSION['created'])) {
+		$_SESSION['created'] = date('c');
+		$language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'N/A';
+		$user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'N/A';
+		$logger->info('Language: '.$language.' :: User Agent: '.$user_agent);
+	}
+
+	// log the referer if not from this domain
+	if (isset($_SERVER['HTTP_REFERER']) && strlen($_SERVER['HTTP_REFERER'])) {
+		if (!preg_match('/'.$_SERVER['HTTP_HOST'].'/', $_SERVER['HTTP_REFERER'])) {
+			$logger->info('Referer: '.$_SERVER['HTTP_REFERER']);
+		}
+	}
+}
+
 // $value is a regex of the errors to ignore
 function suppress_exceptions($value) {
 	global $suppress_exceptions;

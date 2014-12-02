@@ -66,7 +66,7 @@ class Dispatcher {
 		$controller->setUrl($this->url);
 		$full_method_name = $method_name = $request->getMethodName();
 		$methods = $controller->getAllMethods();
-		if (!in_array($method_name, $methods)) {
+		if (!$controller->RespondToAllMethods() && !in_array($method_name, $methods)) {
 			$this->logger->debug("Method Not found: $controller_class::".$request->getMethodName());
 			return $this->error404($request);
 		}
