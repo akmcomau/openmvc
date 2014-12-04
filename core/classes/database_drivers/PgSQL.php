@@ -21,16 +21,6 @@ class PgSQL extends DatabaseDriver {
 			$sql .= "\t$column ".$this->getDataType($data).",\n";
 		}
 
-		// add the uniques
-		foreach ($this->uniques as $column) {
-			if (is_array($column)) {
-				$sql .= "\tUNIQUE (".join(',', $column)."),\n";
-			}
-			else {
-				$sql .= "\tUNIQUE ($column),\n";
-			}
-		}
-
 		// add the primary key
 		$sql .= "\tPRIMARY KEY (".$this->primary_key.")\n";
 
@@ -58,9 +48,7 @@ class PgSQL extends DatabaseDriver {
 		foreach ($this->foreign_keys as $column => $foreign) {
 			$foreign_table  = $foreign[0];
 			$foreign_column = $foreign[1];
-			$sql = "ALTER TABLE ONLY ".$this->table." ADD CONSTRAINT ".$this->table."_".$column."_fk FOREIGN KEY ($column) REFERENCES $foreign_table ($foreign_column);";
-
-			$this->database->executeQuery($sql);
+			$this->addForeignKey($column, $foreign_table, $foreign_column);
 		}
 	}
 
@@ -70,14 +58,17 @@ class PgSQL extends DatabaseDriver {
 	public function createIndexes() {
 		// add the indexes
 		foreach ($this->indexes as $column) {
-			if (is_array($column)) {
-				$sql = "CREATE INDEX ON ".$this->table."(".join(',', $column).");\n";
-			}
-			else {
-				$sql = "CREATE INDEX ON ".$this->table."($column);\n";
-			}
+			$this->addIndex($column);
+		}
+	}
 
-			$this->database->executeQuery($sql);
+	/**
+	 * Create the PostgreSQL table unique constraints this model is associated with
+	 */
+	public function createUniques() {
+		// add the indexes
+		foreach ($this->uniques as $column) {
+			$this->addUnique($column);
 		}
 	}
 
@@ -332,38 +323,68 @@ class PgSQL extends DatabaseDriver {
 	}
 
 	public function addColumn($name, $data) {
-		throw new \ErrorException('TODO');
+		$sql = "ALTER TABLE ".$this->table." ADD COLUMN $name ".$this->getDataType($data);
+		$this->database->executeQuery($sql);
 	}
 
 	public function alterColumn($name, $data) {
-		throw new \ErrorException('TODO');
+		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name ".$this->getDataType($data);
+		$this->database->executeQuery($sql);
 	}
 
 	public function dropColumn($name) {
-		throw new \ErrorException('TODO');
+		$sql = "ALTER TABLE ".$this->table." DROP COLUMN $name";
+		$this->database->executeQuery($sql);
 	}
 
-	public function addIndex($name, $columns) {
-		throw new \ErrorException('TODO');
+	public function addIndex($columns) {
+		$sql = "CREATE INDEX ".$this->indexConstraintName($columns)."_idx ON ".$this->table."(".$this->indexConstraintColumns($columns).")";
+		$this->database->executeQuery($sql);
 	}
 
-	public function dropIndex($name) {
-		throw new \ErrorException('TODO');
+	public function dropIndex($columns) {
+		$sql = "DROP INDEX ".$this->indexConstraintName($columns)."_idx";
+		$this->database->executeQuery($sql);
 	}
 
-	public function addUnique($name, $columns) {
-		throw new \ErrorException('TODO');
+	public function addUnique($columns) {
+		$sql = "ALTER TABLE ONLY ".$this->table." ADD CONSTRAINT ".$this->indexConstraintName($columns)."_key UNIQUE (".$this->indexConstraintColumns($columns).")";
+		$this->database->executeQuery($sql);
 	}
 
 	public function dropUnique($name) {
-		throw new \ErrorException('TODO');
+		$sql = "ALTER TABLE ONLY ".$this->table." DROP CONSTRAINT ".$this->indexConstraintName($columns)."_key";
+		$this->database->executeQuery($sql);
 	}
 
-	public function addForeignKey($name, $data) {
-		throw new \ErrorException('TODO');
+	public function addForeignKey($column, $foreign_table, $foreign_column) {
+		$sql = "ALTER TABLE ONLY ".$this->table." ADD CONSTRAINT ".$this->indexConstraintName($column)."_fk FOREIGN KEY ($column) REFERENCES $foreign_table ($foreign_column)";
+		$this->database->executeQuery($sql);
 	}
 
-	public function dropForeignKey($name) {
-		throw new \ErrorException('TODO');
+	public function dropForeignKey($column) {
+		$sql = "ALTER TABLE ONLY ".$this->table." DROP CONSTRAINT ".$this->indexConstraintName($column)."_fk";
+		$this->database->executeQuery($sql);
+	}
+
+	protected function indexConstraintName($columns) {
+		if (!is_array($columns)) {
+			$columns = [$columns];
+		}
+		foreach ($columns as &$column) {
+			if (preg_match('/^.*\((.*)\)$/', $column, $matches)) {
+				$column = $matches[1];
+			}
+		}
+		return $this->table."_".join('_', $columns);
+	}
+
+	protected function indexConstraintColumns($columns) {
+		if (is_array($columns)) {
+			return join(',', $columns);
+		}
+		else {
+			return $columns;
+		}
 	}
 }

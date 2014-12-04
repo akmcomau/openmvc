@@ -9,6 +9,7 @@ use core\classes\Database;
 use core\classes\Config;
 use core\classes\Logger;
 use core\classes\Model;
+use core\classes\Module;
 use core\classes\AutoLoader;
 
 include('core/ErrorHandler.php');
@@ -101,5 +102,17 @@ foreach ($all_models as $model_class => $data_classes) {
 			$object = $model->getModel($model_class);
 			$object->insertInitalData($data_class);
 		}
+	}
+}
+
+// Create the block types
+$model = new Model($config, $database);
+$module = new Module($config);
+$block_types = $module->getBlockTypes($database);
+foreach ($block_types['name'] as $type) {
+	if (!$type['id']) {
+		$block_type = $model->getModel('\\core\\classes\\models\\BlockType');
+		$block_type->name = $type['name'];
+		$block_type->insert();
 	}
 }

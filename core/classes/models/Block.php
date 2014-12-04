@@ -69,6 +69,8 @@ class Block extends Model {
 	public function __construct(Config $config, Database $database) {
 		parent::__construct($config, $database);
 
+		if ($database->getCreatingDatabase()) return;
+
 		$module = new Module($this->config);
 		$block_types = $module->getBlockTypes($database);
 		foreach ($block_types['id'] as $id => $block_type) {

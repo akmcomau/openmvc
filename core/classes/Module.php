@@ -84,7 +84,7 @@ class Module {
 			return self::$block_types;
 		}
 
-		$url = new URL($this->config);
+		$url = new URL($this->config, FALSE);
 
 		$model = new Model($this->config, $database);
 		$model = $model->getModel('\core\classes\models\BlockType');
@@ -115,7 +115,7 @@ class Module {
 			if (isset($module['block_types'])) {
 				foreach ($module['block_types'] as $type => $data) {
 					$canonical = $url->canonical($type);
-					$data['id'] = $type_ids[$type];
+					$data['id'] = isset($type_ids[$type]) ? $type_ids[$type] : NULL;
 					$data['name'] = $type;
 					$data['canonical'] = $canonical;
 

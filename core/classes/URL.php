@@ -8,9 +8,9 @@ class URL {
 	protected static $url_map = NULL;
 	protected $logger = NULL;
 
-	public function __construct(Config $config) {
+	public function __construct(Config $config, $gen_url_map = TRUE) {
 		$this->config = $config;
-		$this->generateUrlMap();
+		if ($gen_url_map) $this->generateUrlMap();
 		$this->logger = Logger::getLogger(__CLASS__);
 	}
 

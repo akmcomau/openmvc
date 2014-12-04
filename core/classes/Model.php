@@ -869,6 +869,8 @@ class Model {
 	 * Create the database
 	 */
 	public function createDatabase() {
+		$this->database->setCreatingDatabase(TRUE);
+
 		// Create the tables
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating table: $model");
@@ -885,6 +887,14 @@ class Model {
 			$model->sqlHelper()->createIndexes();
 		}
 
+		// Create the uniques
+		foreach (self::$site_models as $model) {
+			$this->logger->info("Creating uniques: $model");
+			$model = $this->getModel($model);
+			if (!$model->hasTable()) continue;
+			$model->sqlHelper()->createUniques();
+		}
+
 		// Create the foreign keys
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating foreign keys: $model");
@@ -892,6 +902,8 @@ class Model {
 			if (!$model->hasTable()) continue;
 			$model->sqlHelper()->createForeignKeys();
 		}
+
+		$this->database->setCreatingDatabase(FALSE);
 	}
 
 	/**
@@ -1117,63 +1129,63 @@ class Model {
 					// add a column
 					case 'add_column':
 						foreach ($update as $name => $data) {
-							$this->sqlHelper()->addColumn($name, $data);
+							$model->sqlHelper()->addColumn($name, $data);
 						}
 						break;
 
 					// drop a column
 					case 'drop_column':
-						foreach ($update as $name => $data) {
-							$this->sqlHelper()->dropColumn($name);
+						foreach ($update as $name) {
+							$model->sqlHelper()->dropColumn($name);
 						}
 						break;
 
 					// alter a column
 					case 'alter_column':
 						foreach ($update as $name => $data) {
-							$this->sqlHelper()->alterColumn($name, $data);
+							$model->sqlHelper()->alterColumn($name, $data);
 						}
 						break;
 
 					// add an index
 					case 'add_index':
-						foreach ($update as $name => $columns) {
-							$this->sqlHelper()->addIndex($name, $columns);
+						foreach ($update as $columns) {
+							$model->sqlHelper()->addIndex($columns);
 						}
 						break;
 
 					// drop an index
 					case 'drop_index':
-						foreach ($update as $name => $columns) {
-							$this->sqlHelper()->dropIndex($name);
+						foreach ($update as $columns) {
+							$model->sqlHelper()->dropIndex($columns);
 						}
 						break;
 
 					// add an unique
 					case 'add_unique':
-						foreach ($update as $name => $columns) {
-							$this->sqlHelper()->addUnique($name, $columns);
+						foreach ($update as $columns) {
+							$model->sqlHelper()->addUnique($columns);
 						}
 						break;
 
 					//  an unique
 					case 'drop_unique':
-						foreach ($update as $name => $columns) {
-							$this->sqlHelper()->dropUnique($name);
+						foreach ($update as $columns) {
+							$model->sqlHelper()->dropUnique($columns);
 						}
 						break;
 
 					// add a foreign key
 					case 'add_foreign_key':
-						foreach ($update as $name => $data) {
-							$this->sqlHelper()->addForeignKey($name, $data);
+						foreach ($update as $column => $data) {
+							$model->sqlHelper()->addForeignKey($column, $data);
 						}
 						break;
 
 					// drop a foreign key
 					case 'drop_foreign_key':
-						foreach ($update as $name => $data) {
-							$this->sqlHelper()->dropForeignKey($name, $data);
+						foreach ($update as $column => $data) {
+							$model->sqlHelper()->dropForeignKey($column);
 						}
 						break;
 				}

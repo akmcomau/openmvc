@@ -64,6 +64,12 @@ class Database extends PDO {
 	protected $cache = [];
 
 	/**
+	 * Is the database currently being created
+	 * @var boolean $creating_database
+	 */
+	protected $creating_database = FALSE;
+
+	/**
 	 * Constructor
 	 * @param[in] $engine     \b string The database engine to use, either: mysql, pgsql, none
 	 * @param[in] $hostname   \b string The database server's hostname
@@ -105,6 +111,20 @@ class Database extends PDO {
 	 */
 	public function getEngine() {
 		return $this->engine;
+	}
+
+	/**
+	 * Sets creating database field
+	 */
+	public function setCreatingDatabase($creating_database) {
+		$this->creating_database = $creating_database ? TRUE : FALSE;
+	}
+
+	/**
+	 * Fetches creating database field
+	 */
+	public function getCreatingDatabase() {
+		return $this->creating_database;
 	}
 
 	/**
