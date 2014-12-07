@@ -267,7 +267,7 @@ class Database extends PDO {
 			return [];
 		}
 
-		$this->executeQuery($sql);
+		$statement = $this->executeQuery($sql);
 		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 		if (!$result) return [];
 
@@ -289,7 +289,7 @@ class Database extends PDO {
 			return [];
 		}
 
-		$this->executeQuery($sql);
+		$statement = $this->executeQuery($sql);
 		$result = $statement->fetchAll(PDO::FETCH_NUM);
 		if (!$result) return [];
 
@@ -312,7 +312,7 @@ class Database extends PDO {
 			return [];
 		}
 
-		$this->executeQuery($sql);
+		$statement = $this->executeQuery($sql);
 		$result = $statement->fetchAll(PDO::FETCH_NUM);
 		if (!$result) return [];
 
