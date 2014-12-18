@@ -272,7 +272,13 @@ class Blocks extends Controller {
 		}
 
 		// set the form submission URL
-		$data['form_url'] = $data['url'] = $this->url->getUrl('administrator\Blocks', 'edit', [$tag]);
+		if ($type) {
+			$data['form_url'] = $this->url->getUrl($type['controller'], 'edit', [$tag]);
+		}
+		else {
+			$data['form_url'] = $this->url->getUrl('administrator\Blocks', 'edit', [$tag]);
+		}
+		$data['url'] = $this->url->getUrl('administrator\Blocks', 'edit', [$tag]);
 
 		$data['is_add_page'] = FALSE;
 		$data['form'] = $form_block;
