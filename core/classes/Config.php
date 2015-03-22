@@ -294,6 +294,10 @@ class Config {
 	 * @throws ConfigException if the host does not reference a site and there is no default site
 	 */
 	public function setSiteDomain($host, $redirect = TRUE) {
+		// strip the port off the host
+		$parts = explode(":", $host);
+		$host = $parts[0];
+
 		$default_site = NULL;
 		$sites = $this->sites;
 		foreach ($sites as $domain => $site) {
