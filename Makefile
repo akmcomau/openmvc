@@ -21,7 +21,15 @@ site-update-composer:
 
 # update dependancies
 site-update-depends:
-	cd sites/${SITE} && make update-depends;
+	cd module/${SITE} && make update-depends;
+
+# update composer
+site-update-composer:
+	cd module/${MODULE} && make update-composer;
+
+# update dependancies
+site-update-depends:
+	cd sites/${MODULE} && make update-depends;
 
 # create database
 create-database:
