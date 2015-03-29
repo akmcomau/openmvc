@@ -37,15 +37,8 @@ try {
 	$config->setSiteDomain($_SERVER['HTTP_HOST']);
 	$display_errors = $config->siteConfig()->display_errors;
 
-	$database   = new Database(
-		$config->database->engine,
-		$config->database->hostname,
-		$config->database->username,
-		$config->database->database,
-		$config->database->password
-	);
+	$database   = new Database($config);
 	$request    = new Request($config, $database);
-
 	$dispatcher = new Dispatcher($config, $database);
 	$response = $dispatcher->dispatch($request);
 

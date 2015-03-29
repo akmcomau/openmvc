@@ -40,6 +40,12 @@ class Database extends PDO {
 	protected $password;
 
 	/**
+	 * The database port
+	 * @var string $port
+	 */
+	protected $port;
+
+	/**
 	 * Should this be a persistant connection
 	 * @var string $persistant
 	 */
@@ -71,20 +77,16 @@ class Database extends PDO {
 
 	/**
 	 * Constructor
-	 * @param[in] $engine     \b string The database engine to use, either: mysql, pgsql, none
-	 * @param[in] $hostname   \b string The database server's hostname
-	 * @param[in] $username   \b string The database user name
-	 * @param[in] $database   \b string The database name
-	 * @param[in] $password   \b string The database password
-	 * @param[in] $persistant \b boolean Should this be a persistant connection
+	 * @param[in] $config     \b Config The configuration object
 	 */
-	public function __construct($engine, $hostname, $username, $database, $password, $persistant = FALSE) {
-		$this->engine     = $engine;
-		$this->hostname   = $hostname;
-		$this->username   = $username;
-		$this->database   = $database;
-		$this->password   = $password;
-		$this->persistant = $persistant;
+	public function __construct($config) {
+		$this->engine     = $config->database->engine;
+		$this->hostname   = $config->database->hostname;
+		$this->port       = property_exists($config->database, 'port') ? $config->database->port : NULL;
+		$this->username   = $config->database->username;
+		$this->database   = $config->database->database;
+		$this->password   = $config->database->password;
+		$this->persistant = property_exists($config->database, 'persistant') ? $config->database->persistant : NULL;
 
 		if ($this->engine != 'mysql' && $this->engine != 'pgsql' && $this->engine != 'none') {
 			throw new DatabaseException('Invalid database engine: '.$this->engine);
@@ -101,7 +103,8 @@ class Database extends PDO {
 			return;
 		}
 
-        $dns = $this->engine.':dbname='.$this->database.";host=".$this->hostname;
+		$dns = $this->engine.':dbname='.$this->database.";host=".$this->hostname;
+		if ($this->port) $dns .= ";port=".$this->port;
 		parent::__construct($dns, $this->username, $this->password, $options);
 	}
 

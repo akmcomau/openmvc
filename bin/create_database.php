@@ -20,13 +20,7 @@ Logger::init();
 
 $logger     = Logger::getLogger('');
 $config     = new Config();
-$database   = new Database(
-	$config->database->engine,
-	$config->database->hostname,
-	$config->database->username,
-	$config->database->database,
-	$config->database->password
-);
+$database   = new Database($config);
 
 $model = new Model($config, $database);
 $model->createDatabase();
