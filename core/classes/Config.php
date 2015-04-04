@@ -47,6 +47,7 @@ class Config {
 		}
 
 		// add the default config to this object
+		$clones = [];
 		foreach ($this->configuration['sites'] as $domain => &$site_data) {
 			foreach ($_DEFAULT_CONFIG->default_site as $key => $value) {
 				if (!isset($site_data->$key)) {
@@ -54,6 +55,16 @@ class Config {
 				}
 			}
 			$site_data->domain = $domain;
+			if (property_exists($site_data, 'domains')) {
+				foreach ($site_data->domains as $domain) {
+					$clones[$domain] = &$site_data;
+				}
+			}
+		}
+
+		// add the clone sites
+		foreach ($clones as $domain => &$site_data) {
+			$this->configuration['sites']->$domain = &$site_data;
 		}
 
 		foreach ($_DEFAULT_CONFIG as $key => $value) {
