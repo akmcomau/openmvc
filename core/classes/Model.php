@@ -63,6 +63,12 @@ class Model {
 	protected $primary_key    = NULL;
 
 	/**
+	 * During a database creation should this table be created
+	 * @var bool $create_schema
+	 */
+	protected $create_schema    = TRUE;
+
+	/**
 	 * An array containing table columns with data types.<br>
 	 * Valid data types: smallint, int, bigint, numeric, date, datetime, bool, text, blob <br>
 	 * This is an array of the form:
@@ -283,6 +289,14 @@ class Model {
 	}
 
 	/**
+	 * Get the create schema value
+	 * @return \b bool Should this table be created
+	 */
+	public function getCreateSchema() {
+ 		return $this->create_schema;
+	}
+
+	/**
 	 * Get the available models
 	 * @return \b array The available models
 	 */
@@ -382,6 +396,8 @@ class Model {
 	 * @param[in] $name The name of the hook
 	 */
 	protected function callHook($name) {
+		if (!$this->config->getSiteDomain()) return;
+
 		$name = $this->table.'_'.$name;
 		$modules = (new Module($this->config))->getEnabledModules();
 		foreach ($modules as $module) {
@@ -875,7 +891,7 @@ class Model {
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating table: $model");
 			$model = $this->getModel($model);
-			if (!$model->hasTable()) continue;
+			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
 			$model->sqlHelper()->createTable();
 		}
 
@@ -883,7 +899,7 @@ class Model {
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating indexes: $model");
 			$model = $this->getModel($model);
-			if (!$model->hasTable()) continue;
+			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
 			$model->sqlHelper()->createIndexes();
 		}
 
@@ -891,7 +907,7 @@ class Model {
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating uniques: $model");
 			$model = $this->getModel($model);
-			if (!$model->hasTable()) continue;
+			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
 			$model->sqlHelper()->createUniques();
 		}
 
@@ -899,7 +915,7 @@ class Model {
 		foreach (self::$site_models as $model) {
 			$this->logger->info("Creating foreign keys: $model");
 			$model = $this->getModel($model);
-			if (!$model->hasTable()) continue;
+			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
 			$model->sqlHelper()->createForeignKeys();
 		}
 
@@ -1018,7 +1034,7 @@ class Model {
 
 			// remove index
 			if (!$found) {
-				$updates['drop_index'] = $name;
+				$updates['drop_index'][] = $name;
 			}
 		}
 

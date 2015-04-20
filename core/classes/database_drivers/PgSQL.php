@@ -144,6 +144,9 @@ class PgSQL extends DatabaseDriver {
 		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
 			$type .= " NOT NULL";
 		}
+		else {
+			$type .= " NULL";
+		}
 
 		if (isset($data['default_value'])) {
 			$type .= " DEFAULT ".$data['default_value'];
@@ -328,7 +331,7 @@ class PgSQL extends DatabaseDriver {
 	}
 
 	public function alterColumn($name, $data) {
-		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name ".$this->getDataType($data);
+		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name TYPE ".$this->getDataType($data);
 		$this->database->executeQuery($sql);
 	}
 

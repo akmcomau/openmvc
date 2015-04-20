@@ -17,6 +17,6 @@ $config     = new Config();
 $database   = new Database($config);
 
 $model = new Model($config, $database);
-$models = $model->getAllModels();
+$models = $model->findAllModels();
 
 print "Not Implemented yet!\n\n";

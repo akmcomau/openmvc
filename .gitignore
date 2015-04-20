@@ -5,6 +5,7 @@ core/config/log4php.php
 core/config/config.php
 core/config/admin_users.php
 core/config/config-*.php
+core/config/constants.php
 composer/composer.lock
 composer/composer.phar
 composer/vendor/

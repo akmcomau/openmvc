@@ -206,6 +206,7 @@ class Config {
 	 * @return \b stdClass The sites configuration object
 	 */
 	public function siteConfig() {
+		if (!$this->site_domain) return NULL;
 		return $this->sites->{$this->site_domain};
 	}
 

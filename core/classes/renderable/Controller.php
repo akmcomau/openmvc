@@ -5,6 +5,7 @@ namespace core\classes\renderable;
 use ReflectionClass;
 use ReflectionMethod;
 use core\classes\exceptions\SoftRedirectException;
+use core\classes\exceptions\TemplateException;
 use core\classes\Authentication;
 use core\classes\Config;
 use core\classes\Database;
@@ -131,7 +132,7 @@ class Controller extends Renderable {
 	public function render() {
 		if ($this->layout) {
 			if ($this->show_admin_layout) {
-				$main_menu = new Menu($this->config, $this->language);
+				$main_menu = new Menu($this->config, $this->language, $this->authentication);
 				$main_menu->loadMenu('menu_admin_main.php');
 
 				$user_menu = new Menu($this->config, $this->language, $this->authentication);
@@ -143,16 +144,21 @@ class Controller extends Renderable {
 				]);
 			}
 			else {
-				$public_main = new Menu($this->config, $this->language);
-				$public_main->loadMenu('menu_public_main.php');
+				$public_main = new Menu($this->config, $this->language, $this->authentication);
+				$public_user = new Menu($this->config, $this->language, $this->authentication);
 
 				if ($this->authentication->customerLoggedIn()) {
-					$public_user = new Menu($this->config, $this->language);
 					$public_user->loadMenu('menu_public_user.php');
+					try {
+						$public_main->loadMenu('menu_public_customer.php');
+					}
+					catch (TemplateException $ex) {
+						$public_main->loadMenu('menu_public_main.php');
+					}
 				}
 				else {
-					$public_user = new Menu($this->config, $this->language);
 					$public_user->loadMenu('menu_public_login.php');
+					$public_main->loadMenu('menu_public_main.php');
 				}
 
 				$admin_panel = new Menu($this->config, $this->language);

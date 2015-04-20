@@ -30,7 +30,7 @@ class Address extends Model {
 		],
 		'customer_id' => [
 			'data_type'      => 'bigint',
-			'null_allowed'   => FALSE,
+			'null_allowed'   => TRUE,
 		],
 		'address_first_name' => [
 			'data_type'      => 'text',

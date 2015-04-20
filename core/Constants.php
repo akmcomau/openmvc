@@ -8,3 +8,7 @@ define('CUSTOMER_TYPE_NORMAL', 1);
 
 // Administrator constants
 define('ADMINISTRATOR_TYPE_SUPER',  1);
+
+if (file_exists(__DIR__.'/config/constants.php')) {
+	require(__DIR__.'/config/constants.php');
+}
