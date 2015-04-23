@@ -16,6 +16,8 @@ class Customers extends Controller {
 
 	protected $show_admin_layout = TRUE;
 
+	protected $customerModelClass = 'core\classes\models\Customer';
+
 	protected $permissions = [
 		'index' => ['administrator'],
 		'add' => ['administrator'],
@@ -48,7 +50,7 @@ class Customers extends Controller {
 
 		// get all the customers
 		$model     = new Model($this->config, $this->database);
-		$customer  = $model->getModel('\core\classes\models\Customer');
+		$customer  = $model->getModel($this->customerModelClass);
 		$customers = $customer->getMulti($params, $pagination->getOrdering(), $pagination->getLimitOffset());
 		$pagination->setRecordCount($customer->getCount($params));
 
@@ -88,7 +90,7 @@ class Customers extends Controller {
 		$this->language->loadLanguageFile('administrator/customers.php');
 
 		$model = new Model($this->config, $this->database);
-		$customer = $model->getModel('\core\classes\models\Customer');
+		$customer = $model->getModel($this->customerModelClass);
 		$customer->customer_email_verified = FALSE;
 		$customer->site_id = $this->config->siteConfig()->site_id;
 		$form_customer = $this->getCustomerForm(TRUE, $customer);
@@ -109,6 +111,7 @@ class Customers extends Controller {
 			'form' => $form_customer,
 			'customer' => $customer,
 		];
+		$this->getExtraTemplateData($customer, $data);
 
 		$template = $this->getTemplate('pages/administrator/customers/add_edit.php', $data);
 		$this->response->setContent($template->render());
@@ -118,7 +121,7 @@ class Customers extends Controller {
 		$this->language->loadLanguageFile('administrator/customers.php');
 
 		$model = new Model($this->config, $this->database);
-		$customer = $model->getModel('\core\classes\models\Customer')->get([
+		$customer = $model->getModel($this->customerModelClass)->get([
 			'id' => (int)$customer_id,
 		]);
 		$this->siteProtection($customer);
@@ -139,6 +142,7 @@ class Customers extends Controller {
 			'form' => $form_customer,
 			'customer' => $customer,
 		];
+		$this->getExtraTemplateData($customer, $data);
 
 		$template = $this->getTemplate('pages/administrator/customers/add_edit.php', $data);
 		$this->response->setContent($template->render());
@@ -147,7 +151,7 @@ class Customers extends Controller {
 	public function delete() {
 		if ($this->request->requestParam('selected')) {
 			$model = new Model($this->config, $this->database);
-			$customer_model = $model->getModel('\core\classes\models\Customer');
+			$customer_model = $model->getModel($this->customerModelClass);
 			foreach ($this->request->requestParam('selected') as $id) {
 				$customer = $customer_model->get(['id' => $id]);
 				$this->siteProtection($customer);
@@ -156,6 +160,10 @@ class Customers extends Controller {
 
 			throw new RedirectException($this->url->getUrl('administrator/Customers', 'index', ['delete-success']));
 		}
+	}
+
+	protected function getExtraTemplateData(Customer $customer, &$data) {
+
 	}
 
 	protected function updateFromRequest(FormValidator $form, Customer $customer) {
@@ -244,13 +252,14 @@ class Customers extends Controller {
 			],
 		];
 
+		$object = $this;
 		$validators = [
 			'email' => [
 				[
 					'type'     => 'function',
 					'message'  => $this->language->get('error_email_taken'),
-					'function' => function($value) use ($model, $customer_obj) {
-						$customer = $model->getModel('core\classes\models\Customer');
+					'function' => function($value) use ($model, $customer_obj, $object) {
+						$customer = $model->getModel($object->customerModelClass);
 						$customer = $customer->get(['email' => $value]);
 						if ($customer && $customer->id != $customer_obj->id) {
 							return FALSE;
@@ -265,8 +274,8 @@ class Customers extends Controller {
 				[
 					'type'     => 'function',
 					'message'  => $this->language->get('error_login_taken'),
-					'function' => function($value) use ($model, $customer_obj) {
-						$customer = $model->getModel('core\classes\models\Customer');
+					'function' => function($value) use ($model, $customer_obj, $object) {
+						$customer = $model->getModel($object->customerModelClass);
 						$customer = $customer->get(['login' => $value]);
 						if ($customer && $customer->id != $customer_obj->id) {
 							return FALSE;

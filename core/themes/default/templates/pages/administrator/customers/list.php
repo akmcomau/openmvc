@@ -64,11 +64,11 @@
 							<?php foreach ($customers as $customer) { ?>
 							<tr>
 								<td class="select"><input type="checkbox" name="selected[]" value="<?php echo $customer->id; ?>"" /></td>
-								<td><?php echo $customer->login; ?></td>
-								<td><?php echo $customer->email; ?></td>
-								<td><?php echo $customer->first_name; ?></td>
-								<td><?php echo $customer->last_name; ?></td>
-								<td><?php echo $customer->active ? $text_active : $text_not_active; ?></td>
+								<td><?php echo htmlspecialchars($customer->login); ?></td>
+								<td><?php echo htmlspecialchars($customer->email); ?></td>
+								<td><?php echo htmlspecialchars($customer->first_name); ?></td>
+								<td><?php echo htmlspecialchars($customer->last_name); ?></td>
+								<td><?php echo htmlspecialchars($customer->active ? $text_active : $text_not_active); ?></td>
 								<td>
 									<a href="<?php echo $this->url->getUrl('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary"><i class="fa fa-edit" title="<?php echo $text_edit; ?>"></i></a>
 								</td>
