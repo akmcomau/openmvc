@@ -63,7 +63,7 @@ class Address extends Model {
 		],
 		'state_id' => [
 			'data_type'      => 'int',
-			'null_allowed'   => FALSE,
+			'null_allowed'   => TRUE,
 		],
 		'country_id' => [
 			'data_type'      => 'int',
