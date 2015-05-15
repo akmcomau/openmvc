@@ -11,6 +11,7 @@ class FormValidator {
 	protected $inputs = [];
 	protected $validators = [];
 	protected $form_errors = [];
+	protected $logger = NULL;
 
 	protected $notification_message = NULL;
 	protected $notification_type = NULL;
@@ -20,6 +21,8 @@ class FormValidator {
 	public function __construct($request, $name, array $inputs = NULL, array $validators  = NULL) {
 		$this->request = $request;
 		$this->name = $name;
+		$this->logger = Logger::getLogger(get_class($this));
+
 		if ($inputs) {
 			$this->inputs = $inputs;
 		}
@@ -105,6 +108,12 @@ class FormValidator {
 			return NULL;
 		}
 		return $this->request->requestParam($name);
+	}
+
+	public function setValue($name, $value) {
+		// Add this value ot the request data
+		$this->request->requestParam($this->name.'-submit','submit');
+		$this->request->requestParam($name, $value);
 	}
 
 	public function getSubmittedValues() {
@@ -270,6 +279,7 @@ class FormValidator {
 			}
 
 			if (!$is_this_valid) {
+				$this->logger->debug("Form field not valid: $name");
 				if (!isset($this->form_errors[$name])) {
 					if (isset($data['message'])) {
 						$this->form_errors[$name] = $data['message'];
