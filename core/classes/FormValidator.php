@@ -189,6 +189,12 @@ class FormValidator {
 						}
 						break;
 
+					case 'datetime':
+						if (!$this->isDateTime($value)) {
+							$is_this_valid = FALSE;
+						}
+						break;
+
 					case 'money':
 						if (!$this->isMoney($value)) {
 							$is_this_valid = FALSE;
@@ -325,6 +331,13 @@ class FormValidator {
 
 	public function isDate ($string) {
 		if (preg_match('/^\s*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}\s*$/i', $string)) {
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	public function isDateTime ($string) {
+		if (preg_match('/^\s*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}\s*[0-9]{2}:[0-9]{2}(:[0-9]{2})?\s*$/i', $string)) {
 			return TRUE;
 		}
 		return FALSE;

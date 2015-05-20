@@ -39,6 +39,12 @@ $.extend(FormValidator, {
 		}
 		return false;
 	},
+	isDateTime: function (string) {
+		if (/^\s*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}\s*[0-9]{2}:[0-9]{2}(:[0-9]{2})?\s*$/i.test(string)){
+			return true;
+		}
+		return false;
+	},
 	isUrlFragment: function (string) {
 		if (/[^A-Za-z0-9-_]/i.test(string)){
 			return false;
@@ -120,6 +126,12 @@ $.extend(FormValidator, {
 
 					case 'date':
 						if (!this.isDate(element_value)) {
+							is_this_valid = false;
+						}
+					break;
+
+					case 'datetime':
+						if (!this.isDateTime(element_value)) {
 							is_this_valid = false;
 						}
 					break;
