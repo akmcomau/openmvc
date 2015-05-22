@@ -20,6 +20,8 @@ class Customer extends Controller {
 		'contact_details' => ['customer'],
 	];
 
+	protected $customer_class = 'core\classes\models\Customer';
+
 	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
 		$controller = $this->url->getControllerClassName('\\'.get_class($this));
 		$urls = [
@@ -59,6 +61,13 @@ class Customer extends Controller {
 		$this->response->setContent($template->render());
 	}
 
+	protected function getCustomerLookupForLogin($form_login) {
+		return [
+			'login' => $form_login->getValue('username'),
+			'active' => TRUE,
+		];
+	}
+
 	public function login($controller = NULL, $method = NULL, $param = NULL) {
 		if ($this->authentication->customerLoggedIn()) {
 			throw new RedirectException($this->url->getUrl('Customer'));
@@ -75,11 +84,8 @@ class Customer extends Controller {
 		$form_login    = $this->getLoginForm();
 
 		if ($form_login->validate()) {
-			$customer = $model->getModel('core\classes\models\Customer');
-			$customer = $customer->get([
-				'login' => $form_login->getValue('username'),
-				'active' => TRUE,
-			]);
+			$customer = $model->getModel($this->customer_class);
+			$customer = $customer->get($this->getCustomerLookupForLogin($form_login));
 			if ($customer && Encryption::bcrypt_verify($form_login->getValue('password'), $customer->password)) {
 				$this->logger->info('Login Customer: '.$customer->id);
 				$this->authentication->loginCustomer($customer);

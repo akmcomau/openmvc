@@ -299,7 +299,7 @@ class Model {
 	 * @return \b bool Should this table be created
 	 */
 	public function getCreateSchema() {
- 		return $this->create_schema;
+		return $this->create_schema;
 	}
 
 	/**
