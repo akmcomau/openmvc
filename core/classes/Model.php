@@ -66,7 +66,13 @@ class Model {
 	 * During a database creation should this table be created
 	 * @var bool $create_schema
 	 */
-	protected $create_schema    = TRUE;
+	protected $create_schema  = TRUE;
+
+	/**
+	 * Defines which model object this model overrides
+	 * @var string $override_model
+	 */
+	protected $override_model = FALSE;
 
 	/**
 	 * An array containing table columns with data types.<br>
@@ -294,6 +300,14 @@ class Model {
 	 */
 	public function getCreateSchema() {
  		return $this->create_schema;
+	}
+
+	/**
+	 * Get the model class name that this model overrides
+	 * @return \b string The overridden class name
+	 */
+	public function getOverrideModel() {
+ 		return $this->override_model;
 	}
 
 	/**
@@ -887,8 +901,33 @@ class Model {
 	public function createDatabase() {
 		$this->database->setCreatingDatabase(TRUE);
 
-		// Create the tables
+		// replace overridden models
+		$create_models = [];
+		$site_models = self::$site_models;
 		foreach (self::$site_models as $model) {
+			// is this model overriding another one
+			$model_class = $this->getModel($model);
+			$overridden = $model_class->getOverrideModel();
+			if ($overridden) {
+				// remove this model
+				foreach ($site_models as $index => $model_name) {
+					if ($model == $model_name) {
+						array_splice($site_models, $index, 1);
+					}
+				}
+
+				// replace the overridden model
+				// remove this model
+				foreach ($site_models as $index => $model_name) {
+					if ($overridden == $model_name) {
+						array_splice($site_models, $index, 1, [$model]);
+					}
+				}
+			}
+		}
+
+		// Create the tables
+		foreach ($site_models as $model) {
 			$this->logger->info("Creating table: $model");
 			$model = $this->getModel($model);
 			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
@@ -896,7 +935,7 @@ class Model {
 		}
 
 		// Create the indexes
-		foreach (self::$site_models as $model) {
+		foreach ($site_models as $model) {
 			$this->logger->info("Creating indexes: $model");
 			$model = $this->getModel($model);
 			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
@@ -904,7 +943,7 @@ class Model {
 		}
 
 		// Create the uniques
-		foreach (self::$site_models as $model) {
+		foreach ($site_models as $model) {
 			$this->logger->info("Creating uniques: $model");
 			$model = $this->getModel($model);
 			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
@@ -912,7 +951,7 @@ class Model {
 		}
 
 		// Create the foreign keys
-		foreach (self::$site_models as $model) {
+		foreach ($site_models as $model) {
 			$this->logger->info("Creating foreign keys: $model");
 			$model = $this->getModel($model);
 			if (!$model->hasTable() || !$model->getCreateSchema()) continue;

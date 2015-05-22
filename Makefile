@@ -15,20 +15,20 @@ update-depends:
 	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/onchange ./onchange
 	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/font ./font
 
-# update composer
+# update site composer
 site-update-composer:
 	cd sites/${SITE} && make update-composer;
 
-# update dependancies
+# update site dependancies
 site-update-depends:
 	cd module/${SITE} && make update-depends;
 
-# update composer
-site-update-composer:
+# update module composer
+module-update-composer:
 	cd module/${MODULE} && make update-composer;
 
-# update dependancies
-site-update-depends:
+# update module dependancies
+module-update-depends:
 	cd sites/${MODULE} && make update-depends;
 
 # create database
