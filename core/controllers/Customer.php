@@ -78,6 +78,7 @@ class Customer extends Controller {
 			$customer = $model->getModel('core\classes\models\Customer');
 			$customer = $customer->get([
 				'login' => $form_login->getValue('username'),
+				'active' => TRUE,
 			]);
 			if ($customer && Encryption::bcrypt_verify($form_login->getValue('password'), $customer->password)) {
 				$this->logger->info('Login Customer: '.$customer->id);
