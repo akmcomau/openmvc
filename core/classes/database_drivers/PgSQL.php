@@ -390,4 +390,10 @@ class PgSQL extends DatabaseDriver {
 			return $columns;
 		}
 	}
+
+	public function setTimezone($timezone) {
+		$timezone = $this->database->quote($timezone);
+		$sql = "SET timezone TO $timezone";
+		$this->database->executeQuery($sql);
+	}
 }

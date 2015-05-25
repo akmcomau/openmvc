@@ -223,4 +223,8 @@ class MySQL extends DatabaseDriver {
 	public function dropForeignKey($name) {
 		throw new \ErrorException('TODO');
 	}
+
+	protected function setTimezone($timezone) {
+		throw new \ErrorException('TODO');
+	}
 }
