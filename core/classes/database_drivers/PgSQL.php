@@ -78,7 +78,7 @@ class PgSQL extends DatabaseDriver {
 	 * @return \b string An SQL fragment
 	 * @throws ModelException If there is an invalid data_type
 	 */
-	public function getDataType($data) {
+	public function getDataType($data, $full = TRUE) {
 		$type = '';
 		switch ($data['data_type']) {
 			case 'smallint':
@@ -141,15 +141,17 @@ class PgSQL extends DatabaseDriver {
 				break;
 		}
 
-		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
-			$type .= " NOT NULL";
-		}
-		else {
-			$type .= " NULL";
-		}
+		if ($full) {
+			if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
+				$type .= " NOT NULL";
+			}
+			else {
+				$type .= " NULL";
+			}
 
-		if (isset($data['default_value'])) {
-			$type .= " DEFAULT ".$data['default_value'];
+			if (isset($data['default_value'])) {
+				$type .= " DEFAULT ".$data['default_value'];
+			}
 		}
 
 		return $type;
@@ -331,7 +333,25 @@ class PgSQL extends DatabaseDriver {
 	}
 
 	public function alterColumn($name, $data) {
-		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name TYPE ".$this->getDataType($data);
+		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name TYPE ".$this->getDataType($data, FALSE);
+		$this->database->executeQuery($sql);
+
+		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name";
+		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
+			$sql .= " SET NOT NULL";
+		}
+		else {
+			$sql .= " DROP NOT NULL";
+		}
+		$this->database->executeQuery($sql);
+
+		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name";
+		if (isset($data['default_value'])) {
+			$sql .= " SET DEFAULT ".$data['default_value'];
+		}
+		else {
+			$sql .= " DROP DEFAULT";
+		}
 		$this->database->executeQuery($sql);
 	}
 
