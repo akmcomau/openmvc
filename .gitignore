@@ -18,3 +18,4 @@ docs/doxygen_*.tmp
 docs/html
 docs/latex
 docs/src/mainpage.dox
+docs/doxygen_sqlite3.db

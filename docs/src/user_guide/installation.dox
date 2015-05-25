@@ -40,54 +40,115 @@ Site Setup
       sudo apt-get install mysql-server
     @endcode
 
-  - Clone git Repos
+  - Create PostgreSQL or MySQL user and database depending on your database engine.  Please
+    refer to your hosting/server configuration documentation on how to do this.
+
+  - Clone openmvc/site/module Repos
+    Everything in OpenMVC is a git repository. All sites and modules your create should also
+    be git repositories.
     @code
       # clone the OpenMVC core
       cd /path/to/site
-      git clone .... ./public_html
+      git clone https://github.com/akmcomau/openmvc.git ./public_html
 
-      # [OPTIONAL] clone the OpenMVC vendor package
-      # If you do not do this then you have to use composer
-      # to fetch the dependances then build them, see below.
+      # install openmvc dependancies
+      cd /path/to/site
       cd public_html
-      git submodule init
-      git submodule update
+      make install-composer
+      make update-depends
+
+      # create .htaccess file
+      cd /path/to/site
+      cd public_html
+      cp .htaccess.example .htaccess
 
       # clone your sites
-      cd /path/to/site/public_html
-      cd sites
-      git clone .... ./site
+      cd /path/to/site
+      cd public_html/sites
+      git clone ssh://ssh-server.com/path/to/site/repo ./site
+      cd site
+      make install-composer
+      make update-depends
+      ...
 
       # clone your modules
-      cd /path/to/site/public_html
-      cd modules
-      git clone .... ./module_name
+      cd /path/to/site
+      cd public_html/modules
+      git clone https://github.com/akmcomau/openmvc-payment-paypal.git ./payment_paypal
+      cd payment_paypal
+      make install-composer
+      make update-depends
+      ...
+
+      # fix all the file permissions
+      cd /path/to/site
+      cd public_html
+      ./bin/fix_permissions.php
     @endcode
 
   - Create Site Configuration
+    You can create your configuration files from the default ones in the config directory.
     @code
+      # create the site config files
+      cd /path/to/site
+      cd public_html/core/config
+      cp config.php.example config.php
+      cp log4php.php.example log4php.php
+      vim config.php   # edit configuration settings
+      vim log4php.php  # edit configuration settings
     @endcode
 
   - Create Database
+    Once your _config.php_ and _log4php.php_ files have been created, you can just use
+    _make_ to create your database.
     @code
+      make create-database
     @endcode
 
   - Apache Configuration
+    This is an example Virtual Host for Apache 2.2
     @code
+      <VirtualHost *:80>
+          ServerName example.com
+          ServerAlias www.example.com
+          DocumentRoot /path/to/site/public_html
+          ErrorLog /path/to/site/logs/example.com-error_log
+          CustomLog /path/to/site/logs/example.com-access_log combined
+
+          <Directory "/path/to/site/public_html">
+              AllowOverride All
+          </Directory>
+
+          <Location "/">
+              Allow from all
+          </Location>
+      </VirtualHost>
     @endcode
 
-  - [OPTIONAL] Composer Dependances
-    If you would prefer to use composer and build dependances rather than the
-    vendor submodule, you can fetch/build the dependances with the following commands:
+    This is an example Virtual Host for Apache 2.4
     @code
-      make update-composer
-      make update-depends
-      make build-depends
+      <VirtualHost *:80>
+          ServerName example.com
+          ServerAlias www.example.com
+          DocumentRoot /path/to/site/public_html
+          ErrorLog /home/supplements/logs/example.com-error_log
+          CustomLog /home/supplements/logs/example.com-access_log combined
+
+          <Directory "/path/to/site/public_html">
+              AllowOverride All
+          </Directory>
+
+          <Location "/">
+              Require all granted
+          </Location>
+      </VirtualHost>
     @endcode
 
   - [OPTIONAL] Build Documentation
     To re-build all documentation and re-run SchemaSpy, use the following command:
     @code
+      cd /path/to/site
+      cd public_html
       make build-docs
     @endcode
 
