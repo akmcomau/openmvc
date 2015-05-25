@@ -1258,7 +1258,7 @@ class Model {
 					// add a foreign key
 					case 'add_foreign_key':
 						foreach ($update as $column => $data) {
-							$model->sqlHelper()->addForeignKey($column, $data);
+							$model->sqlHelper()->addForeignKey($column, $data[0], $data[1]);
 						}
 						break;
 
