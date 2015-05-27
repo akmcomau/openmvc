@@ -12,7 +12,18 @@ class Encryption {
 	}
 
 	public static function bcrypt($string, $cost) {
-		return password_hash($string, PASSWORD_BCRYPT, ['cost' => $cost]);
+		if (BCRYPT_IMPLEMENTATION == BCRYPT_IMPLEMENTATION_2A) {
+			if (strlen($cost) == 1) $cost = '0'.$cost;
+			$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890';
+			$salt = '$2a$'.$cost.'$';
+			for ($i=0; $i<22; $i++) {
+				$salt .= $chars{rand(0, strlen($chars)-1)};
+			}
+			return crypt($string, $salt);
+		}
+		else {
+		   return password_hash($string, PASSWORD_BCRYPT, ['cost' => $cost]);
+		}
 	}
 
 	public static function bcrypt_verify($string, $hash) {
