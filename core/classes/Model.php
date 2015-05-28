@@ -146,6 +146,20 @@ class Model {
 	protected $uniques = [];
 
 	/**
+	 * An array containing the partial unique constraints for the table
+	 * This is an array of the form:
+	 * @code{.php}
+	 *    $uniques = [
+	 *       ['*condition*', '*column_name*'],
+	 *       ['*condition*', '*column_name1*', '*column_name2*', ...],
+	 *       ...
+	 *    ];
+	 * @endcode
+	 * @var array $uniques
+	 */
+	protected $partial_uniques = [];
+
+	/**
 	 * An array containing relationships for the table.
 	 * This is an array of the form:
 	 * @code{.php}
@@ -1079,6 +1093,11 @@ class Model {
 				continue;
 			}
 
+			// skip if this is a partial index
+			if (preg_match('/_part_uni$/', $name)) {
+				continue;
+			}
+
 			// look over all the indexes looking for this one
 			$found = FALSE;
 			foreach ($this->indexes as $curr_name => $curr_columns) {
@@ -1153,6 +1172,33 @@ class Model {
 			// remove unique
 			if (!$found) {
 				$updates['drop_unique'] = $name;
+			}
+		}
+
+		// look for new/changed parital uniques
+		foreach ($this->partial_uniques as $name => $columns) {
+			// look over all the uniques looking for this one
+			$orig_columns = $columns;
+			array_shift($columns);
+			$found = FALSE;
+			foreach ($schema['indexes'] as $curr_name => $curr_columns) {
+				if (!is_array($columns)) {
+					$columns = [$columns];
+				}
+
+				sort($curr_columns);
+				sort($columns);
+				$diff1 = array_diff($columns, $curr_columns);
+				$diff2 = array_diff($curr_columns, $columns);
+				if (count(array_merge($diff1, $diff2)) == 0) {
+					$found = TRUE;
+					break;
+				}
+			}
+
+			// new unique
+			if (!$found) {
+				$updates['add_partial_unique'][$name] = $orig_columns;
 			}
 		}
 
@@ -1245,6 +1291,13 @@ class Model {
 					case 'add_unique':
 						foreach ($update as $columns) {
 							$model->sqlHelper()->addUnique($columns);
+						}
+						break;
+
+					// add a partial unique
+					case 'add_partial_unique':
+						foreach ($update as $columns) {
+							$model->sqlHelper()->addPartialUnique(array_shift($columns), $columns);
 						}
 						break;
 

@@ -86,9 +86,9 @@ class Customer extends Model {
 		'customer_token_created',
 	];
 
-	protected $uniques = [
-		['site_id', 'customer_login'],
-		['site_id', 'customer_email'],
+	protected $partial_uniques = [
+		'WHERE customer_active = TRUE' => ['site_id', 'customer_login'],
+		'WHERE customer_active = TRUE' => ['site_id', 'customer_email'],
 	];
 
 	public function getName() {

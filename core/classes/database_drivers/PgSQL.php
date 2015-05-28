@@ -70,6 +70,11 @@ class PgSQL extends DatabaseDriver {
 		foreach ($this->uniques as $column) {
 			$this->addUnique($column);
 		}
+
+		// add the partial indexes
+		foreach ($this->partial_uniques as $condition => $column) {
+			$this->addPartialUnique($condition, $column);
+		}
 	}
 
 	/**
@@ -372,6 +377,11 @@ class PgSQL extends DatabaseDriver {
 
 	public function addUnique($columns) {
 		$sql = "ALTER TABLE ONLY ".$this->table." ADD CONSTRAINT ".$this->indexConstraintName($columns)."_key UNIQUE (".$this->indexConstraintColumns($columns).")";
+		$this->database->executeQuery($sql);
+	}
+
+	public function addPartialUnique($condition, $columns) {
+		$sql = "CREATE  UNIQUE INDEX ".$this->indexConstraintName($columns)."_part_uni ON ".$this->table." (".$this->indexConstraintColumns($columns).") WHERE $condition";
 		$this->database->executeQuery($sql);
 	}
 
