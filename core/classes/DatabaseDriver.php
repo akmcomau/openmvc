@@ -38,6 +38,8 @@ class DatabaseDriver {
 
 	protected $uniques = [];
 
+	protected $partial_uniques = [];
+
 	public function __construct(Config $config, Database $database, Model $model) {
 		$this->config   = $config;
 		$this->database = $database;
@@ -45,11 +47,12 @@ class DatabaseDriver {
 		$this->model    = $model;
 
 		$table = $model->getTableData();
-		$this->table        = $table['table'];
-		$this->primary_key  = $table['primary_key'];
-		$this->columns      = $table['columns'];
-		$this->indexes      = $table['indexes'];
-		$this->uniques      = $table['uniques'];
-		$this->foreign_keys = $table['foreign_keys'];
+		$this->table           = $table['table'];
+		$this->primary_key     = $table['primary_key'];
+		$this->columns         = $table['columns'];
+		$this->indexes         = $table['indexes'];
+		$this->uniques         = $table['uniques'];
+		$this->partial_uniques = $table['partial_uniques'];
+		$this->foreign_keys    = $table['foreign_keys'];
 	}
 }

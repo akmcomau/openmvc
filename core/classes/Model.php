@@ -220,12 +220,13 @@ class Model {
 	 */
 	public function getTableData() {
 		return [
-			'table'        => $this->table,
-			'primary_key'  => $this->primary_key,
-			'columns'      => $this->columns,
-			'indexes'      => $this->indexes,
-			'uniques'      => $this->uniques,
-			'foreign_keys' => $this->foreign_keys,
+			'table'           => $this->table,
+			'primary_key'     => $this->primary_key,
+			'columns'         => $this->columns,
+			'indexes'         => $this->indexes,
+			'uniques'         => $this->uniques,
+			'partial_uniques' => $this->partial_uniques,
+			'foreign_keys'    => $this->foreign_keys,
 		];
 	}
 
