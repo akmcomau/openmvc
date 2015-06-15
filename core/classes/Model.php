@@ -769,11 +769,15 @@ class Model {
 						break;
 
 					case 'in':
-						if ($value['value']) {
+						if (is_array($value['value']) && count($value['value']) > 0) {
 							foreach ($value['value'] as &$val) {
 								$val = $this->database->quote($val);
 							}
 							$where[] = $column.' IN ('.join(',', $value['value']).')';
+						}
+						else {
+							// Do not match anything
+							$where[] = "1 = 2";
 						}
 						break;
 
