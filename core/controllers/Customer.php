@@ -104,6 +104,9 @@ class Customer extends Controller {
 				if ($this->request->postParam('remember_me')) {
 					$this->rememberMeCookie($customer);
 				}
+				else {
+					setcookie('rememberme', NULL, -1, '/', $this->config->getSiteDomain());
+				}
 
 				// save the controller for login redirect
 				if ($this->config->siteConfig()->post_login_redirect) {
