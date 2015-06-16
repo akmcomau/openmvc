@@ -68,6 +68,13 @@ class Customer extends Controller {
 		];
 	}
 
+	protected function rememberMeCookie($customer) {
+		$expire = time() + 365 * 24 * 60 * 60;
+		$token = $customer->getRememberMeToken();
+		$details = json_encode(['login' => $customer->login, 'password' => $token]);
+		setcookie('rememberme', $details, $expire, '/', $this->config->getSiteDomain());
+	}
+
 	public function login($controller = NULL, $method = NULL, $param = NULL) {
 		if ($this->authentication->customerLoggedIn()) {
 			throw new RedirectException($this->url->getUrl('Customer'));
@@ -86,11 +93,30 @@ class Customer extends Controller {
 		if ($form_login->validate()) {
 			$customer = $model->getModel($this->customer_class);
 			$customer = $customer->get($this->getCustomerLookupForLogin($form_login));
-			if ($customer && Encryption::bcrypt_verify($form_login->getValue('password'), $customer->password)) {
+			if ($customer && (
+				Encryption::bcrypt_verify($form_login->getValue('password'), $customer->password) ||
+				$customer->remember_me == $form_login->getValue('password')
+			)) {
 				$this->logger->info('Login Customer: '.$customer->id);
 				$this->authentication->loginCustomer($customer);
 
-				if ($controller) {
+				// save the remember me cookie
+				if ($this->request->postParam('remember_me')) {
+					$this->rememberMeCookie($customer);
+				}
+
+				// save the controller for login redirect
+				if ($this->config->siteConfig()->post_login_redirect) {
+					$this->request->session->delete('login-redirect-done');
+					$this->request->session->set('login-redirect-controller', $controller);
+					$this->request->session->set('login-redirect-method', $method);
+					$this->request->session->set('login-redirect-params', $params);
+				}
+
+				if ($this->config->siteConfig()->post_login_redirect) {
+					throw new RedirectException($this->url->getUrl('Customer', 'loginRedirect'));
+				}
+				else if ($controller) {
 					throw new RedirectException($this->url->getUrl($controller, $method, $params));
 				}
 				else {
@@ -103,14 +129,36 @@ class Customer extends Controller {
 			}
 		}
 
+		// get the remember me token
+		$remember_me = NULL;
+		if (isset($this->request->cookies['rememberme'])) {
+			$remember_me = json_decode($this->request->cookies['rememberme']);
+		}
+
 		$data = [
 			'login' => $form_login,
 			'controller' => $controller,
 			'method' => $method,
 			'params' => $param,
+			'remember_me' => $remember_me,
 		];
 
 		$template = $this->getTemplate('pages/customer/login.php', $data);
+		$this->response->setContent($template->render());
+	}
+
+	public function loginRedirect() {
+		$controller = $this->request->session->get('login-redirect-controller');
+		$method = $this->request->session->get('login-redirect-method');
+		$params = $this->request->session->get('login-redirect-params');
+
+		$url = $this->url->getUrl('Customer');
+		if ($controller) {
+			$url = $this->url->getUrl($controller, $method, $params);
+		}
+
+		$data = ['url' => $url];
+		$template = $this->getTemplate('pages/customer/login_redirect.php', $data);
 		$this->response->setContent($template->render());
 	}
 

@@ -67,6 +67,11 @@ class Customer extends Model {
 			'data_length'    => '32',
 			'null_allowed'   => TRUE,
 		],
+		'customer_remember_me' => [
+			'data_type'      => 'text',
+			'data_length'    => '256',
+			'null_allowed'   => TRUE,
+		],
 		'customer_token' => [
 			'data_type'      => 'text',
 			'data_length'    => '64',
@@ -82,6 +87,7 @@ class Customer extends Model {
 		'site_id',
 		'customer_active',
 		'customer_type',
+		'customer_remember_me',
 		'customer_token',
 		'customer_token_created',
 	];
@@ -107,5 +113,28 @@ class Customer extends Model {
 		$this->token = NULL;
 		$this->token_created = NULL;
 		$this->update();
+	}
+
+	public function getRememberMeToken() {
+		$token = $this->generateRememberMeToken();
+		if ($token != $this->remember_me) {
+			$this->remember_me = $token;
+			$this->update();
+		}
+		return $token;
+	}
+
+	protected function generateRememberMeToken() {
+		return hash('sha512', $this->id.$this->login.$this->password);
+	}
+
+	public function insert() {
+		$this->getRememberMeToken();
+		parent::insert();
+	}
+
+	public function update() {
+		$this->getRememberMeToken();
+		parent::update();
 	}
 }

@@ -32,6 +32,7 @@ $_DEFAULT_CONFIG = (object)[
 		'display_errors' => false,
 		'site_offline_mode' => false,
 		'site_maintenance_mode' => false,
+		'post_login_redirect' => false,
 		'page_div_class' => 'container',
 		'bcrypt_cost' => 10,
 		'locale' => 'en_AU.utf8',

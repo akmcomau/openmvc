@@ -9,6 +9,7 @@ class Request {
 	public $post_params;
 	public $request_params;
 	public $server_params;
+	public $cookies;
 	public $session;
 	public $file_params = NULL;
 
@@ -29,6 +30,7 @@ class Request {
 		$this->request_params = &$_REQUEST;
 		$this->server_params = &$_SERVER;
 		$this->file_params = &$_FILES;
+		$this->cookies = &$_COOKIE;
 		$this->session = new Session();
 		$this->database = $database;
 		$this->authentication = new Authentication($config, $database, $this);
