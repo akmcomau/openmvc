@@ -173,7 +173,7 @@ class Customer extends Controller {
 		$form_register = $this->getRegisterForm();
 
 		if ($form_register->validate()) {
-			$customer = $model->getModel('core\classes\models\Customer');
+			$customer = $model->getModel($this->customer_class);
 			$customer->site_id    = $this->config->siteConfig()->site_id;
 			$customer->login      = $form_register->getValue('username');
 			$customer->password   = Encryption::bcrypt($form_register->getValue('password1'), $bcrypt_cost);
@@ -224,7 +224,7 @@ class Customer extends Controller {
 		$message_js = NULL;
 		if ($this->request->requestParam('email')) {
 			$model       = new Model($this->config, $this->database);
-			$customer    = $model->getModel('\core\classes\models\Customer')->get([
+			$customer    = $model->getModel($this->customer_class)->get([
 				'email' => $this->request->requestParam('email'),
 			]);
 
@@ -233,6 +233,7 @@ class Customer extends Controller {
 					$data = [
 						'name' => $customer->getName(),
 						'username' => $customer->login,
+						'customer' => $customer,
 					];
 					$body = $this->getTemplate('emails/forgot_username.txt.php', $data);
 					$html = $this->getTemplate('emails/forgot_username.html.php', $data);
@@ -254,6 +255,7 @@ class Customer extends Controller {
 						'url' => $this->url->getUrl('Customer', 'reset', [$enc_customer_id, $token]),
 						'name' => $customer->getName(),
 						'username' => $customer->login,
+						'customer' => $customer,
 					];
 					$body = $this->getTemplate('emails/forgot_password.txt.php', $data);
 					$html = $this->getTemplate('emails/forgot_password.html.php', $data);
@@ -284,7 +286,7 @@ class Customer extends Controller {
 	public function reset($customer_id, $token) {
 		$customer_id = Encryption::defuscate($customer_id, $this->config->siteConfig()->secret);
 		$model = new Model($this->config, $this->database);
-		$customer = $model->getModel('\core\classes\models\Customer')->get([
+		$customer = $model->getModel($this->customer_class)->get([
 			'id' => $customer_id,
 			'token' => $token,
 		]);
@@ -305,7 +307,7 @@ class Customer extends Controller {
 
 		$model       = new Model($this->config, $this->database);
 		$customer_id = $this->getAuthentication()->getCustomerID();
-		$customer    = $model->getModel('\core\classes\models\Customer')->get(['id' => $customer_id]);
+		$customer    = $model->getModel($this->customer_class)->get(['id' => $customer_id]);
 		$form = $this->getDetailsForm($customer);
 
 		if ($form->validate()) {
@@ -347,7 +349,7 @@ class Customer extends Controller {
 		$bcrypt_cost = $this->config->siteConfig()->bcrypt_cost;
 		$model       = new Model($this->config, $this->database);
 		$customer_id = $this->getAuthentication()->getCustomerID();
-		$customer    = $model->getModel('\core\classes\models\Customer')->get(['id' => $customer_id]);
+		$customer    = $model->getModel($this->customer_class)->get(['id' => $customer_id]);
 		$form = $this->getPasswordForm($customer);
 
 		if ($form->validate()) {
@@ -534,13 +536,14 @@ class Customer extends Controller {
 			]
 		];
 
+		$customer_class = $this->customer_class;
 		$validators = [
 			'email' => [
 				[
 					'type'     => 'function',
 					'message'  => $this->language->get('error_email_taken'),
-					'function' => function($value) use ($model) {
-						$customer = $model->getModel('core\classes\models\Customer');
+					'function' => function($value) use ($model, $customer_class) {
+						$customer = $model->getModel($customer_class);
 						$customer = $customer->get(['email' => $value]);
 						if ($customer) {
 							return FALSE;
@@ -555,8 +558,8 @@ class Customer extends Controller {
 				[
 					'type'     => 'function',
 					'message'  => $this->language->get('error_username_taken'),
-					'function' => function($value) use ($model) {
-						$customer = $model->getModel('core\classes\models\Customer');
+					'function' => function($value) use ($model, $customer_class) {
+						$customer = $model->getModel($customer_class);
 						$customer = $customer->get(['login' => $value]);
 						if ($customer) {
 							return FALSE;
