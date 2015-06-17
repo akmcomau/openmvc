@@ -119,7 +119,9 @@ class Customer extends Model {
 		$token = $this->generateRememberMeToken();
 		if ($token != $this->remember_me) {
 			$this->remember_me = $token;
-			$this->update();
+			if ($this->id) {
+				$this->update();
+			}
 		}
 		return $token;
 	}

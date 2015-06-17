@@ -49,12 +49,19 @@ class Customer extends Controller {
 		$form_login    = $this->getLoginForm();
 		$form_register = $this->getRegisterForm();
 
+		// get the remember me token
+		$remember_me = NULL;
+		if (isset($this->request->cookies['rememberme'])) {
+			$remember_me = json_decode($this->request->cookies['rememberme']);
+		}
+
 		$data = [
 			'login' => $form_login,
 			'register' => $form_register,
 			'controller' => $controller,
 			'method' => $method,
 			'params' => $params,
+			'remember_me' => $remember_me,
 		];
 
 		$template = $this->getTemplate('pages/customer/login_register.php', $data);
