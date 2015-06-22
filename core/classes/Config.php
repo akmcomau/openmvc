@@ -284,7 +284,7 @@ class Config {
 	 * @return \b string The sites base URL
 	 */
 	public function getSecureSiteUrl() {
-		if ($this->config->siteConfig()->enable_ssl) {
+		if ($this->siteConfig()->enable_ssl) {
 			return 'https://www.'.$this->site_domain;
 		}
 		return 'http://www.'.$this->site_domain;

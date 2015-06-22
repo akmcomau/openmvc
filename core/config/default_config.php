@@ -9,6 +9,7 @@ $_DEFAULT_CONFIG = (object)[
 		],
 		'default_site' => false,
 		'enable_ssl' => false,
+		'force_ssl' => false,
 		'default_block_type' => 'HTML',
 		'modules' => [],
 		'tmp_path' => '/tmp',

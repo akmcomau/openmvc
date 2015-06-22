@@ -18,6 +18,13 @@ class URL {
 		return self::$url_map;
 	}
 
+	public function usingSSL() {
+		if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+			return true;
+		}
+		return false;
+	}
+
 	protected function generateUrlMap() {
 		if (self::$url_map) return self::$url_map;
 
@@ -307,6 +314,9 @@ class URL {
 	}
 
 	public function getUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+		if ($this->usingSSL() || ($this->config->siteConfig()->enable_ssl && $this->config->siteConfig()->force_ssl)) {
+			return $this->getSecureUrl($controller_name, $method_name, $params, $get_params);
+		}
 		return $this->config->getSiteUrl().$this->getRelativeUrl($controller_name, $method_name, $params, $get_params);
 	}
 
