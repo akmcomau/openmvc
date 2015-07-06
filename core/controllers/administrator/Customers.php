@@ -162,6 +162,16 @@ class Customers extends Controller {
 		}
 	}
 
+	public function login($customer_id) {
+		$model = new Model($this->config, $this->database);
+		$customer = $model->getModel($this->customerModelClass)->get([
+			'id' => (int)$customer_id,
+		]);
+		$this->siteProtection($customer);
+		$this->authentication->loginCustomer($customer);
+		throw new RedirectException($this->url->getUrl('Customer', 'index'));
+	}
+
 	protected function getExtraTemplateData(Customer $customer, &$data) {
 
 	}

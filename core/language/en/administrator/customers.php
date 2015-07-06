@@ -14,6 +14,7 @@ $_LANGUAGE = [
 	'last_name' => 'Last Name',
 	'not_active' => 'Deactivated',
 	'edit' => 'Edit',
+	'login_as_customer' => 'Login As Customer',
 	'add_header' => 'New Customer',
 	'update_header' => 'Update Customer',
 	'add_button' => 'Add Customer',
