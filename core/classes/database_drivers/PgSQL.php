@@ -122,6 +122,14 @@ class PgSQL extends DatabaseDriver {
 				}
 				break;
 
+			case 'float':
+				return 'real';
+				break;
+
+			case 'double':
+				return 'double precision';
+				break;
+
 			case 'date':
 				$type = 'DATE';
 				break;
@@ -184,6 +192,14 @@ class PgSQL extends DatabaseDriver {
 
 			case 'date':
 				return 'date';
+				break;
+
+			case 'real':
+				return 'float';
+				break;
+
+			case 'double precision':
+				return 'double';
 				break;
 
 			case 'timestamp with time zone':
