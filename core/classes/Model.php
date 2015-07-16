@@ -639,17 +639,28 @@ class Model {
 	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
 	 * @return \b string A SQL fragment
 	 */
-	protected function generateFromClause(array $params = NULL, array $ordering = NULL) {
+	protected function generateFromClause(array $params = NULL, array $ordering = NULL, array &$in_from = NULL) {
 		if (!$params) $params = [];
 		if (!$ordering) $ordering = [];
-		$tables = [ $this->table ];
-		$in_from = [];
+
+		$tables = [];
+		if ($in_from == NULL) {
+			$tables = [ $this->table ];
+			$in_from = [];
+		}
+
 		foreach (array_merge($params, $ordering) as $column => $value) {
 			foreach ($this->relationships as $table => $data) {
+				$column_parts = explode(':', $column);
+				$column = $column_parts[0];
 				$table_parts = explode(':', $table);
 				$table = $table_parts[0];
 				if ($table == '__common_join__') continue;
-				if (!isset($in_from[$table]) && in_array($column, $data['where_fields'])) {
+
+				if ($column == 'or' || $column == 'and') {
+					$tables[] = $this->generateFromClause($value, NULL, $in_from);
+				}
+				else if (!isset($in_from[$table]) && in_array($column, $data['where_fields'])) {
 					if (isset($data['join_clause'])) {
 						$tables[] = $data['join_clause'];
 						$in_from[$table] = 1;
