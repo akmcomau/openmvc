@@ -26,6 +26,8 @@ class Layout extends Renderable {
 	protected $method;
 	protected $sub_page;
 	protected $template_data = [];
+	protected $responsive = TRUE;
+	protected $fixed_width = FALSE;
 
 	public function __construct(Config $config, Database $database, Request $request, Response $response, Authentication $auth, Language $language, $template) {
 		parent::__construct($config, $database);
@@ -75,6 +77,8 @@ class Layout extends Renderable {
 		$data = [
 			'method'                  => $method,
 			'meta_tags'               => $this->meta_tags,
+			'responsive'              => $this->responsive,
+			'fixed_width'             => $this->fixed_width,
 			'page_content'            => $this->response->getContent(),
 			'logged_in'               => $this->authentication->loggedIn(),
 			'customer_logged_in'      => $this->authentication->customerLoggedIn(),
@@ -97,5 +101,13 @@ class Layout extends Renderable {
 				$this->meta_tags[$property] = $value;
 			}
 		}
+	}
+
+	public function setResponsive($value) {
+		$this->responsive = $value ? TRUE : FALSE;
+	}
+
+	public function setFixedWidth($value) {
+		$this->fixed_width = $value;
 	}
 }
