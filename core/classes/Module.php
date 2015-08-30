@@ -21,6 +21,10 @@ class Module {
 		$this->config = $config;
 	}
 
+	public static function clearCache() {
+		self::$modules = NULL;
+	}
+
 	public function getModules() {
 		if (self::$modules) return self::$modules;
 

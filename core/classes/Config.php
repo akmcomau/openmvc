@@ -145,7 +145,7 @@ class Config {
 		require($filename);
 
 		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
-
+		
 		if (in_array($module['namespace'], $_CONFIG['modules'])) {
 			$index = array_search($module['namespace'], $_CONFIG['modules']);
 			array_splice($_CONFIG['modules'], $index, 1);
@@ -336,5 +336,28 @@ class Config {
 		}
 
 		throw new ConfigException("HTTP_HOST does not reference a site: $host");
+	}
+
+	public function updateConfig() {
+		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		require($filename);
+		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
+
+		$module_class = new Module($this);
+		$modules = $module_class->getModules();
+		foreach ($modules as $namespace => $module) {
+			if ($module['enabled'] && isset($module['default_config'])) {
+				foreach ($module['default_config'] as $name => $value) {
+					if (!isset($_CONFIG['sites'][$this->site_domain]['modules'][$namespace][$name])) {
+						$_CONFIG['sites'][$this->site_domain]['modules'][$namespace][$name] = $value;
+					}
+				}
+			}
+		}
+
+		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($filename);
+		}
 	}
 }

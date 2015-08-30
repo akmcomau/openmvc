@@ -1187,7 +1187,7 @@ class Model {
 
 			// remove unique
 			if (!$found) {
-				$updates['drop_unique'] = $name;
+				$updates['drop_unique'][] = $name;
 			}
 		}
 
@@ -1312,15 +1312,15 @@ class Model {
 
 					// add a partial unique
 					case 'add_partial_unique':
-						foreach ($update as $columns) {
-							$model->sqlHelper()->addPartialUnique(array_shift($columns), $columns);
+						foreach ($update as $clause => $columns) {
+							$model->sqlHelper()->addPartialUnique($clause, $columns);
 						}
 						break;
 
 					//  an unique
 					case 'drop_unique':
-						foreach ($update as $columns) {
-							$model->sqlHelper()->dropUnique($columns);
+						foreach ($update as $name) {
+							$model->sqlHelper()->dropUnique($name);
 						}
 						break;
 

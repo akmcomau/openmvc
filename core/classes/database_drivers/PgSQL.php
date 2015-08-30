@@ -403,7 +403,10 @@ class PgSQL extends DatabaseDriver {
 	}
 
 	public function dropUnique($name) {
-		$sql = "ALTER TABLE ONLY ".$this->table." DROP CONSTRAINT ".$this->indexConstraintName($columns)."_key";
+		if (is_array($name)) {
+			$name = $this->indexConstraintName($columns)."_key";
+		}
+		$sql = "ALTER TABLE ONLY ".$this->table." DROP CONSTRAINT ".$name;
 		$this->database->executeQuery($sql);
 	}
 

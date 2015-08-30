@@ -93,8 +93,8 @@ class Customer extends Model {
 	];
 
 	protected $partial_uniques = [
-		'WHERE customer_active = TRUE' => ['site_id', 'customer_login'],
-		'WHERE customer_active = TRUE' => ['site_id', 'customer_email'],
+		'customer_active = TRUE' => ['site_id', 'customer_login'],
+		'customer_active = TRUE' => ['site_id', 'customer_email'],
 	];
 
 	public function getName() {
