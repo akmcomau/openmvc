@@ -37,6 +37,25 @@ try {
 	$config->setSiteDomain($_SERVER['HTTP_HOST']);
 	$display_errors = $config->siteConfig()->display_errors;
 
+	// clean up log files if required
+	if ($config->siteConfig()->logger_clean_enable) {
+		try {
+			if ($config->siteConfig()->logger_clean_frequency > 0) {
+				$rand = rand(1, $config->siteConfig()->logger_clean_frequency);
+				if ($rand == 1) {
+					$logger->info('Cleaning up log files');
+					$path = $config->siteConfig()->logger_clean_path;
+					$regex = $config->siteConfig()->logger_clean_regex;
+					$ttl = $config->siteConfig()->logger_clean_ttl;
+					Logger::clean($path, $regex, $ttl);
+				}
+			}
+		}
+		catch (Exception $ex) {
+			$logger->error("Error during log file cleanup: $ex");
+		}
+	}
+
 	$database   = new Database($config);
 	$request    = new Request($config, $database);
 	$dispatcher = new Dispatcher($config, $database);
