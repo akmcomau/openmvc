@@ -14,6 +14,7 @@ update-depends:
 
 	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/onchange ./onchange
 	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/font ./font
+	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../core/themes/default/packages/ckeditor_mathjax ./mathjax
 
 # update site composer
 site-update-composer:

@@ -9,14 +9,14 @@
 
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet" />
 	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/font-awesome/css/font-awesome.min.css'); ?>" rel="stylesheet" media="screen" />
-	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery-ui/themes/base/jquery-ui.css'); ?>" rel="stylesheet" media="screen" />
+	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jqueryui/themes/base/jquery-ui.css'); ?>" rel="stylesheet" media="screen" />
 
 	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/bootstrap.css'); ?>" rel="stylesheet" media="screen" />
 	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/common.css'); ?>" rel="stylesheet" media="screen" />
 	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/admin.css'); ?>" rel="stylesheet" media="screen" />
 
-	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery.min.js'); ?>"></script>
-	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery-ui/ui/jquery-ui.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery/jquery.min.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jqueryui/jquery-ui.js'); ?>"></script>
 	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/bootstrap/js/bootstrap.min.js'); ?>"></script>
 	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/js/form_validator.js'); ?>"></script>
 
@@ -32,9 +32,10 @@
 	<?php } ?>
 	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/ckeditor/ckeditor.js'); ?>"></script>
 
-	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
-		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/html5shiv/dist/html5shiv.min.js'); ?>"></script>
+		<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/Respond/dest/respond.min.js'); ?>"></script>
 	<![endif]-->
 
 	<link rel="shortcut icon" href="<?php echo $this->url->getStaticUrl('/core/themes/default/images/favicon.ico'); ?>" />

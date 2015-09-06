@@ -11,9 +11,6 @@ use core\classes\renderable\Controller;
 use core\classes\Model;
 use core\classes\FileManager as FileManagerRPC;
 
-require_once(__DIR__.'/../../../composer/vendor/simogeo/Filemanager/connectors/php/inc/filemanager.inc.php');
-require_once(__DIR__.'/../../../composer/vendor/simogeo/Filemanager/connectors/php/filemanager.class.php');
-
 class FileManager extends Controller {
 
 	protected $show_admin_layout = TRUE;

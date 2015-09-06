@@ -12,7 +12,7 @@
 	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/common.css'); ?>" rel="stylesheet" media="screen" />
 	<link href="<?php echo $this->url->getStaticUrl('/core/themes/default/css/theme.css'); ?>" rel="stylesheet" media="screen" />
 
-	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery.min.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery/jquery.min.js'); ?>"></script>
 	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/bootstrap/js/bootstrap.min.js'); ?>"></script>
 	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/js/form_validator.js'); ?>"></script>
 
@@ -209,7 +209,7 @@
 		$(document).ready(function(){
 			var test_canvas = document.createElement("canvas");
 			var canvascheck = (test_canvas.getContext)? true : false;
-			if (!canvascheck || !supports_html5_storage()) {
+			if (!canvascheck) {
 				$('#modern-browsers').html($('#modern-browsers noscript').text());
 				$('#navigation a').each(function() {
 					$(this).attr('href', '#').unbind('click').removeAttr('data-toggle');

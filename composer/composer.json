@@ -3,43 +3,8 @@
 		{
 			"type":"package",
 			"package": {
-				"name": "simogeo/Filemanager",
-				"version":"v1.0",
-				"source": {
-					"url": "https://github.com/simogeo/Filemanager.git",
-					"type": "git",
-					"reference":"master"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "spekkionu/wideimage",
-				"version":"11.02.19",
-				"source": {
-					"url": "https://github.com/spekkionu/wideimage.git",
-					"type": "git",
-					"reference":"master"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "ckeditor/ckeditor",
-				"version": "4.2.1",
-				"dist": {
-					"url": "http://download.cksource.com/CKEditor/CKEditor/CKEditor%204.2.1/ckeditor_4.2.1_standard.zip",
-					"type": "zip"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
 				"name": "ckeditor/onchange",
-				"version": "1.8",
+				"version": "v1.8",
 				"dist": {
 					"url": "http://download.ckeditor.com/onchange/releases/onchange_1.8.zip",
 					"type": "zip"
@@ -50,7 +15,7 @@
 			"type":"package",
 			"package": {
 				"name": "ckeditor/font",
-				"version": "4.2.1",
+				"version": "v4.2.1",
 				"dist": {
 					"url": "http://download.ckeditor.com/font/releases/font_4.2.1.zip",
 					"type": "zip"
@@ -60,124 +25,8 @@
 		{
 			"type":"package",
 			"package": {
-				"name": "twbs/bootstrap",
-				"version": "v3.0.3",
-				"dist": {
-					"url": "https://github.com/twbs/bootstrap/releases/download/v3.0.3/bootstrap-3.0.3-dist.zip",
-					"type": "zip"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "FortAwesome/Font-Awesome",
-				"version": "v4.2.0",
-				"source": {
-					"url": "https://github.com/FortAwesome/Font-Awesome.git",
-					"type": "git",
-					"reference":"v4.2.0"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "jquery/jquery",
-				"version": "1.11.0",
-				"dist": {
-					"url": "http://code.jquery.com/jquery-1.11.0.min.js",
-					"type": "file"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "jquery/jquery-ui",
-				"version": "1.10.3",
-				"dist": {
-					"url": "http://jqueryui.com/resources/download/jquery-ui-1.10.3.zip",
-					"type": "zip"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "remysh/html5shiv",
-				"version": "1.0.0",
-				"dist": {
-					"url": "https://github.com/aFarkas/html5shiv/zipball/master",
-					"type": "zip"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "malsup/form",
-				"version": "3.25.0",
-				"source": {
-					"url": "https://github.com/malsup/form.git",
-					"type": "git",
-					"reference":"3.25.0-2013.01.18"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "arnklint/jquery-contextMenu",
-				"version": "1.0.4",
-				"source": {
-					"url": "https://github.com/arnklint/jquery-contextMenu.git",
-					"type": "git",
-					"reference":"1.0.4"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "trentrichardson/jQuery-Impromptu",
-				"version": "v5.0",
-				"source": {
-					"url": "https://github.com/trentrichardson/jQuery-Impromptu.git",
-					"type": "git",
-					"reference":"v5.0"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "Mottie/tablesorter",
-				"version": "v2.11.1",
-				"source": {
-					"url": "https://github.com/Mottie/tablesorter.git",
-					"type": "git",
-					"reference":"v2.11.1"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
-				"name": "scottjehl/Respond",
-				"version": "1.4.2",
-				"source": {
-					"url": "https://github.com/scottjehl/Respond.git",
-					"type": "git",
-					"reference":"1.4.2"
-				}
-			}
-		},
-		{
-			"type":"package",
-			"package": {
 				"name": "schemaspy/schemaspy",
-				"version": "5.0.0",
+				"version": "v5.0.0",
 				"dist": {
 					"url": "http://downloads.sourceforge.net/project/schemaspy/schemaspy/SchemaSpy%205.0.0/schemaSpy_5.0.0.jar",
 					"type": "zip"
@@ -188,7 +37,7 @@
 			"type":"package",
 			"package": {
 				"name": "schemaspy/postgres",
-				"version": "9.3.1100.3",
+				"version": "v9.3.1100.3",
 				"dist": {
 					"url": "http://jdbc.postgresql.org/download/postgresql-9.3-1100.jdbc3.jar",
 					"type": "zip"
@@ -198,23 +47,18 @@
 	],
 	"require": {
 		"apache/log4php": "2.3.0",
-		"simogeo/Filemanager": "v1.0",
-		"spekkionu/wideimage": "11.02.19",
-		"ckeditor/ckeditor": "4.2.1",
-		"ckeditor/font": "4.2.1",
-		"ckeditor/onchange": "1.8",
 		"twbs/bootstrap": "v3.0.3",
-		"FortAwesome/Font-Awesome": "v4.2.0",
-		"jquery/jquery": "1.11.0",
-		"jquery/jquery-ui": "1.10.3",
-		"malsup/form": "3.25.0",
-		"arnklint/jquery-contextMenu": "1.0.4",
-		"trentrichardson/jQuery-Impromptu": "v5.0",
-		"Mottie/tablesorter": "v2.11.1",
-		"scottjehl/Respond": "1.4.2",
-		"remysh/html5shiv": "1.0.0",
-		"schemaspy/schemaspy": "5.0.0",
-		"schemaspy/postgres": "9.3.1100.3"
+		"components/font-awesome": "4.4.0",
+		"components/jquery": "1.11.0",
+		"components/jqueryui": "1.11.4",
+		"medialize/jquery-context-menu": "1.6.7",
+		"rogeriopradoj/respond": "1.4.2",
+		"afarkas/html5shiv": "3.7.3",
+		"ckeditor/ckeditor": "4.5.3",
+		"ckeditor/font": "v4.2.1",
+		"ckeditor/onchange": "v1.8",
+		"schemaspy/schemaspy": "v5.0.0",
+		"schemaspy/postgres": "v9.3.1100.3"
 	}
 }
 
