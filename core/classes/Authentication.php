@@ -260,6 +260,19 @@ class Authentication {
 	 */
 	protected function callHook($name, array $params = []) {
 		$modules = (new Module($this->config))->getEnabledModules();
+
+		if (
+			property_exists($this->config->siteConfig(), 'hooks') &&
+			property_exists($this->config->siteConfig()->hooks, 'authentication') &&
+			property_exists($this->config->siteConfig()->hooks->authentication, $name)
+		) {
+			$class_name = $this->config->siteConfig()->hooks->authentication->$name;
+			$class = $class_name;
+			$this->logger->debug("Calling Hook: $class::$name");
+			$class = new $class($this->config, $this->database, $this->request);
+			call_user_func_array(array($class, $name), $params);
+		}
+
 		foreach ($modules as $module) {
 			if (isset($module['hooks']['authentication'][$name])) {
 				$class = $module['namespace'].'\\'.$module['hooks']['authentication'][$name];
