@@ -1312,8 +1312,9 @@ class Model {
 
 					// add a partial unique
 					case 'add_partial_unique':
-						foreach ($update as $clause => $columns) {
-							$model->sqlHelper()->addPartialUnique($clause, $columns);
+						foreach ($update as $columns) {
+							$condition = array_shift($columns);
+							$model->sqlHelper()->addPartialUnique($condition, $columns);
 						}
 						break;
 

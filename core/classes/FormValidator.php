@@ -73,7 +73,7 @@ class FormValidator {
 	}
 
 	public function addValidator($name, array $data) {
-		$this->validators[$name] = $data;
+		$this->validators[$name][] = $data;
 	}
 
 	public function getJavascriptValidation() {
