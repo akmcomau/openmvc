@@ -1,6 +1,6 @@
 <?php
 
-if (!(isset($_GET['no_session']) && $_GET['no_session'])) {
+if (!(isset($_SERVER['no_session']) && $_SERVER['no_session'])) {
 	session_start();
 }
 
@@ -14,6 +14,7 @@ use core\classes\Logger;
 use core\classes\Request;
 use core\classes\URL;
 
+include('core/Robots.php');
 include('core/ErrorHandler.php');
 include('core/Constants.php');
 include('core/classes/AutoLoader.php');
@@ -24,7 +25,7 @@ $config = new Config();
 
 try {
 	// is this a bot?
-	if (!isset($_SERVER['HTTP_USER_AGENT']) || preg_match('/bot|index|spider|crawl|wget|curl|slurp|Mediapartners-Google|Feedfetcher-Google/i', $_SERVER['HTTP_USER_AGENT'])) {
+	if (!isset($_SERVER['HTTP_USER_AGENT']) || preg_match($_ROBOTS, $_SERVER['HTTP_USER_AGENT'])) {
 		$config->setRobot(TRUE);
 	}
 
@@ -58,6 +59,10 @@ try {
 
 	$database   = new Database($config);
 	$request    = new Request($config, $database);
+
+	// run the before_request hook
+	Dispatcher::beforeRequest($config, $database, $request);
+
 	$dispatcher = new Dispatcher($config, $database);
 	$response = $dispatcher->dispatch($request);
 

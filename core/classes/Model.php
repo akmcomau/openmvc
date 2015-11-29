@@ -43,6 +43,13 @@ class Model {
 	protected $objects = [];
 
 	/**
+	 * This array is used as a static cache related model objects to avoid
+	 * duplicate database requests.
+	 * @var array $objects
+	 */
+	protected static $static_objects = [];
+
+	/**
 	 * Are results of the get() function cacheable.
 	 * This should be TRUE for table where the data very rarely changes,
 	 * like the country, state or city tables.
@@ -246,6 +253,15 @@ class Model {
 		return $this->sql_helper;
 	}
 
+	public function __call ($name, $arguments) {
+		$sqlHelper = $this->sqlHelper();
+		if (method_exists($sqlHelper, $name)) {
+			return call_user_func_array([$sqlHelper, $name], $arguments);
+		}
+
+		throw new \ErrorException('Method ' . $name . ' not exists');
+	}
+
 	/**
 	 * Finds all the available models for this site and stores them in self::$site_models
 	 * @param[in] $site  [Optional] Get models for a sepecific site, if NULL then
@@ -418,7 +434,6 @@ class Model {
 
 		return NULL;
 	}
-
 
 	/**
 	 * Call a database model hook, if one is set
@@ -1195,7 +1210,6 @@ class Model {
 		foreach ($this->partial_uniques as $name => $columns) {
 			// look over all the uniques looking for this one
 			$orig_columns = $columns;
-			array_shift($columns);
 			$found = FALSE;
 			foreach ($schema['indexes'] as $curr_name => $curr_columns) {
 				if (!is_array($columns)) {

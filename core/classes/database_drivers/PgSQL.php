@@ -150,6 +150,10 @@ class PgSQL extends DatabaseDriver {
 				$type = 'BYTEA';
 				break;
 
+			case 'inet':
+				$type = 'INET';
+				break;
+
 			default:
 				throw new ModelException("Invalid data type: ".$data['data_type']);
 				break;
@@ -212,6 +216,10 @@ class PgSQL extends DatabaseDriver {
 
 			case 'text':
 				return 'text';
+				break;
+
+			case 'inet':
+				return 'inet';
 				break;
 
 			case 'bytea':
@@ -445,5 +453,17 @@ class PgSQL extends DatabaseDriver {
 		$timezone = $this->database->quote($timezone);
 		$sql = "SET timezone TO $timezone";
 		$this->database->executeQuery($sql);
+	}
+
+	public function begin() {
+		$this->database->executeQuery('BEGIN;');
+	}
+
+	public function commit() {
+		$this->database->executeQuery('COMMIT;');
+	}
+
+	public function rollback() {
+		$this->database->executeQuery('ROLLBACK;');
 	}
 }

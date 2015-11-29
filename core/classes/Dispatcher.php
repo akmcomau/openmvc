@@ -33,6 +33,11 @@ class Dispatcher {
 	 */
 	protected $url;
 
+	protected static $static_config;
+	protected static $static_database;
+	protected static $static_request;
+	protected static $static_logger;
+
 	public function __construct(Config $config, Database $database) {
 		$this->config   = $config;
 		$this->database = $database;
@@ -246,6 +251,36 @@ class Dispatcher {
 		}
 		else {
 			return [];
+		}
+	}
+
+	public static function beforeRequest(Config $config, Database $database, Request $request) {
+		self::$static_logger   = Logger::getLogger(__CLASS__);
+		self::$static_config   = $config;
+		self::$static_database = $database;
+		self::$static_request  = $request;
+		$modules = (new Module($config))->getEnabledModules();
+		foreach ($modules as $module) {
+			if (isset($module['hooks']['request']['before_request'])) {
+				$class = $module['namespace'].'\\'.$module['hooks']['request']['before_request'];
+				self::$static_logger->debug("Calling Hook: $class::before_request");
+				$class = new $class($config, $database, $request);
+				call_user_func_array(array($class, 'before_request'), [$request]);
+			}
+		}
+	}
+
+	public static function afterRequest() {
+		if (self::$static_config) {
+			$modules = (new Module(self::$static_config))->getEnabledModules();
+			foreach ($modules as $module) {
+				if (isset($module['hooks']['request']['after_request'])) {
+					$class = $module['namespace'].'\\'.$module['hooks']['request']['after_request'];
+					self::$static_logger->debug("Calling Hook: ".get_class($class)."::after_request");
+					$class = new $class(self::$static_config, self::$static_database, self::$static_request);
+					call_user_func_array(array($class, 'after_request'), [self::$static_request]);
+				}
+			}
 		}
 	}
 }

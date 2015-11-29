@@ -2,6 +2,7 @@
 
 namespace core\classes;
 
+use NumberFormatter;
 use core\classes\exceptions\ConfigException;
 use core\classes\exceptions\DomainRedirectException;
 use ErrorException;
@@ -145,7 +146,7 @@ class Config {
 		require($filename);
 
 		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
-		
+
 		if (in_array($module['namespace'], $_CONFIG['modules'])) {
 			$index = array_search($module['namespace'], $_CONFIG['modules']);
 			array_splice($_CONFIG['modules'], $index, 1);
@@ -319,8 +320,11 @@ class Config {
 			elseif ('www.'.$domain == $host || (!$redirect && $domain == $host)) {
 				$this->site_domain = $domain;
 
-				// set locale
-				setlocale(LC_ALL, $this->siteConfig()->locale);
+				$locale  = $this->siteConfig()->locale;
+				if (property_exists($this->siteConfig(), 'override_locale')) {
+					$locale = $this->siteConfig()->override_locale;
+				}
+				$this->setLocale($locale);
 
 				return;
 			}
@@ -336,6 +340,14 @@ class Config {
 		}
 
 		throw new ConfigException("HTTP_HOST does not reference a site: $host");
+	}
+
+	public function setLocale($locale) {
+		$this->siteConfig()->site_locale = $locale;
+		$formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+		$this->siteConfig()->currency = $formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE);
+
+		setlocale(LC_MONETARY, $locale);
 	}
 
 	public function updateConfig() {

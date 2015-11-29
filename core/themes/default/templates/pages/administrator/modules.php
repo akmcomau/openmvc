@@ -1,5 +1,5 @@
 <div class="container">
-	<table class="table">
+	<table class="table modules">
 		<tr>
 			<th><?php echo $text_name; ?></th>
 			<th><?php echo $text_description; ?></th>
@@ -16,10 +16,10 @@
 						<?php if ($module['enabled_anywhere']) { ?>
 							<i class="fa fa-thumbs-up"></i>
 						<?php } else { ?>
-							<a href="<?php echo $module['uninstall_url']; ?>" title="<?php echo $text_install_module; ?>" onclick="return confirm('<?php echo htmlspecialchars($text_confirm_uninstall); ?>')"><i class="fa fa-thumbs-up"></i></a>
+							<a href="<?php echo $module['uninstall_url']; ?>" title="<?php echo $text_uninstall_module; ?>" onclick="return confirm('<?php echo htmlspecialchars($text_confirm_uninstall); ?>')"><i class="fa fa-thumbs-up"></i></a>
 						<?php } ?>
 					<?php } else { ?>
-						<a href="<?php echo $module['install_url']; ?>" title="<?php echo $text_uninstall_module; ?>" onclick="return confirm('<?php echo htmlspecialchars($text_confirm_install); ?>')"><i class="fa fa-thumbs-down"></i></a>
+						<a href="<?php echo $module['install_url']; ?>" title="<?php echo $text_install_module; ?>" onclick="return confirm('<?php echo htmlspecialchars($text_confirm_install); ?>')"><i class="fa fa-thumbs-down"></i></a>
 					<?php } ?>
 				</td>
 				<td class="align-center">

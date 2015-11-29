@@ -74,15 +74,24 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 	}
 }
 function shutdown_error_handler() {
+	global $config;
 	global $display_errors;
 	global $script_start;
 
+	// log/display the error
 	$logger = Logger::getLogger('');
 	$error = error_get_last();
 	if ($error) {
 		$ex = new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']);
 		log_display_exception($display_errors, $logger, $ex);
 	}
+
+	// run the after_request hook
+	if ($config) {
+		Dispatcher::afterRequest();
+	}
+
+	// Log the end of the script
 	$script_time = number_format(microtime(TRUE) - $script_start, 6);
 	if (php_sapi_name() == 'cli') {
 		$logger->debug("End Request: $script_time");
