@@ -320,10 +320,9 @@ class Config {
 			elseif ('www.'.$domain == $host || (!$redirect && $domain == $host)) {
 				$this->site_domain = $domain;
 
-				$locale  = $this->siteConfig()->locale;
-				if (property_exists($this->siteConfig(), 'override_locale')) {
-					$locale = $this->siteConfig()->override_locale;
-				}
+				$locale = $this->siteConfig()->locale;
+				$formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+				$this->siteConfig()->site_currency = $formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE);
 				$this->setLocale($locale);
 
 				return;
