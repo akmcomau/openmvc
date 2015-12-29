@@ -53,6 +53,10 @@ class Language {
 		}
 	}
 
+	public function exists($tag) {
+		return isset($this->strings[$tag]);
+	}
+
 	public function getFile($file, $path = NULL) {
 		$strings = [];
 		if ($this->config->siteConfig()->load_default_language_files) {

@@ -25,6 +25,11 @@ class Country extends Model {
 			'data_length'    => '2',
 			'null_allowed'   => FALSE,
 		],
+		'country_continent' => [
+			'data_type'      => 'text',
+			'data_length'    => '2',
+			'null_allowed'   => TRUE,
+		],
 		'country_code3' => [
 			'data_type'      => 'text',
 			'data_length'    => '3',
@@ -43,6 +48,7 @@ class Country extends Model {
 	];
 	protected $indexes = [
 		'lower(country_name)',
+		'country_continent',
 	];
 	protected $uniques = [
 		'country_name',
@@ -56,6 +62,47 @@ class Country extends Model {
 		else {
 			return NULL;
 		}
+	}
+
+	public function getContinents() {
+		$sql = "
+			SELECT DISTINCT country_continent as continent
+			FROM country
+			WHERE
+				country_continent IS NOT NULL
+				AND country_continent != ''
+		 ";
+		$results = $this->database->queryMulti($sql);
+		foreach ($results as $result) {
+			$result['text_tag'] = 'continent_'.strtolower($result['continent']);
+		}
+		return $results;
+	}
+
+	public function getCountriesByContinent($filter = NULL) {
+		$result = [];
+		$countries = $this->getMulti();
+		foreach ($countries as $country) {
+			if ($country->continent) {
+				if ($filter == NULL || $filter($country)) {
+					$result[$country->continent][] = $country;
+				}
+			}
+		}
+		return $result;
+	}
+
+	public function getCurrenciesByContinent($filter = NULL) {
+		$result = [];
+		$countries = $this->getMulti();
+		foreach ($countries as $country) {
+			if ($country->continent && $country->currency) {
+				if ($filter == NULL || $filter($country)) {
+					$result[$country->continent][$country->currency] = $country->code;
+				}
+			}
+		}
+		return $result;
 	}
 
 	public function updateCountries() {
@@ -101,6 +148,7 @@ class Country extends Model {
 			$country->code = $row['ISO'];
 			$country->code3 = $row['ISO3'];
 			$country->name = $row['Country'];
+			$country->continent = $row['Continent'];
 			$country->language = $language;
 			$country->currency = empty($row['CurrencyCode']) ? NULL : $row['CurrencyCode'];
 

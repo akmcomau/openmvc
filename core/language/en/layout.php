@@ -16,4 +16,11 @@ $_LANGUAGE = [
 	'footer_about' => 'OpenMVC is a MVC framwork written in PHP with CMS features and support for LaTeX.  It can also be extended with modules.',
 	'back_to_top' => 'Back To Top',
 	'footer_text' => 'Site Powered by <a href="http://www.openmvc.com">OpenMVC</a> | Copyright 2013 &copy; OpenMVC',
+	'continent_sa' => 'South America',
+	'continent_as' => 'Asia',
+	'continent_eu' => 'Europe',
+	'continent_oc' => 'Oceania',
+	'continent_af' => 'Africa',
+	'continent_an' => 'Antarctica',
+	'continent_na' => 'North America',
 ];

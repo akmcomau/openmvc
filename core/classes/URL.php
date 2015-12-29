@@ -329,10 +329,6 @@ class URL {
 		if (!$method_name)     $method_name     = 'index';
 		if (!$params)          $params          = [];
 
-		if ($controller_name == 'Root' && $method_name == 'index' && count($params) == 0) {
-			return '/';
-		}
-
 		$params_string = '';
 		foreach ($params as $value) {
 			// not allowed to have '/' characters in the value
@@ -382,7 +378,7 @@ class URL {
 			$url .= '?'.http_build_query($get_params);
 		}
 
-		return $url;
+		return (strlen($url) == 0) ? '/' : $url;
 	}
 
 	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {

@@ -28,6 +28,7 @@ class Layout extends Renderable {
 	protected $template_data = [];
 	protected $responsive = TRUE;
 	protected $fixed_width = FALSE;
+	protected $extra_data = [];
 
 	public function __construct(Config $config, Database $database, Request $request, Response $response, Authentication $auth, Language $language, $template) {
 		parent::__construct($config, $database);
@@ -85,8 +86,10 @@ class Layout extends Renderable {
 			'administrator_logged_in' => $this->authentication->administratorLoggedIn(),
 			'database'                => $this->database,
 			'request'                 => $this->request,
+			'currency_code'           => $this->config->siteConfig()->currency,
 		];
 		$data = array_merge($data, $this->template_data);
+		$data = array_merge($data, $this->extra_data);
 		$template = new Template($this->config, $this->language, $this->template, $data);
 		$this->response->setContent($template->render());
 	}
