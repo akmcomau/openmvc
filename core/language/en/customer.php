@@ -23,6 +23,7 @@ $_LANGUAGE = [
 	'forgot_password' => 'Forgot your username or password?',
 	'button_username' => 'Forgot Username',
 	'button_password' => 'Forgot Password',
+	'remember_me' => 'Remember me',
 
 	'account_created' => 'Account Created',
 	'hi' => 'Hi',

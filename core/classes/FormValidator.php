@@ -337,7 +337,7 @@ class FormValidator {
 	}
 
 	public function isDateTime ($string) {
-		if (preg_match('/^\s*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}\s*[0-9]{2}:[0-9]{2}(:[0-9]{2})?\s*$/i', $string)) {
+		if (preg_match('/^\s*[0-9]{4}[\/-][0-9]{1,2}[\/-][0-9]{1,2}\s*[0-9]{2}:[0-9]{2}(:[0-9]{2})?\s*$/i', $string)) {
 			return TRUE;
 		}
 		return FALSE;

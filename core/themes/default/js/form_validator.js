@@ -40,7 +40,7 @@ $.extend(FormValidator, {
 		return false;
 	},
 	isDateTime: function (string) {
-		if (/^\s*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}\s*[0-9]{2}:[0-9]{2}(:[0-9]{2})?\s*$/i.test(string)){
+		if (/^\s*[0-9]{4}[\/-][0-9]{1,2}[\/-][0-9]{1,2}\s*[0-9]{2}:[0-9]{2}(:[0-9]{2})?\s*$/i.test(string)){
 			return true;
 		}
 		return false;
