@@ -195,6 +195,14 @@ class Email {
 			'name'    => $file_name,
 		];
 	}
+	public function attachContent($file_name, $file_content, $mime_type) {
+		$attachment = chunk_split(base64_encode($file_content));
+		$this->attachments[] = [
+			'content' => $attachment,
+			'type'    => $mime_type,
+			'name'    => $file_name,
+		];
+	}
 
 	/**
 	 * Send the email
