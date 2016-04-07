@@ -367,20 +367,25 @@ class PgSQL extends DatabaseDriver {
 		$this->database->executeQuery($sql);
 
 		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name";
-		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
-			$sql .= " SET NOT NULL";
-		}
-		else {
-			$sql .= " DROP NOT NULL";
-		}
-		$this->database->executeQuery($sql);
-
-		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name";
 		if (isset($data['default_value'])) {
 			$sql .= " SET DEFAULT ".$data['default_value'];
 		}
 		else {
 			$sql .= " DROP DEFAULT";
+		}
+		$this->database->executeQuery($sql);
+
+		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name";
+		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
+			$sql .= " SET NOT NULL";
+
+			if (isset($data['default_value'])) {
+				$sql_inner = "UPDATE ".$this->table." SET $name = ".$data['default_value'];
+				$this->database->executeQuery($sql_inner);
+			}
+		}
+		else {
+			$sql .= " DROP NOT NULL";
 		}
 		$this->database->executeQuery($sql);
 	}
