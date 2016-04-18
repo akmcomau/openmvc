@@ -1,4 +1,7 @@
 {
+	"config": {
+		"secure-http": true
+	},
 	"repositories": [
 		{
 			"type":"package",

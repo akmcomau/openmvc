@@ -169,10 +169,22 @@ class FormValidator {
 						if (!$this->isInteger($value)) {
 							$is_this_valid = FALSE;
 						}
+						elseif (isset($data['max_value']) && $value > $data['max_value']) {
+							$is_this_valid = FALSE;
+						}
+						elseif (isset($data['min_value']) && $value < $data['min_value']) {
+							$is_this_valid = FALSE;
+						}
 						break;
 
 					case 'float':
 						if (!$this->isFloat($value)) {
+							$is_this_valid = FALSE;
+						}
+						elseif (isset($data['max_value']) && $value > $data['max_value']) {
+							$is_this_valid = FALSE;
+						}
+						elseif (isset($data['min_value']) && $value < $data['min_value']) {
 							$is_this_valid = FALSE;
 						}
 						break;

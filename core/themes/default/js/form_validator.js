@@ -112,14 +112,26 @@ $.extend(FormValidator, {
 			}
 			else {
 				switch (element.type) {
-					case 'integer':
+				case 'integer':
 						if (!this.isInteger(element_value)) {
+							is_this_valid = false;
+						}
+						else if (typeof(element.max_value) != 'undefined' && element_value > element.max_value) {
+							is_this_valid = false;
+						}
+						else if (typeof(element.min_value) != 'undefined' && element_value < element.min_value) {
 							is_this_valid = false;
 						}
 						break;
 
 					case 'float':
 						if (!this.isFloat(element_value)) {
+							is_this_valid = false;
+						}
+						else if (typeof(element.max_value) != 'undefined' && element_value > element.max_value) {
+							is_this_valid = false;
+						}
+						else if (typeof(element.min_value) != 'undefined' && element_value < element.min_value) {
 							is_this_valid = false;
 						}
 						break;
