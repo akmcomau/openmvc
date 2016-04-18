@@ -46,6 +46,7 @@ class Customers extends Controller {
 					$params[$matches[1]] = ['type'=>'like', 'value'=>'%'.$value.'%'];
 				}
 			}
+			$this->getExtraSearchParams($values, $params);
 		}
 
 		// get all the customers
@@ -75,6 +76,7 @@ class Customers extends Controller {
 			'customers' => $customers,
 			'message_js' => $message_js,
 		];
+		$this->getExtraTemplateData($customer, $data);
 
 		$template = $this->getTemplate('pages/administrator/customers/list.php', $data);
 		$this->response->setContent($template->render());
@@ -173,6 +175,10 @@ class Customers extends Controller {
 	}
 
 	protected function getExtraTemplateData(Customer $customer, &$data) {
+
+	}
+
+	protected function getExtraSearchParams($values, &$params) {
 
 	}
 
