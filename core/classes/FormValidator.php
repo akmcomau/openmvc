@@ -142,6 +142,174 @@ class FormValidator {
 		return TRUE;
 	}
 
+	public function checkFormValue($data, $value) {
+		$is_this_valid = TRUE;
+		switch ($data['type']) {
+			case 'integer':
+				if (!$this->isInteger($value)) {
+					$is_this_valid = FALSE;
+				}
+				elseif (isset($data['max_value']) && $value > $data['max_value']) {
+					$is_this_valid = FALSE;
+				}
+				elseif (isset($data['min_value']) && $value < $data['min_value']) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'float':
+				if (!$this->isFloat($value)) {
+					$is_this_valid = FALSE;
+				}
+				elseif (isset($data['max_value']) && $value > $data['max_value']) {
+					$is_this_valid = FALSE;
+				}
+				elseif (isset($data['min_value']) && $value < $data['min_value']) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'date':
+				if (!$this->isDate($value)) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'time':
+				if (!$this->isTime($value)) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'datetime':
+				if (!$this->isDateTime($value)) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'money':
+				if (!$this->isMoney($value)) {
+					$is_this_valid = FALSE;
+				}
+				elseif ($data['zero_allowed'] && (float)$value == 0) {
+					$is_this_valid = TRUE;
+				}
+				elseif (!$data['zero_allowed'] && (float)$value <= 0) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'string':
+				if (isset($data['max_length']) && strlen($value) > $data['max_length']) {
+					$is_this_valid = FALSE;
+				}
+				elseif (isset($data['min_length']) && strlen($value) < $data['min_length']) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'email':
+				if (!$this->isEmail($value)) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'url':
+				if (!$this->isUrl($value)) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'url-fragment':
+				if (!$this->isUrlFragment($value)) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'date-segements':
+				if (!$this->isDate($value)) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			case 'file':
+				$file = $this->request->fileParam($name);
+				if (!$file) {
+					$is_this_valid = FALSE;
+				}
+				elseif ($file['error'] != UPLOAD_ERR_OK) {
+					$is_this_valid = FALSE;
+				}
+				break;
+
+			default:
+				throw new FormException("Invalid form element type [$name]: ".$data['type']);
+				break;
+		}
+
+		return $is_this_valid;
+	}
+
+	public function checkElement($name, $data, $value) {
+		$is_this_valid = TRUE;
+
+		if (!isset($data['required'])) $data['required'] = TRUE;
+		if (!isset($data['zero_allowed'])) $data['zero_allowed'] = FALSE;
+
+		if ((is_null($value) || $value == '') && !$data['required']) {
+			$is_this_valid = TRUE;
+		}
+		elseif ((is_null($value) || $value == '') && $data['required']) {
+			$is_this_valid = FALSE;
+		}
+		else {
+			$is_this_valid = $this->checkFormValue($data, $value);
+		}
+
+		// run the validators
+		if ($is_this_valid && isset($this->validators[$name])) {
+			foreach ($this->validators[$name] as $validator) {
+				switch($validator['type']) {
+					case 'params-equal':
+						if ($value != $this->request->requestParam($validator['param'])) {
+							$this->form_errors[$name] = $validator['message'];
+							$is_this_valid = FALSE;
+						}
+						break;
+
+					case 'regex':
+						if (!empty($value) && !preg_match('/'.$validator['regex'].'/'.$validator['modifiers'], $value)) {
+							$this->form_errors[$name] = $validator['message'];
+							$is_this_valid = FALSE;
+						}
+						break;
+
+					case 'function':
+						if (!$validator['function']($value, $this)) {
+							$this->form_errors[$name] = $validator['message'];
+							$is_this_valid = FALSE;
+						}
+						break;
+				}
+			}
+		}
+
+		if (!$is_this_valid) {
+			$this->logger->debug("Form field not valid: $name");
+			if (!isset($this->form_errors[$name])) {
+				if (isset($data['message'])) {
+					$this->form_errors[$name] = $data['message'];
+				}
+				else {
+					throw new FormException('No message for element: '.$name);
+				}
+			}
+			$form_valid = FALSE;
+		}
+
+		return $is_this_valid;
+	}
+
 	public function validate() {
 		$this->form_errors = [];
 		$form_valid = TRUE;
@@ -151,162 +319,17 @@ class FormValidator {
 		}
 
 		foreach ($this->inputs as $name => $data) {
-			$is_this_valid = TRUE;
-			$value = $this->request->requestParam($name);
-
-			if (!isset($data['required'])) $data['required'] = TRUE;
-			if (!isset($data['zero_allowed'])) $data['zero_allowed'] = FALSE;
-
-			if ((is_null($value) || $value == '') && !$data['required']) {
-				$is_this_valid = TRUE;
-			}
-			elseif ((is_null($value) || $value == '') && $data['required']) {
-				$is_this_valid = FALSE;
+			if (isset($data['is_array']) && $data['is_array']) {
+				$array = $this->request->requestParam($name);
+				if (is_array($array)) {
+					foreach ($array as $value) {
+						$form_valid &= $this->checkElement($name, $data, $value);
+					}
+				}
 			}
 			else {
-				switch ($data['type']) {
-					case 'integer':
-						if (!$this->isInteger($value)) {
-							$is_this_valid = FALSE;
-						}
-						elseif (isset($data['max_value']) && $value > $data['max_value']) {
-							$is_this_valid = FALSE;
-						}
-						elseif (isset($data['min_value']) && $value < $data['min_value']) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'float':
-						if (!$this->isFloat($value)) {
-							$is_this_valid = FALSE;
-						}
-						elseif (isset($data['max_value']) && $value > $data['max_value']) {
-							$is_this_valid = FALSE;
-						}
-						elseif (isset($data['min_value']) && $value < $data['min_value']) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'date':
-						if (!$this->isDate($value)) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'time':
-						if (!$this->isTime($value)) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'datetime':
-						if (!$this->isDateTime($value)) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'money':
-						if (!$this->isMoney($value)) {
-							$is_this_valid = FALSE;
-						}
-						elseif ($data['zero_allowed'] && (float)$value == 0) {
-							$is_this_valid = TRUE;
-						}
-						elseif (!$data['zero_allowed'] && (float)$value <= 0) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'string':
-						if (isset($data['max_length']) && strlen($value) > $data['max_length']) {
-							$is_this_valid = FALSE;
-						}
-						elseif (isset($data['min_length']) && strlen($value) < $data['min_length']) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'email':
-						if (!$this->isEmail($value)) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'url':
-						if (!$this->isUrl($value)) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'url-fragment':
-						if (!$this->isUrlFragment($value)) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'date-segements':
-						if (!$this->isDate($value)) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					case 'file':
-						$file = $this->request->fileParam($name);
-						if (!$file) {
-							$is_this_valid = FALSE;
-						}
-						elseif ($file['error'] != UPLOAD_ERR_OK) {
-							$is_this_valid = FALSE;
-						}
-						break;
-
-					default:
-						throw new FormException("Invalid form element type [$name]: ".$data['type']);
-						break;
-				}
-			}
-
-			// run the validators
-			if ($is_this_valid && isset($this->validators[$name])) {
-				foreach ($this->validators[$name] as $validator) {
-					switch($validator['type']) {
-						case 'params-equal':
-							if ($value != $this->request->requestParam($validator['param'])) {
-								$this->form_errors[$name] = $validator['message'];
-								$is_this_valid = FALSE;
-							}
-							break;
-
-						case 'regex':
-							if (!empty($value) && !preg_match('/'.$validator['regex'].'/'.$validator['modifiers'], $value)) {
-								$this->form_errors[$name] = $validator['message'];
-								$is_this_valid = FALSE;
-							}
-							break;
-
-						case 'function':
-							if (!$validator['function']($value, $this)) {
-								$this->form_errors[$name] = $validator['message'];
-								$is_this_valid = FALSE;
-							}
-							break;
-					}
-				}
-			}
-
-			if (!$is_this_valid) {
-				$this->logger->debug("Form field not valid: $name");
-				if (!isset($this->form_errors[$name])) {
-					if (isset($data['message'])) {
-						$this->form_errors[$name] = $data['message'];
-					}
-					else {
-						throw new FormException('No message for element: '.$name);
-					}
-				}
-				$form_valid = FALSE;
+				$value = $this->request->requestParam($name);
+				$form_valid &= $this->checkElement($name, $data, $value);
 			}
 		}
 
