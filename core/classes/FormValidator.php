@@ -250,7 +250,7 @@ class FormValidator {
 		return $is_this_valid;
 	}
 
-	public function checkElement($name, $data, $value) {
+	public function checkElement($name, $data, $value, $index = NULL) {
 		$is_this_valid = TRUE;
 
 		if (!isset($data['required'])) $data['required'] = TRUE;
@@ -286,7 +286,12 @@ class FormValidator {
 
 					case 'function':
 						if (!$validator['function']($value, $this)) {
-							$this->form_errors[$name] = $validator['message'];
+							if ($index) {
+								$this->form_errors[$name][$index] = $validator['message'];
+							}
+							else {
+								$this->form_errors[$name] = $validator['message'];
+							}
 							$is_this_valid = FALSE;
 						}
 						break;
@@ -298,7 +303,12 @@ class FormValidator {
 			$this->logger->debug("Form field not valid: $name");
 			if (!isset($this->form_errors[$name])) {
 				if (isset($data['message'])) {
-					$this->form_errors[$name] = $data['message'];
+					if ($index) {
+						$this->form_errors[$name] = $data['message'];
+					}
+					else {
+						$this->form_errors[$name][$index] = $data['message'];
+					}
 				}
 				else {
 					throw new FormException('No message for element: '.$name);
@@ -322,8 +332,8 @@ class FormValidator {
 			if (isset($data['is_array']) && $data['is_array']) {
 				$array = $this->request->requestParam($name);
 				if (is_array($array)) {
-					foreach ($array as $value) {
-						$form_valid &= $this->checkElement($name, $data, $value);
+					foreach ($array as $index => $value) {
+						$form_valid &= $this->checkElement($name, $data, $value, $index);
 					}
 				}
 			}
