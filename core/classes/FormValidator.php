@@ -15,6 +15,7 @@ class FormValidator {
 
 	protected $notification_message = NULL;
 	protected $notification_type = NULL;
+	protected $disable_submit_button = FALSE;
 
 	protected $suppress_submit_check = FALSE;
 
@@ -48,6 +49,10 @@ class FormValidator {
 		$this->form_errors = $errors;
 	}
 
+	public function setDisableSubmitButton($value) {
+		$this->disable_submit_button = $value ? TRUE : FALSE;
+	}
+
 	public function addError($name, $message) {
 		$this->form_errors[$name] = $message;
 	}
@@ -78,10 +83,10 @@ class FormValidator {
 
 	public function getJavascriptValidation() {
 		// register the form with the validator
-		$js = "FormValidator.registerForm('".$this->name."', ".json_encode($this->inputs).", ".json_encode($this->validators).");";
+		$js = "FormValidator.registerForm('".$this->name."', ".json_encode($this->inputs).", ".json_encode($this->validators).", ".($this->disable_submit_button ? 'true' : 'false').");";
 
 		// add an onclick event to the submit button
-		$js .= '$("#'.$this->name.' button[name=\''.$this->name.'-submit\']").click(function(event) {return FormValidator.validateForm("'.$this->name.'", event);});';
+		$js .= '$("#'.$this->name.' button[name=\''.$this->name.'-submit\']").click(function(event) {return FormValidator.validateForm(this, "'.$this->name.'", event);});';
 
 		// check for notification display
 		if ($this->notification_message && $this->notification_type) {

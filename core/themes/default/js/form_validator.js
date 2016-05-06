@@ -2,6 +2,7 @@ var FormValidator = {};
 $.extend(FormValidator, {
 	_forms: [],
 	_validators: [],
+	_disables: [],
 
 	isFloat: function (string) {
 		if (/^-?[0-9]+(\.[0-9]+)?$/.test(string)){
@@ -83,9 +84,10 @@ $.extend(FormValidator, {
 		error.show()
 		$("#"+form_id+" *[name='"+array_name+"']").addClass('form-error-input');
 	},
-	registerForm: function (form_id, form, validators) {
+	registerForm: function (form_id, form, validators, disable_button) {
 		this._forms[form_id] = form;
 		this._validators[form_id] = validators;
+		this._disables[form_id] = disable_button;
 	},
 	checkElementValue: function (element, element_value) {
 		is_this_valid = true;
@@ -241,7 +243,7 @@ $.extend(FormValidator, {
 
 		return [is_this_valid, validator_error];
 	},
-	validateForm: function (form_id, event) {
+	validateForm: function (button, form_id, event) {
 		$('#'+form_id+' .form-error').hide();
 
 		var form = this._forms[form_id];
@@ -286,6 +288,12 @@ $.extend(FormValidator, {
 			$('body').animate({ scrollTop: scroll_position }, 500);
 			event.stopPropagation();
 			return false;
+		}
+
+		if (this._disables[form_id]) {
+			setTimeout(function() {
+				$(button).attr('disabled', 'disabled');
+			}, 100);
 		}
 
 		return true;
