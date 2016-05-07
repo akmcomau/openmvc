@@ -334,7 +334,7 @@ class FormValidator {
 		}
 
 		foreach ($this->inputs as $name => $data) {
-			if (isset($data['is_array']) && $data['is_array']) {
+			if ((isset($data['is_array']) && $data['is_array']) || (isset($data['array_value']) && $data['array_value'])) {
 				$array = $this->request->requestParam($name);
 				if (is_array($array)) {
 					foreach ($array as $index => $value) {

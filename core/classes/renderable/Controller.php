@@ -266,7 +266,7 @@ class Controller extends Renderable {
 				throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error404');
 			}
 			else {
-				throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error404');
+				throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
 			}
 		}
 		elseif ($this->request->session->get('admin_site_id')) {
@@ -275,7 +275,7 @@ class Controller extends Renderable {
 					throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error401');
 				}
 				else {
-					throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error404', 'error401');
+					throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
 				}
 			}
 		}
@@ -285,7 +285,7 @@ class Controller extends Renderable {
 					throw new SoftRedirectException($this->url->getControllerClass('Administrator'), 'error401');
 				}
 				else {
-					throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error404', 'error401');
+					throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
 				}
 			}
 		}

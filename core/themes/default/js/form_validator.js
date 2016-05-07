@@ -194,8 +194,16 @@ $.extend(FormValidator, {
 			array_name += '[]';
 			error_name += '-'+element_index;
 		}
+		if (element.array_value) {
+			array_name += '[]';
+		}
 		if (element.type != 'date_segements') {
-			element_value = $($('#'+form_id+' *[name="'+array_name+'"]')[element_index]).val();
+			if (element.array_value) {
+				element_value = $('#'+form_id+' *[name="'+array_name+'"]').val()[element_index];
+			}
+			else {
+				element_value = $($('#'+form_id+' *[name="'+array_name+'"]')[element_index]).val();
+			}
 		}
 
 		if (typeof(element.required) == 'undefined') {
