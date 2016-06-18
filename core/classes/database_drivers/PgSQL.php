@@ -72,8 +72,7 @@ class PgSQL extends DatabaseDriver {
 		}
 
 		// add the partial indexes
-		foreach ($this->partial_uniques as $columns) {
-			$condition = array_shift($columns);
+		foreach ($this->partial_uniques as $condition => $columns) {
 			$this->addPartialUnique($condition, $columns);
 		}
 	}
