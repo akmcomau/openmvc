@@ -415,7 +415,7 @@ class Customer extends Controller {
 					'type'     => 'function',
 					'message'  => $this->language->get('error_email_taken'),
 					'function' => function($value) use ($customer) {
-						$check = $customer->get(['email' => $value]);
+						$check = $customer->get(['email' => $value, 'active' => TRUE]);
 						if (!$check || ($check && $check->id == $customer->id)) {
 							return TRUE;
 						}
@@ -551,7 +551,7 @@ class Customer extends Controller {
 					'message'  => $this->language->get('error_email_taken'),
 					'function' => function($value) use ($model, $customer_class) {
 						$customer = $model->getModel($customer_class);
-						$customer = $customer->get(['email' => $value]);
+						$customer = $customer->get(['email' => $value, 'active' => TRUE]);
 						if ($customer) {
 							return FALSE;
 						}
