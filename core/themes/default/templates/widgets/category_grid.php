@@ -6,10 +6,10 @@
 				<?php
 					$image = $category->getImageThumbnailUrl();
 					if ($image) {
-						?><img src="<?php echo $image; ?>" /><?php
+						?><img class="img-responsive" src="<?php echo $image; ?>" /><?php
 					}
 					else {
-						?><img src="<?php echo $this->url->getStaticUrl('/core/themes/default/images/no_image.svg'); ?>" /><?php
+						?><img class="img-responsive" src="<?php echo $this->url->getStaticUrl('/core/themes/default/images/no_image.svg'); ?>" /><?php
 					}
 				?>
 			</a>

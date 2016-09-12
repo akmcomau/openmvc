@@ -1,6 +1,8 @@
 <?php
 // recursive function to render out the categories
+$GLOBALS['url'] = $this->url;
 function echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $category, $depth = 0) {
+	global $url;
 	?>
 	<tr>
 		<?php if (!$readonly) { ?>
@@ -13,7 +15,7 @@ function echoCategory($readonly, $has_image, $allow_subcategories, $add_text, $c
 						?><img src="<?php echo $category['thumbnail']; ?>" height="50px" /><?php
 					}
 					else {
-						?><img src="<?php echo $this->url->getStaticUrl('/core/themes/default/images/no_image.svg'); ?>" height="50px" /><?php
+						?><img src="<?php echo $url->getStaticUrl('/core/themes/default/images/no_image.svg'); ?>" height="50px" /><?php
 				} ?>
 			</td>
 		<?php } ?>
