@@ -1,3 +1,7 @@
+CKEDITOR.stylesSet.add( 'my_styles', [
+	{ name: 'Responsive Image', element: 'img', attributes: { 'class': 'img-responsive' } },
+]);
+
 CKEDITOR.editorConfig = function( config ) {
 	config.toolbarGroups = [
 		{ name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
@@ -16,12 +20,13 @@ CKEDITOR.editorConfig = function( config ) {
 	];
 
 	if (typeof(MathJax) == 'undefined') {
-		config.extraPlugins = 'font,onchange';
+		config.extraPlugins = 'widgetbootstrap,font,onchange';
 	}
 	else {
-		config.extraPlugins = 'font,onchange,mathjax';
+		config.extraPlugins = 'widgetbootstrap,font,onchange,mathjax';
 	}
 
+	config.stylesSet = 'my_styles';
 	config.extraAllowedContent = '*(*)';
 	config.protectedSource.push(/<\?[\s\S]*?\?>/g);
 	config.protectedSource.push(/\r|\n/g);

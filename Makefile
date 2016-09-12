@@ -9,11 +9,14 @@ install-composer:
 update-depends:
 	rm -rf composer/vendor/ckeditor/ckeditor/plugins/onchange
 	rm -rf composer/vendor/ckeditor/ckeditor/plugins/font
+	rm -rf composer/vendor/ckeditor/ckeditor/plugins/widgetbootstrap
+	rm -rf composer/vendor/ckeditor/ckeditor/plugins/mathjax
 
 	cd composer && php composer.phar update;
 
 	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/onchange ./onchange
 	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/font ./font
+	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../composer/vendor/ckeditor/bootstrap ./widgetbootstrap
 	cd composer/vendor/ckeditor/ckeditor/plugins && cp -a ../../../../../core/themes/default/packages/ckeditor_mathjax ./mathjax
 
 # update site composer
