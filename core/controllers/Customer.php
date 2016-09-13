@@ -96,6 +96,7 @@ class Customer extends Controller {
 		$bcrypt_cost   = $this->config->siteConfig()->bcrypt_cost;
 		$model         = new Model($this->config, $this->database);
 		$form_login    = $this->getLoginForm();
+		$form_register = $this->getRegisterForm();
 
 		if ($form_login->validate()) {
 			$customer = $model->getModel($this->customer_class);
@@ -147,6 +148,7 @@ class Customer extends Controller {
 
 		$data = [
 			'login' => $form_login,
+			'register' => $form_register,
 			'controller' => $controller,
 			'method' => $method,
 			'params' => $param,

@@ -10,9 +10,12 @@
 		<hr />
 		<input type="password" name="password" class="form-control" placeholder="<?php echo $text_password; ?>" />
 		<?php echo $login->getHtmlErrorDiv('password'); ?>
+		<br />
+		<div class="text-center">
+			<input type="checkbox" name="remember_me" value="1" <?php if ($remember_me) echo 'checked="checked"'; ?> />
+			<?php echo $text_remember_me; ?>
+		</div>
 		<button name="form-login-submit" class="btn btn-lg btn-primary btn-block" type="submit"><?php echo $text_login_button; ?></button>
-		<br />
-		<br />
 		<div  class="align-center">
 			<a href="<?php echo $this->url->getUrl('Customer', 'forgot'); ?>"><?php echo $text_forgot_password; ?></a>
 		</div>

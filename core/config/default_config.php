@@ -50,5 +50,8 @@ $_DEFAULT_CONFIG = (object)[
 			'email' => ['type'=>'email', 'message_text_tag' => 'error_email'],
 			'enquiry' => ['type'=>'string', 'message_text_tag' => 'error_enquiry'],
 		],
+		'customer_types' => [
+			1 => 'Normal',
+		],
 	]
 ];

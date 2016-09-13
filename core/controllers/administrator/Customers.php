@@ -185,6 +185,7 @@ class Customers extends Controller {
 	protected function updateFromRequest(FormValidator $form, Customer $customer) {
 		$customer->login = $form->getValue('login');
 		$customer->email = $form->getValue('email');
+		$customer->type = $form->getValue('type');
 		$customer->first_name = $form->getValue('first_name');
 		$customer->last_name = $form->getValue('last_name');
 		$customer->phone = $form->getValue('phone');
@@ -224,6 +225,11 @@ class Customers extends Controller {
 				'min_length' => 6,
 				'max_length' => 32,
 				'message' => $this->language->get('error_login'),
+			],
+			'type' => [
+				'type' => 'integer',
+				'required' => TRUE,
+				'message' => $this->language->get('error_type'),
 			],
 			'email' => [
 				'type' => 'email',
