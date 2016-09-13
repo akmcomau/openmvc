@@ -21,3 +21,15 @@
 	color: #FFF;
 	text-decoration: none;
 }
+.file-grid > div {
+	border: 1px solid black;
+	height: 260px;
+	overflow: hidden;
+}
+.file-grid img {
+	max-height: 200px;
+	max-width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
