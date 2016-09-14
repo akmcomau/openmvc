@@ -53,5 +53,10 @@ $_DEFAULT_CONFIG = (object)[
 		'customer_types' => [
 			1 => 'Normal',
 		],
+		'filemanager_paths' => [
+			'/themes/default/images/' => 'images',
+			'/themes/default/css/' => 'files',
+			'/themes/default/js/' => 'files',
+		],
 	]
 ];
