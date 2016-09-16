@@ -1228,7 +1228,7 @@ class Model {
 
 			// new unique
 			if (!$found) {
-				$updates['add_partial_unique'][$name] = $orig_columns;
+				//$updates['add_partial_unique'][$name] = $orig_columns;
 			}
 		}
 

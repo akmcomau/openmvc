@@ -19,8 +19,12 @@ Logger::init();
 
 $logger     = Logger::getLogger('');
 $config     = new Config();
-$database   = new Database($config);
 
+if (isset($argv[1])) {
+	$config->setSiteDomain($argv[1], FALSE);
+}
+
+$database   = new Database($config);
 $model = new Model($config, $database);
 $updates = $model->checkDatabase();
 
@@ -29,7 +33,7 @@ print_r($updates);
 print "\n\nApply changes [y,n]: ";
 $handle = fopen ("php://stdin","r");
 $line = fgets($handle);
-if(!(trim($line) == 'y' || trim($line) == 'Y')){
+if(!(trim($line) == 'y' || trim($line) == 'Y')) {
 	echo "\nABORTING!\n";
 	exit;
 }

@@ -17,6 +17,50 @@
 		{
 			"type":"package",
 			"package": {
+				"name": "ckeditor/colorbutton",
+				"version": "v4.5.11",
+				"dist": {
+					"url": "http://download.ckeditor.com/colorbutton/releases/colorbutton_4.5.11.zip",
+					"type": "zip"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "ckeditor/youtube",
+				"version": "v2.0.9",
+				"dist": {
+					"url": "http://download.ckeditor.com/youtube/releases/youtube_2.0.9.zip",
+					"type": "zip"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "ckeditor/bgimage",
+				"version": "v0.4",
+				"dist": {
+					"url": "http://download.ckeditor.com/bgimage/releases/bgimage_0.4.zip",
+					"type": "zip"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
+				"name": "ckeditor/youtube",
+				"version": "v2.0.9",
+				"dist": {
+					"url": "http://download.ckeditor.com/youtube/releases/youtube_2.0.9.zip",
+					"type": "zip"
+				}
+			}
+		},
+		{
+			"type":"package",
+			"package": {
 				"name": "ckeditor/bootstrap",
 				"version": "v1.0",
 				"dist": {
@@ -70,8 +114,11 @@
 		"afarkas/html5shiv": "3.7.3",
 		"ckeditor/ckeditor": "4.5.3",
 		"ckeditor/font": "v4.2.1",
+		"ckeditor/colorbutton": "v4.5.11",
 		"ckeditor/bootstrap": "v1.0",
 		"ckeditor/onchange": "v1.8",
+		"ckeditor/youtube": "v2.0.9",
+		"ckeditor/bgimage": "v0.4",
 		"schemaspy/schemaspy": "v5.0.0",
 		"schemaspy/postgres": "v9.3.1100.3"
 	}
