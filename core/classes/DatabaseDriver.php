@@ -40,6 +40,8 @@ class DatabaseDriver {
 
 	protected $partial_uniques = [];
 
+	protected $citusdb = NULL;
+
 	public function __construct(Config $config, Database $database, Model $model) {
 		$this->config   = $config;
 		$this->database = $database;
@@ -54,5 +56,6 @@ class DatabaseDriver {
 		$this->uniques         = $table['uniques'];
 		$this->partial_uniques = $table['partial_uniques'];
 		$this->foreign_keys    = $table['foreign_keys'];
+		$this->citusdb         = $table['citusdb'];
 	}
 }

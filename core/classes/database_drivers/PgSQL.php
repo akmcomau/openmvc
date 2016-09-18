@@ -9,6 +9,10 @@ use core\classes\exceptions\ModelException;
 
 class PgSQL extends DatabaseDriver {
 
+	public function citusDbEnabled() {
+		return $this->citusdb ? TRUE : FALSE;
+	}
+
 	/**
 	 * Create the PostgreSQL table this model is associated with
 	 */
@@ -17,17 +21,47 @@ class PgSQL extends DatabaseDriver {
 		$sql = 'CREATE TABLE '.$this->table." (\n";
 
 		// add the columns
+		$index = 0;
 		foreach ($this->columns as $column => $data) {
-			$sql .= "\t$column ".$this->getDataType($data).",\n";
+			if ($index++) $sql .= ",\n";
+			$sql .= "\t$column ".$this->getDataType($data);
 		}
 
 		// add the primary key
-		$sql .= "\tPRIMARY KEY (".$this->primary_key.")\n";
+		if ($this->primary_key) {
+			$sql .= ",\n\tPRIMARY KEY (".$this->primary_key.")";
+		}
 
 		// make an InnoDB type database
-		$sql .= ");\n";
+		$sql .= "\n);\n";
 
 		return $this->database->executeQuery($sql);
+	}
+
+	public function createCitusDB() {
+		$status = TRUE;
+		if ($this->citusDbEnabled()) {
+			if ($this->citusdb) {
+				if ($this->citusdb->distribution_type == 'hash') {
+					$sql = "SELECT master_create_distributed_table("
+						.$this->database->quote($this->table).","
+						.$this->database->quote($this->citusdb->distribution_field).","
+						."'hash');\n";
+					$this->database->executeQuery($sql);
+
+					$sql = "SELECT master_create_worker_shards("
+						.$this->database->quote($this->table).","
+						.(int)$this->citusdb->num_shards.","
+						.(int)$this->citusdb->num_replicas.");\n";
+					$this->database->executeQuery($sql);
+				}
+				else {
+					throw new ModelException('Invalid CitusDB Distribution Type');
+				}
+			}
+		}
+
+		return TRUE;
 	}
 
 	/**

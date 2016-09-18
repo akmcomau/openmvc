@@ -82,6 +82,12 @@ class Model {
 	protected $override_model = FALSE;
 
 	/**
+	 * Extra data for CitusDB
+	 * @var array $objects
+	 */
+	protected $citusdb = NULL;
+
+	/**
 	 * An array containing table columns with data types.<br>
 	 * Valid data types: smallint, int, bigint, numeric, date, datetime, bool, text, blob <br>
 	 * This is an array of the form:
@@ -213,6 +219,12 @@ class Model {
 		else {
 			$this->findAllModels();
 		}
+
+		if (property_exists($this->config->database, 'citusdb') && $this->config->database->citusdb) {
+			if (property_exists($this->config->database->citusdb_config, $this->table)) {
+				$this->citusdb = $this->config->database->citusdb_config->{$this->table};
+			}
+		}
 	}
 
 	/**
@@ -234,6 +246,7 @@ class Model {
 			'uniques'         => $this->uniques,
 			'partial_uniques' => $this->partial_uniques,
 			'foreign_keys'    => $this->foreign_keys,
+			'citusdb'         => $this->citusdb,
 		];
 	}
 
@@ -1001,6 +1014,14 @@ class Model {
 			$model = $this->getModel($model);
 			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
 			$model->sqlHelper()->createForeignKeys();
+		}
+
+		// Create the citusdb metadata
+		foreach ($site_models as $model) {
+			$this->logger->info("Creating CitusDB: $model");
+			$model = $this->getModel($model);
+			if (!$model->hasTable() || !$model->getCreateSchema()) continue;
+			$model->sqlHelper()->createCitusDB();
 		}
 
 		$this->database->setCreatingDatabase(FALSE);
