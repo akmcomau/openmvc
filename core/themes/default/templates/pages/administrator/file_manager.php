@@ -74,7 +74,7 @@
 								</tr>
 							<?php } elseif (is_file($file)) { ?>
 								<tr>
-									<td><a href="" target="_blank"><?php echo basename($file); ?></a></td>
+									<td><a href="/<?php echo $file; ?>" target="_blank"><?php echo basename($file); ?></a></td>
 									<td><?php echo mime_content_type($file); ?></td>
 									<td><?php echo number_format((int)(filesize($file)/1024), 0); ?> KB</td>
 									<td><input type="checkbox" name="select_files[]" value="<?php echo $file; ?>" /></td>
