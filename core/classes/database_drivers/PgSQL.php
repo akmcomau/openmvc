@@ -55,6 +55,19 @@ class PgSQL extends DatabaseDriver {
 						.(int)$this->citusdb->num_replicas.");\n";
 					$this->database->executeQuery($sql);
 				}
+				elseif ($this->citusdb->distribution_type == 'append') {
+					$sql = "SELECT master_create_distributed_table("
+						.$this->database->quote($this->table).","
+						.$this->database->quote($this->citusdb->distribution_field).","
+						."'append');\n";
+					$this->database->executeQuery($sql);
+
+					$sql = "SET citus.shard_replication_factor = ".(int)$this->citusdb->num_replicas;
+					$this->database->executeQuery($sql);
+
+					$sql = "SELECT master_create_empty_shard(".$this->database->quote($this->table).");";
+					$this->database->executeQuery($sql);
+				}
 				else {
 					throw new ModelException('Invalid CitusDB Distribution Type');
 				}
@@ -155,12 +168,16 @@ class PgSQL extends DatabaseDriver {
 				}
 				break;
 
+			case 'uuid':
+				$type = 'UUID';
+				break;
+
 			case 'float':
-				return 'real';
+				$type = 'REAL';
 				break;
 
 			case 'double':
-				return 'double precision';
+				$type = 'DOUBLE PRECISION';
 				break;
 
 			case 'date':
@@ -229,6 +246,10 @@ class PgSQL extends DatabaseDriver {
 
 			case 'date':
 				return 'date';
+				break;
+
+			case 'uuid':
+				return 'uuid';
 				break;
 
 			case 'real':
