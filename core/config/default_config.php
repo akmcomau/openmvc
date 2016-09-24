@@ -2,10 +2,42 @@
 
 $_DEFAULT_CONFIG = (object)[
 	'modules' => [],
+	'database' => [
+		'engine' => 'none',
+		'hostname' => '',
+		'port'     => '',
+		'username' => '',
+		'database' => '',
+		'password' => '',
+		'slavedb'  => false,
+		'slavedb_config' => [
+			'only_master'        => false,
+			'master_for_reads'   => false,
+			'master_probability' => 0,
+			'slaves' => [
+				['hostname' => 'dbslave01', 'probability' => 1],
+				['hostname' => 'dbslave02', 'probability' => 1],
+			],
+		],
+		'citusdb'  => false,
+		'citusdb_replicas' => 2,
+		'citusdb_shard_size' => '1GB',
+		'citusdb_config' => [
+			'time_based_table' => [
+				'distribution_type'  => 'append',
+				'distribution_field' => 'timestamp',
+			],
+			'hash_table' => [
+				'distribution_type'  => 'hash',
+				'distribution_field' => 'unique_id',
+				'num_shards'         => 256,
+			],
+		],
+	],
 	'default_site' => [
 		'email_addresses' => [
-        	'from' => 'info@example.com',
-	        'contact_us' => 'info@example.com',
+			'from' => 'info@example.com',
+			'contact_us' => 'info@example.com',
 		],
 		'default_site' => false,
 		'enable_ssl' => false,

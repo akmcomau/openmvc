@@ -10,6 +10,12 @@ use core\classes\exceptions\DatabaseException;
  */
 class Database extends PDO {
 	/**
+	 * The configuration object
+	 * @var Config $config
+	 */
+	protected $config;
+
+	/**
 	 * The database engine to use, either: mysql, pgsql, none
 	 * @var string $engine
 	 */
@@ -58,6 +64,18 @@ class Database extends PDO {
 	protected $logger;
 
 	/**
+	 * Is this a connection to the msater database
+	 * @var boolean $is_masterdb Is this the Master DB
+	 */
+	protected $is_masterdb = FALSE;
+
+	/**
+	 * Is this a connection to the msater database
+	 * @var Database $masterdb The connection to the Master DB
+	 */
+	protected $masterdb = NULL;
+
+	/**
 	 * Is caching enabled
 	 * @var boolean $cache_enabled
 	 */
@@ -79,7 +97,10 @@ class Database extends PDO {
 	 * Constructor
 	 * @param[in] $config     \b Config The configuration object
 	 */
-	public function __construct($config) {
+	public function __construct($config, $force_masterdb = FALSE) {
+		// set the defaults (master if this is a master/slave setup)
+		$this->config     = $config;
+		$this->logger     = Logger::getLogger(__CLASS__);
 		$this->engine     = $config->database->engine;
 		$this->hostname   = $config->database->hostname;
 		$this->port       = property_exists($config->database, 'port') ? $config->database->port : NULL;
@@ -92,20 +113,76 @@ class Database extends PDO {
 			throw new DatabaseException('Invalid database engine: '.$this->engine);
 		}
 
-		$this->logger = Logger::getLogger(__CLASS__);
-
+		// Make persistent if needed
 		$options = [];
 		if ($this->persistant) {
 			$options = [PDO::ATTR_PERSISTENT => true];
 		}
 
+		// if there is no database for this site
 		if ($this->engine == 'none') {
 			return;
 		}
 
-		$dns = $this->engine.':dbname='.$this->database.";host=".$this->hostname;
-		if ($this->port) $dns .= ";port=".$this->port;
-		parent::__construct($dns, $this->username, $this->password, $options);
+		// check if we should be connecting to a slave instead
+		if ($this->config->database->slavedb && !$this->config->database->slavedb_config->only_master && !$force_masterdb) {
+			// create the list of slaves
+			$max_index = 0;
+			$slaves = [];
+			if ($this->config->database->slavedb_config->master_for_reads) {
+				$end = $max_index + $this->config->database->slavedb_config->master_probability;
+				$slaves[] = [
+					'start'  => $max_index,
+					'end'    => $end,
+					'config' => ['is_masterdb' => TRUE],
+				];
+				$max_index = $end;
+			}
+			foreach ($this->config->database->slavedb_config->slaves as $slave) {
+				$end = $max_index + $slave->probability;
+				$slaves[] = [
+					'start'  => $max_index,
+					'end'    => $end,
+					'config' => $slave,
+				];
+				$max_index = $end;
+			}
+
+			// randomly pick a database
+			$random_slave = NULL;
+			$random = $max_index * rand() / getrandmax();
+			foreach ($slaves as $slave) {
+				if ($random > $slave['start'] && $random < $slave['end']) {
+					$random_slave = $slave['config'];
+					break;
+				}
+			}
+
+			// if a slave was picked, override the settings
+			if ($random_slave) {
+				foreach ((array)$random_slave as $key => $value) {
+					$this->$key = $value;
+				}
+			}
+		}
+		else {
+			// we did not select a slave so this must be the mster
+			$this->is_masterdb = TRUE;
+		}
+
+		// create DSN and call parent constructor
+		$dsn = $this->engine.':dbname='.$this->database.";host=".$this->hostname;
+		if ($this->port) $dsn .= ";port=".$this->port;
+		parent::__construct($dsn, $this->username, $this->password, $options);
+
+		// if citusdb is enabled then set the replication factor and num shards
+		if ($this->config->database->citusdb) {
+			$sql = "SET citus.shard_replication_factor = ".(int)$this->config->database->citusdb_replicas;
+			$this->executeQuery($sql);
+
+			$sql = "SET citus.shard_max_size = ".$this->quote($this->config->database->citusdb_shard_size);
+			$this->executeQuery($sql);
+		}
 	}
 
 	/**
@@ -114,6 +191,24 @@ class Database extends PDO {
 	 */
 	public function getEngine() {
 		return $this->engine;
+	}
+
+	/**
+	 * Gets the Master DB connection
+	 * @return \Database A connection to the master database
+	 */
+	public function getMasterDB() {
+		// if this is the master db, just return $this
+		if ($this->is_masterdb) {
+			return $this;
+		}
+
+		// if there is no connection to the master database yet, its time to connect
+		if (!$this->masterdb) {
+			$this->masterdb = new Database($this->config, TRUE);
+		}
+
+		return $this->masterdb;
 	}
 
 	/**
@@ -195,7 +290,7 @@ class Database extends PDO {
 	 * @return PDOStatement The result of executing the SQL statement
 	 * @throws DatabaseException If an error was returned
 	 */
-	public function executeQuery($sql) {
+	public function executeQuery($sql, $use_masterdb = FALSE) {
 		if ($this->engine == 'none') {
 			return NULL;
 		}
@@ -216,12 +311,12 @@ class Database extends PDO {
 	 * @param[in] $sql  \b string The SQL statement
 	 * @return mixed The value from the database
 	 */
-	public function queryValue($sql) {
+	public function queryValue($sql, $use_masterdb = FALSE) {
 		if ($this->engine == 'none') {
 			return NULL;
 		}
 
-		$statement = $this->executeQuery($sql);
+		$statement = $this->executeQuery($sql, $use_masterdb);
 		$returnArray = $statement->fetch(PDO::FETCH_NUM);
 		return $returnArray[0];
 	}
@@ -232,12 +327,12 @@ class Database extends PDO {
 	 * @param[in] $sql  \b string The SQL statement
 	 * @return array A single record
 	 */
-	public function querySingle($sql) {
+	public function querySingle($sql, $use_masterdb = FALSE) {
 		if ($this->engine == 'none') {
 			return NULL;
 		}
 
-		$statement = $this->executeQuery($sql);
+		$statement = $this->executeQuery($sql, $use_masterdb);
 		return $statement->fetch(PDO::FETCH_ASSOC);
 	}
 
@@ -247,12 +342,12 @@ class Database extends PDO {
 	 * @param[in] $sql  \b string The SQL statement
 	 * @return array An array of records
 	 */
-	public function queryMulti($sql) {
+	public function queryMulti($sql, $use_masterdb = FALSE) {
 		if ($this->engine == 'none') {
 			return [];
 		}
 
-		$statement = $this->executeQuery($sql);
+		$statement = $this->executeQuery($sql, $use_masterdb);
 		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 		if (!$result) return [];
 		return $result;
@@ -265,12 +360,12 @@ class Database extends PDO {
 	 * @param[in] $field  \b string Column to use as the key for the result array
 	 * @return array An assoc array of records
 	 */
-	public function queryMultiKeyed($sql, $field) {
+	public function queryMultiKeyed($sql, $field, $use_masterdb = FALSE) {
 		if ($this->engine == 'none') {
 			return [];
 		}
 
-		$statement = $this->executeQuery($sql);
+		$statement = $this->executeQuery($sql, $use_masterdb);
 		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 		if (!$result) return [];
 
@@ -287,12 +382,18 @@ class Database extends PDO {
 	 * @param[in] $sql  \b string The SQL statement
 	 * @return array An list of values
 	 */
-	public function queryList($sql) {
+	public function queryList($sql, $use_masterdb = FALSE) {
 		if ($this->engine == 'none') {
 			return [];
 		}
 
-		$statement = $this->executeQuery($sql);
+		$statement = NULL;
+		if ($use_masterdb) {
+			$statement = $this->masterdb->executeQuery($sql, $use_masterdb);
+		}
+		else {
+			$statement = $this->executeQuery($sql, $use_masterdb);
+		}
 		$result = $statement->fetchAll(PDO::FETCH_NUM);
 		if (!$result) return [];
 
@@ -310,12 +411,12 @@ class Database extends PDO {
 	 * @param[in] $sql  \b string The SQL statement
 	 * @return array An list of values
 	 */
-	public function queryKeyValue($sql) {
+	public function queryKeyValue($sql, $use_masterdb = FALSE) {
 		if ($this->engine == 'none') {
 			return [];
 		}
 
-		$statement = $this->executeQuery($sql);
+		$statement = $this->executeQuery($sql, $use_masterdb);
 		$result = $statement->fetchAll(PDO::FETCH_NUM);
 		if (!$result) return [];
 

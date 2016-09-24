@@ -35,7 +35,7 @@ class PgSQL extends DatabaseDriver {
 		// make an InnoDB type database
 		$sql .= "\n);\n";
 
-		return $this->database->executeQuery($sql);
+		return $this->database->executeQuery($sql, TRUE);
 	}
 
 	public function createCitusDB() {
@@ -47,26 +47,26 @@ class PgSQL extends DatabaseDriver {
 						.$this->database->quote($this->table).","
 						.$this->database->quote($this->citusdb->distribution_field).","
 						."'hash');\n";
-					$this->database->executeQuery($sql);
+					$this->database->executeQuery($sql, TRUE);
 
 					$sql = "SELECT master_create_worker_shards("
 						.$this->database->quote($this->table).","
 						.(int)$this->citusdb->num_shards.","
-						.(int)$this->citusdb->num_replicas.");\n";
-					$this->database->executeQuery($sql);
+						.(int)$this->config->database->citusdb_replicas.");\n";
+					$this->database->executeQuery($sql, TRUE);
 				}
 				elseif ($this->citusdb->distribution_type == 'append') {
 					$sql = "SELECT master_create_distributed_table("
 						.$this->database->quote($this->table).","
 						.$this->database->quote($this->citusdb->distribution_field).","
 						."'append');\n";
-					$this->database->executeQuery($sql);
+					$this->database->executeQuery($sql, TRUE);
 
-					$sql = "SET citus.shard_replication_factor = ".(int)$this->citusdb->num_replicas;
-					$this->database->executeQuery($sql);
+					$sql = "SET citus.shard_replication_factor = ".(int)$this->config->database->citusdb_replicas;
+					$this->database->executeQuery($sql, TRUE);
 
 					$sql = "SELECT master_create_empty_shard(".$this->database->quote($this->table).");";
-					$this->database->executeQuery($sql);
+					$this->database->executeQuery($sql, TRUE);
 				}
 				else {
 					throw new ModelException('Invalid CitusDB Distribution Type');
@@ -84,7 +84,7 @@ class PgSQL extends DatabaseDriver {
 		if (is_null($this->table)) return;
 
 		$sql = 'DROP TABLE '.$this->table;
-		return $this->database->executeQuery($sql);
+		return $this->database->executeQuery($sql, TRUE);
 	}
 
 	/**
@@ -413,12 +413,12 @@ class PgSQL extends DatabaseDriver {
 
 	public function addColumn($name, $data) {
 		$sql = "ALTER TABLE ".$this->table." ADD COLUMN $name ".$this->getDataType($data);
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function alterColumn($name, $data) {
 		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name TYPE ".$this->getDataType($data, FALSE);
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 
 		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name";
 		if (isset($data['default_value'])) {
@@ -427,7 +427,7 @@ class PgSQL extends DatabaseDriver {
 		else {
 			$sql .= " DROP DEFAULT";
 		}
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 
 		$sql = "ALTER TABLE ".$this->table." ALTER COLUMN $name";
 		if (!(isset($data['null_allowed']) && $data['null_allowed'])) {
@@ -435,38 +435,38 @@ class PgSQL extends DatabaseDriver {
 
 			if (isset($data['default_value'])) {
 				$sql_inner = "UPDATE ".$this->table." SET $name = ".$data['default_value'];
-				$this->database->executeQuery($sql_inner);
+				$this->database->executeQuery($sql_inner, TRUE);
 			}
 		}
 		else {
 			$sql .= " DROP NOT NULL";
 		}
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function dropColumn($name) {
 		$sql = "ALTER TABLE ".$this->table." DROP COLUMN $name";
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function addIndex($columns) {
 		$sql = "CREATE INDEX ".$this->indexConstraintName($columns)."_idx ON ".$this->table."(".$this->indexConstraintColumns($columns).")";
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function dropIndex($columns) {
 		$sql = "DROP INDEX ".$this->indexConstraintName($columns)."_idx";
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function addUnique($columns) {
 		$sql = "ALTER TABLE ONLY ".$this->table." ADD CONSTRAINT ".$this->indexConstraintName($columns)."_key UNIQUE (".$this->indexConstraintColumns($columns).")";
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function addPartialUnique($condition, $columns) {
 		$sql = "CREATE  UNIQUE INDEX ".$this->indexConstraintName($columns)."_part_uni ON ".$this->table." (".$this->indexConstraintColumns($columns).") WHERE $condition";
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function dropUnique($name) {
@@ -474,17 +474,17 @@ class PgSQL extends DatabaseDriver {
 			$name = $this->indexConstraintName($columns)."_key";
 		}
 		$sql = "ALTER TABLE ONLY ".$this->table." DROP CONSTRAINT ".$name;
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function addForeignKey($column, $foreign_table, $foreign_column) {
 		$sql = "ALTER TABLE ONLY ".$this->table." ADD CONSTRAINT ".$this->indexConstraintName($column)."_fk FOREIGN KEY ($column) REFERENCES $foreign_table ($foreign_column)";
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	public function dropForeignKey($column) {
 		$sql = "ALTER TABLE ONLY ".$this->table." DROP CONSTRAINT ".$this->indexConstraintName($column)."_fk";
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	protected function indexConstraintName($columns) {

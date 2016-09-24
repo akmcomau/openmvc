@@ -489,7 +489,7 @@ class Model {
 		}
 
 		$sql = "INSERT INTO $table (".join(',', $columns).") VALUES (".join(',', $values).")";
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 
 		if (!isset($this->record[$primary_key])) {
 			if ($this->database->getEngine() == 'pgsql') {
@@ -527,7 +527,7 @@ class Model {
 		}
 
 		$sql = "UPDATE $table SET ".join(',', $values)." WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 
 		$this->callHook('update');
 	}
@@ -547,7 +547,7 @@ class Model {
 		$this->callHook('delete');
 
 		$sql = "DELETE FROM $table WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
-		$this->database->executeQuery($sql);
+		$this->database->executeQuery($sql, TRUE);
 	}
 
 	/**
