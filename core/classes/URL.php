@@ -235,6 +235,16 @@ class URL {
 		return NULL;
 	}
 
+	public function getOnlyMasterDB($controller_name = NULL, $method_name = NULL) {
+		if (!$controller_name) $controller_name = 'Root';
+		if (!$method_name)     $method_name     = 'index';
+		if (isset(self::$url_map['forward'][$controller_name]['methods'][$method_name]['only_masterdb'])) {
+			return self::$url_map['forward'][$controller_name]['methods'][$method_name]['only_masterdb'];
+		}
+
+		return FALSE;
+	}
+
 	public function getMethodMetaTags($controller_name = NULL, $method_name = NULL, $postfix_site = TRUE, $recursive = FALSE) {
 		$meta_tags = [];
 		$used_default = FALSE;

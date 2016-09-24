@@ -23,7 +23,7 @@ class Request {
 	protected $url;
 	protected $config;
 
-	public function __construct(Config $config, Database $database) {
+	public function __construct(Config $config) {
 		$this->config = $config;
 		$this->get_params = &$_GET;
 		$this->post_params = &$_POST;
@@ -32,13 +32,16 @@ class Request {
 		$this->file_params = &$_FILES;
 		$this->cookies = &$_COOKIE;
 		$this->session = new Session();
-		$this->database = $database;
-		$this->authentication = new Authentication($config, $database, $this);
 		$this->url = new URL($config);
 	}
 
 	public function getConfig() {
 		return $this->config;
+	}
+
+	public function setDatabase(Database $database) {
+		$this->database = $database;
+		$this->authentication = new Authentication($this->config, $database, $this);
 	}
 
 	public function getDatabase() {

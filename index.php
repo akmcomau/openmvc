@@ -57,14 +57,24 @@ try {
 		}
 	}
 
-	$database   = new Database($config);
-	$request    = new Request($config, $database);
+	// initialise the request
+	$request    = new Request($config);
+	$dispatcher = new Dispatcher($config);
+	$url        = new Url($config);
+	$dispatcher->routeRequest($request);
+
+	// create the database object
+	$database   = new Database(
+		$config,
+		$url->getOnlyMasterDB($url->getControllerClassName($request->getControllerClass()), $request->getMethodName())
+	);
+	$request->setDatabase($database);
+	$dispatcher->setDatabase($database);
 
 	// run the before_request hook
 	Dispatcher::beforeRequest($config, $database, $request);
 
-	$dispatcher = new Dispatcher($config, $database);
-	$response = $dispatcher->dispatch($request);
+	$response = $dispatcher->dispatchRequest($request);
 
 	$response->sendHeaders();
 	$response->sendContent();

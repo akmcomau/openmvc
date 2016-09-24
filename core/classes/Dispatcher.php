@@ -38,14 +38,17 @@ class Dispatcher {
 	protected static $static_request;
 	protected static $static_logger;
 
-	public function __construct(Config $config, Database $database) {
+	public function __construct(Config $config) {
 		$this->config   = $config;
-		$this->database = $database;
 		$this->url      = new URL($config);
 		$this->logger   = Logger::getLogger(__CLASS__);
 	}
 
-	public function dispatch(Request $request) {
+	public function setDatabase(Database $database) {
+		$this->database = $database;
+	}
+
+	public function routeRequest(Request $request) {
 		if (!$this->url->routeRequest($request)) {
 			$controller_class = $this->getControllerClass($request);
 			$request->setControllerClass($controller_class);
@@ -56,6 +59,10 @@ class Dispatcher {
 			$method_params = $this->getMethodParams($request);
 			$request->setMethodParams($method_params);
 		}
+	}
+
+	public function dispatch(Request $request) {
+		$this->routeRequest($request);
 		return $this->dispatchRequest($request);
 	}
 
