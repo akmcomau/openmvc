@@ -169,19 +169,50 @@ class Page {
 	}
 
 	public function delete($controller, $method, $sub_method) {
-		// update the url map
-		$site = $this->config->siteConfig();
-		$language = $site->language;
-		$theme = $site->theme;
-		$url_map = $this->url->getUrlMap();
-		$controller_map = $url_map['forward'][$controller];
-		unset($controller_map['methods'][$method.'/'.$sub_method]);
+		$site       = $this->config->siteConfig();
+		$language   = $site->language;
+		$theme      = $site->theme;
+		$url_map    = $this->url->getUrlMap();
 
-		// Update meta
+		if (!isset($url_map['forward'][$controller])) {
+			throw new \ErrorException('Controller map does not exist');
+		}
+
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$core_path = $root_path.'core'.DS.'meta'.DS;
+		$core_file = $core_path.$controller.'.php';
 		$site_path = $root_path.'sites'.DS.$site->namespace.DS.'meta'.DS;
 		$site_file = $site_path.$controller.'.php';
 
+		$core_controller_map = NULL;
+		if (file_exists($core_file)) {
+			require($core_file);
+			$core_controller_map = $_URLS;
+		}
+
+		if (file_exists($site_file)) {
+			require($site_file);
+			if ($core_controller_map) {
+				$controller_map = array_merge($core_controller_map, $_URLS);
+			}
+			else {
+				$controller_map = $_URLS;
+			}
+		}
+		else {
+			if ($core_controller_map) {
+				$controller_map = $core_controller_map;
+			}
+			else {
+				$controller_map = ['methods'=>[]];
+			}
+		}
+
+		if ($controller_map['methods'][$method.'/'.$sub_method]) {
+			unset($controller_map['methods'][$method.'/'.$sub_method]);
+		}
+
+		// Update meta
 		if (!is_dir($site_path)) {
 			mkdir($site_path, 0775, TRUE);
 		}
