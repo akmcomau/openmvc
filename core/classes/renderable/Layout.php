@@ -75,8 +75,12 @@ class Layout extends Renderable {
 			$method[] = $this->sub_page;
 		}
 
+		$title = $this->meta_tags['orig_title'];
+		unset($this->meta_tags['orig_title']);
+
 		$data = [
 			'method'                  => $method,
+			'title'                   => $title,
 			'meta_tags'               => $this->meta_tags,
 			'responsive'              => $this->responsive,
 			'fixed_width'             => $this->fixed_width,

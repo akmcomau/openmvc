@@ -17,6 +17,7 @@ class FileManager extends Controller {
 
 	protected $permissions = [
 		'index' => ['administrator'],
+		'editor' => ['administrator'],
 		'config' => ['administrator'],
 		'rpc' => ['administrator'],
 	];
@@ -74,6 +75,40 @@ class FileManager extends Controller {
 		];
 
 		$template = $this->getTemplate('pages/administrator/file_manager.php', $data);
+		$this->response->setContent($template->render());
+	}
+
+	public function editor($message = NULL) {
+		$this->language->loadLanguageFile('administrator/file_manager.php');
+		$paths = get_object_vars($this->config->siteConfig()->filemanager_paths);
+
+		$path_id = $this->request->requestParam('path') ? $this->request->requestParam('path') : 0;
+		$sub_path = $this->request->requestParam('sub_path');
+		if (strlen($sub_path) && $sub_path{0} == '/') {
+			$sub_path = substr($sub_path, 1);
+		}
+
+		$namespace = $this->config->siteConfig()->namespace;
+		$glob_path = 'sites/'.$namespace.array_keys($paths)[$path_id].$sub_path.'/';
+		$root_path = __DIR__.'/../../..';
+		chdir($root_path);
+
+		$message_js = '';
+		if (isset($_REQUEST['file_content'])) {
+			$content = str_replace("\r", "", $_REQUEST['file_content']);
+			file_put_contents($root_path.'/sites/'.$namespace.array_keys($paths)[$path_id].$sub_path, $content);
+			$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_file_update_success')).'");';
+		}
+
+		$data = [
+			'path_id' => $path_id,
+			'paths' => $paths,
+			'path' => $root_path.'/sites/'.$namespace.array_keys($paths)[$path_id],
+			'message_js' => $message_js,
+			'sub_path' => $sub_path,
+		];
+
+		$template = $this->getTemplate('pages/administrator/file_manager_editor.php', $data);
 		$this->response->setContent($template->render());
 	}
 

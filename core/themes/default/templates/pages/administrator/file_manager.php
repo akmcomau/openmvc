@@ -55,6 +55,33 @@
 							<?php } ?>
 						<?php } ?>
 					</div>
+				<?php } elseif ($folder_type == 'editor') { ?>
+					<br />
+					<table class="table">
+						<tr>
+							<th><?php echo $text_filename; ?></th>
+							<th><?php echo $text_mime_type; ?></th>
+							<th><?php echo $text_filesize; ?></th>
+							<th><?php echo $text_delete; ?></th>
+						</tr>
+						<?php foreach (glob($glob_path.'*') as $file) { ?>
+							<?php if (is_dir($file)) { ?>
+								<tr>
+									<td><a href="<?php echo $this->url->getUrl('administrator/FileManager', 'index', [], ['path' => $path_id, 'sub_path' => $sub_path.'/'.basename($file)]); ?>"><?php echo basename($file); ?></a></td>
+									<td><?php echo $text_directory; ?></td>
+									<td>-</td>
+									<td><input type="checkbox" name="select_folders[]" value="<?php echo $file; ?>" /></td>
+								</tr>
+							<?php } elseif (is_file($file)) { ?>
+								<tr>
+									<td><a href="<?php echo $this->url->getUrl('administrator/FileManager', 'editor', [], ['path' => $path_id, 'sub_path' => $sub_path.'/'.basename($file)]); ?>"><?php echo basename($file); ?></a></td>
+									<td><?php echo mime_content_type($file); ?></td>
+									<td><?php echo number_format((int)(filesize($file)/1024), 0); ?> KB</td>
+									<td><input type="checkbox" name="select_files[]" value="<?php echo $file; ?>" /></td>
+								</tr>
+							<?php } ?>
+						<?php } ?>
+					</table>
 				<?php } else { ?>
 					<br />
 					<table class="table">

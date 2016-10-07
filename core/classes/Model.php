@@ -930,8 +930,12 @@ class Model {
 			}
 		}
 		if ($pagination) {
-			if (!isset($pagination['offset'])) $pagination['offset'] = 0;
-			$sql .= " OFFSET ".(int)$pagination['offset']." LIMIT ".(int)$pagination['limit'];
+			if (isset($pagination['offset'])) {
+				$sql .= " OFFSET ".(int)$pagination['offset']." LIMIT ".(int)$pagination['limit'];
+			}
+			else {
+				$sql .= " LIMIT ".(int)$pagination['limit'];
+			}
 		}
 		return $sql;
 	}

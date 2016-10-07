@@ -267,6 +267,8 @@ class URL {
 			$meta_tags['title'] = $this->config->siteConfig()->name;
 		}
 
+		$meta_tags['orig_title'] = $meta_tags['title'];
+
 		if (!$used_default && !$recursive && $postfix_site) {
 			$meta_tags['title'] .= ' :: '.$this->config->siteConfig()->name;
 		}

@@ -125,7 +125,12 @@ class Database extends PDO {
 		}
 
 		// check if we should be connecting to a slave instead
-		if ($this->config->database->slavedb && !$this->config->database->slavedb_config->only_master && !$force_masterdb) {
+		if (
+			property_exists($this->config->database, 'slavedb') &&
+			$this->config->database->slavedb &&
+			!$this->config->database->slavedb_config->only_master &&
+			!$force_masterdb
+		) {
 			// create the list of slaves
 			$max_index = 0;
 			$slaves = [];
@@ -176,7 +181,7 @@ class Database extends PDO {
 		parent::__construct($dsn, $this->username, $this->password, $options);
 
 		// if citusdb is enabled then set the replication factor and num shards
-		if ($this->config->database->citusdb) {
+		if (property_exists($this->config->database, 'citusdb') && $this->config->database->citusdb) {
 			$sql = "SET citus.shard_replication_factor = ".(int)$this->config->database->citusdb_replicas;
 			$this->executeQuery($sql);
 

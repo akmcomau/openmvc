@@ -101,6 +101,18 @@
 					"type": "zip"
 				}
 			}
+		},
+        {
+			"type":"package",
+			"package": {
+				"name": "ajaxorg/ace-builds",
+				"version":"v1.2.3",
+				"source": {
+					"url": "https://github.com/ajaxorg/ace-builds.git",
+					"type": "git",
+					"reference":"master"
+				}
+			}
 		}
 	],
 	"require": {
@@ -120,7 +132,8 @@
 		"ckeditor/youtube": "v2.0.9",
 		"ckeditor/bgimage": "v0.4",
 		"schemaspy/schemaspy": "v5.0.0",
-		"schemaspy/postgres": "v9.3.1100.3"
+		"schemaspy/postgres": "v9.3.1100.3",
+		"ajaxorg/ace-builds": "v1.2.3"
 	}
 }
 
