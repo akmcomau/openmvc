@@ -491,7 +491,7 @@ class Model {
 		$sql = "INSERT INTO $table (".join(',', $columns).") VALUES (".join(',', $values).")";
 		$this->database->executeQuery($sql, TRUE);
 
-		if (!isset($this->record[$primary_key])) {
+		if (!isset($this->record[$primary_key]) && !empty($primary_key)) {
 			if ($this->database->getEngine() == 'pgsql') {
 				$sql = "SELECT currval(pg_get_serial_sequence('$table', '$primary_key'))";
 				$this->record[$primary_key] = $this->database->queryValue($sql);
@@ -500,11 +500,16 @@ class Model {
 				$this->record[$primary_key] = $this->database->lastInsertId();
 			}
 		}
-		$this->logger->debug("Inserted record in $table => ".$this->record[$primary_key]);
+		$this->logger->debug("Inserted record in $table => ".empty($primary_key) ? 'N/A' : $this->record[$primary_key]);
 
 		$this->callHook('insert');
 
-		return $this->record[$primary_key];
+		if (empty($primary_key)) {
+			return -1;
+		}
+		else {
+			return $this->record[$primary_key];
+		}
 	}
 
 	/**
@@ -667,7 +672,7 @@ class Model {
 	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
 	 * @return \b string A SQL fragment
 	 */
-	protected function generateFromClause(array $params = NULL, array $ordering = NULL, array &$in_from = NULL) {
+	public function generateFromClause(array $params = NULL, array $ordering = NULL, array &$in_from = NULL) {
 		if (!$params) $params = [];
 		if (!$ordering) $ordering = [];
 
@@ -752,7 +757,7 @@ class Model {
 	 *                    otherwise the clauses will be ORed together.
 	 * @return \b string A SQL fragment
 	 */
-	protected function generateWhereClause(array $params, $and = TRUE) {
+	public function generateWhereClause(array $params, $and = TRUE) {
 		$where = [];
 		foreach ($params as $column => $value) {
 			$parts  = explode(':', $column);
