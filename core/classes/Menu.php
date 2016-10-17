@@ -170,6 +170,9 @@ class Menu {
 				$item['text'] = $this->url->getLinkText($item['controller'], $item['method']);
 			}
 		}
+		if (isset($item['hash'])) {
+			$item['url'] .= '#'.$item['hash'];
+		}
 		unset($item['controller']);
 		unset($item['method']);
 		unset($item['params']);
