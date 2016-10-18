@@ -136,6 +136,7 @@ class Page {
 				'method_alias'     => '',
 				'content'          => '',
 				'category'         => '',
+				'parent_template'  => '',
 			];
 		}
 
@@ -165,6 +166,7 @@ class Page {
 			'method_alias'     => $this->url->seoMethod($controller, $method),
 			'content'          => '',
 			'category'         => $category_id,
+			'parent_template'  => $this->url->parentTemplate($controller, $method),
 		];
 	}
 
@@ -307,6 +309,13 @@ class Page {
 			elseif (isset($method_map['meta_tags'][$property][$language])) {
 				unset($method_map['meta_tags'][$property][$language]);
 			}
+		}
+
+		if (empty($data['parent_template'])) {
+			$method_map['parent_template'] = '';
+		}
+		else {
+			$method_map['parent_template'] = $data['parent_template'];
 		}
 
 		if (empty($data['category'])) {

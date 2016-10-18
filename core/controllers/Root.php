@@ -39,7 +39,7 @@ class Root extends Controller {
 			}
 		}
 
-		$data = [];
+		$data = ['controller' => $this];
 		if (is_array($extra_data)) $data = $extra_data;
 		if (isset($page_data['data'])) {
 			foreach ($page_data['data'] as $property => $method) {
@@ -49,6 +49,10 @@ class Root extends Controller {
 
 		try {
 			$template = $this->getTemplate("pages/misc/$page_name.php", $data);
+			if (isset($page_data['parent_template'])) {
+				$template->setParentTemplate($page_data['parent_template']);
+			}
+
 			if ($this->config->siteConfig()->page_div_class === FALSE) {
 				$this->response->setContent($template->render());
 			}

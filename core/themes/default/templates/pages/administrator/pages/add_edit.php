@@ -114,6 +114,14 @@
 								<?php echo $form->getHtmlErrorDiv('link_text'); ?>
 							</div>
 						</div>
+						<hr class="separator-2column" />
+						<div class="row">
+							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_parent_template; ?></div>
+							<div class="col-md-9 col-sm-9 ">
+								<input type="text" class="form-control" name="parent_template" value="<?php echo htmlspecialchars($parent_template); ?>" />
+								<?php echo $form->getHtmlErrorDiv('parent_template'); ?>
+							</div>
+						</div>
 						<?php if ($misc_page) { ?>
 							<hr class="separator-2column" />
 							<div class="row">

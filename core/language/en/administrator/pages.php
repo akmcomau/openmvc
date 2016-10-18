@@ -18,6 +18,7 @@ $_LANGUAGE = [
 	'controller_alias' => 'Controller Alias',
 	'method_name' => 'Method',
 	'method_alias' => 'Method Alias',
+	'parent_template' => 'Parent Template',
 	'link_text' => 'Link Text',
 	'content' => 'Content',
 	'preview' => 'Content Preview',

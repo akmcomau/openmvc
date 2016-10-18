@@ -58,6 +58,7 @@ function log_display_exception($display_error, $logger, $ex) {
 		$request->setMethodParams([]);
 
 		$dispatcher = new Dispatcher($config, $database);
+		$dispatcher->setDatabase($database);
 		$response = $dispatcher->dispatchRequest($request);
 
 		$response->sendHeaders();

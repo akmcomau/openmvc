@@ -26,6 +26,7 @@ class Template {
 	protected $url;
 	protected $path;
 	protected $language;
+	protected $parent_template = NULL;
 
 	public function __construct(Config $config, Language $language, $filename, $data = NULL, $path = NULL) {
 		$this->config = $config;
@@ -43,6 +44,10 @@ class Template {
 
 	public function setFilename($filename) {
 		$this->filename = $filename;
+	}
+
+	public function setParentTemplate($filename) {
+		$this->parent_template = $filename;
 	}
 
 	public function getData() {
@@ -82,6 +87,12 @@ class Template {
 		require($filename);
 		$contents = ob_get_contents();
 		ob_end_clean();
+
+		if ($this->parent_template) {
+			$this->data['child_content'] = $contents;
+			$template = new Template($this->config, $this->language, $this->parent_template, $this->data);
+			$contents = $template->render();
+		}
 
 		return $contents;
 	}

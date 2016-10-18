@@ -430,6 +430,16 @@ class URL {
 		return $categ;
 	}
 
+	public function parentTemplate($controller, $method) {
+		if (!isset(self::$url_map['forward'][$controller])) {
+			$controller = str_replace('/', '\\', $controller);
+		}
+		if (isset(self::$url_map['forward'][$controller]['methods'][$method]['parent_template'])) {
+			return self::$url_map['forward'][$controller]['methods'][$method]['parent_template'];
+		}
+		return '';
+	}
+
 	public function seoController($controller) {
 		if (!isset(self::$url_map['forward'][$controller])) {
 			$controller = str_replace('/', '\\', $controller);
