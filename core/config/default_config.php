@@ -67,6 +67,7 @@ $_DEFAULT_CONFIG = (object)[
 		'site_maintenance_mode' => false,
 		'post_login_redirect' => false,
 		'page_div_class' => 'container',
+		'meta_title_separator' => ' :: ',
 		'bcrypt_cost' => 10,
 		'logger_clean_enable' => true,
 		'logger_clean_frequency' => 1000,

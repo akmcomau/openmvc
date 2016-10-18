@@ -270,7 +270,7 @@ class URL {
 		$meta_tags['orig_title'] = $meta_tags['title'];
 
 		if (!$used_default && !$recursive && $postfix_site) {
-			$meta_tags['title'] .= ' :: '.$this->config->siteConfig()->name;
+			$meta_tags['title'] .= $this->config->siteConfig()->meta_title_separator.$this->config->siteConfig()->name;
 		}
 
 		// create the open graph meta tags
