@@ -33,21 +33,65 @@ class Dispatcher {
 	 */
 	protected $url;
 
+	/**
+	 * The config object stored as a static variable.
+	 * This is required for before/after request hooks
+	 * @var Config $static_config
+	 */
 	protected static $static_config;
+
+	/**
+	 * The database object stored as a static variable.
+	 * This is required for before/after request hooks
+	 * @var Database $static_database
+	 */
 	protected static $static_database;
+
+	/**
+	 * The request object stored as a static variable.
+	 * This is required for before/after request hooks
+	 * @var Database $static_request
+	 */
 	protected static $static_request;
+
+	/**
+	 * The logger object stored as a static variable.
+	 * This is required for before/after request hooks
+	 * @var Logger $logger
+	 */
 	protected static $static_logger;
 
+	/**
+	 * Constructor
+	 * @param $config   The configuration object
+	 */
 	public function __construct(Config $config) {
 		$this->config   = $config;
 		$this->url      = new URL($config);
 		$this->logger   = Logger::getLogger(__CLASS__);
 	}
 
+	/**
+	 * Set the database object
+	 * @param $database  The database object
+	 */
 	public function setDatabase(Database $database) {
 		$this->database = $database;
 	}
 
+	/**
+	 * Route and dispatch the request to controller/method
+	 * @param $request  The request to dispatch
+	 */
+	public function dispatch(Request $request) {
+		$this->routeRequest($request);
+		return $this->dispatchRequest($request);
+	}
+
+	/**
+	 * Read the request URL and route the request to controller/method
+	 * @param $request  The request to route
+	 */
 	public function routeRequest(Request $request) {
 		if (!$this->url->routeRequest($request)) {
 			$controller_class = $this->getControllerClass($request);
@@ -61,19 +105,22 @@ class Dispatcher {
 		}
 	}
 
-	public function dispatch(Request $request) {
-		$this->routeRequest($request);
-		return $this->dispatchRequest($request);
-	}
-
+	/**
+	 * Dispatch the request to controller/method
+	 * @param $request  The request to route
+	 */
 	public function dispatchRequest(Request $request) {
 		$sub_page = NULL;
 		$response = new Response();
+
+		// get the controller class name
 		$controller_class = $request->getControllerClass();
 		if (!$controller_class) {
 			$this->logger->debug("Controller Not found: ".$request->getParam('controller'));
 			return $this->error404($request);
 		}
+
+		// Create the controller object and check the method name
 		$controller = new $controller_class($this->config, $this->database, $request, $response);
 		$controller->setUrl($this->url);
 		$full_method_name = $method_name = $request->getMethodName();
@@ -83,6 +130,7 @@ class Dispatcher {
 			return $this->error404($request);
 		}
 
+		// special rule for mapping CMS pages
 		if (preg_match('/^page\/(.*)$/', $method_name, $matches)) {
 			$full_method_name = $method_name;
 			$method_name = 'page';
@@ -93,6 +141,7 @@ class Dispatcher {
 
 		$this->logger->debug("Dispatching request to $controller_class::$method_name");
 
+		// check for force password change flag
 	    if ($controller->getAuthentication()->forcePasswordChangeEnabled()) {
 			if (!preg_match('/\Customer$/', $controller_class) || $method_name != 'change_password') {
 				throw new RedirectException($this->url->getUrl('Customer', 'change_password'));
@@ -136,9 +185,9 @@ class Dispatcher {
 			}
 		}
 
+		// if this is an admin page or the admin is logged in, then allow even during offline/maintenance modes
 		$admin_class = $this->url->getControllerClass('Administrator');
 		$is_admin_method = ($method_name == 'login' && $controller_class == $admin_class);
-
 		if (!($is_admin_required || $controller->getAuthentication()->administratorLoggedIn()) && !$is_admin_method) {
 			if ($this->config->siteConfig()->site_offline_mode) {
 				$template = $controller->getTemplate('pages/site_offline.php');
@@ -152,16 +201,19 @@ class Dispatcher {
 			}
 		}
 
+		// check if admin site is disabled
 		if (($is_admin_required || $is_admin_method) && !$this->config->siteConfig()->enable_admin) {
 			$this->logger->info("Admin is disabled");
 			return $this->error404($request);
 		}
 
+		// check if public site is disabled
 		if (!($is_admin_required || $is_admin_method) && !$this->config->siteConfig()->enable_public && !preg_match('/^error/', $method_name)) {
 			$this->logger->info("Public is disabled");
 			return $this->error404($request);
 		}
 
+		// Dispatch the request and handle redirections
 		try {
 			$request->clearDispatcherParams();
 			call_user_func_array([$controller, $request->getMethodName()], $request->getMethodParams());
@@ -173,8 +225,13 @@ class Dispatcher {
  			$request->setMethodParams($ex->getParams());
 			return $this->dispatchRequest($request);
 		}
+		catch (RedirectException $ex) {
+			$this->logger->info($ex->getMessage());
+			header("Location: {$ex->getUrl()}");
+		}
 		$controller->render();
 
+		// render out the page layout
 		if ($controller->getLayout()) {
 			$class = explode('\\', $controller_class);
 			$class = $class[count($class)-1];
@@ -187,13 +244,21 @@ class Dispatcher {
 		return $response;
 	}
 
-	protected function error404($request) {
+	/**
+	 * Set the request to the Error 404 page and dispatch it
+	 * @param $request  The request object
+	 */
+	protected function error404(Request $request) {
 		$request->setControllerClass($this->url->getControllerClass('Root'));
 		$request->setMethodName('error404');
 		$request->setMethodParams([]);
 		return $this->dispatchRequest($request);
 	}
 
+	/**
+	 * Gets the full namepsace for the controller class for this request URL
+	 * @param $request  The request object
+	 */
 	protected function getControllerClass(Request $request) {
 		$site = $this->config->siteConfig();
 		if ($request->getParam('controller')) {
@@ -242,6 +307,10 @@ class Dispatcher {
 		}
 	}
 
+	/**
+	 * Gets the method name for this request URL
+	 * @param $request  The request object
+	 */
 	protected function getMethodName(Request $request) {
 		if ($request->getParam('controller') && $request->getParam('method')) {
 			$controller = $this->url->getControllerClassName($request->getParam('controller'));
@@ -252,6 +321,10 @@ class Dispatcher {
 		}
 	}
 
+	/**
+	 * Gets the method parameters name for this request URL.
+	 * @param $request  The request object
+	 */
 	protected function getMethodParams(Request $request) {
 		if ($request->getParam('params')) {
 			return explode('/', $request->getParam('params'));
@@ -261,6 +334,12 @@ class Dispatcher {
 		}
 	}
 
+	/**
+	 * Execute the 'Before Request' hooks
+	 * @param $config   The configuration object
+	 * @param $database The database object
+	 * @param $request  The request object
+	 */
 	public static function beforeRequest(Config $config, Database $database, Request $request) {
 		self::$static_logger   = Logger::getLogger(__CLASS__);
 		self::$static_config   = $config;
@@ -277,6 +356,9 @@ class Dispatcher {
 		}
 	}
 
+	/**
+	 * Execute the 'After Request' hooks
+	 */
 	public static function afterRequest() {
 		if (self::$static_config) {
 			$modules = (new Module(self::$static_config))->getEnabledModules();

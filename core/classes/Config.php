@@ -20,7 +20,7 @@ class Config {
 
 	/**
 	 * The configuration data
-	 * @var array configuration
+	 * @var array The configuration data as an array
 	 */
 	protected $configuration = [];
 
@@ -80,7 +80,7 @@ class Config {
 
 	/**
 	 * Magic getter for the class, for fetching config values
-	 * @param[in] $name \b string TRUE if the connection is from a robot, FALSE otherwise
+	 * @param $name \b string TRUE if the connection is from a robot, FALSE otherwise
 	 * @throws ConfigException if the configuration parameter does not exist
 	 */
 	public function __get($name) {
@@ -92,7 +92,7 @@ class Config {
 
 	/**
 	 * Sets the is_robot flag
-	 * @param[in] $value \b boolean TRUE if the connection is from a robot, FALSE otherwise
+	 * @param $value \b boolean TRUE if the connection is from a robot, FALSE otherwise
 	 */
 	public function setRobot($value) {
 		if ($value) {
@@ -105,7 +105,7 @@ class Config {
 
 	/**
 	 * Gets the configuation object for a module
-	 * @param[in] $module \b string The modules name
+	 * @param $module \b string The modules name
 	 * @throws ConfigException if the module's configuration was not found
 	 */
 	public function moduleConfig($module) {
@@ -119,7 +119,7 @@ class Config {
 
 	/**
 	 * Installs a new module
-	 * @param[in] $module \b array The modules specification
+	 * @param $module \b array The modules specification
 	 */
 	public function installModule(array $module) {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
@@ -139,7 +139,7 @@ class Config {
 
 	/**
 	 * Uninstalls a module
-	 * @param[in] $module \b array The modules specification
+	 * @param $module \b array The modules specification
 	 */
 	public function uninstallModule($module) {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
@@ -160,7 +160,7 @@ class Config {
 
 	/**
 	 * Enables a module on the current site
-	 * @param[in] $module \b array The modules specification
+	 * @param $module \b array The modules specification
 	 */
 	public function enableModule($module) {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
@@ -182,7 +182,7 @@ class Config {
 
 	/**
 	 * Disables a module on the current site
-	 * @param[in] $module \b array The modules specification
+	 * @param $module \b array The modules specification
 	 */
 	public function disableModule($module) {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
@@ -213,8 +213,8 @@ class Config {
 
 	/**
 	 * Updates a site configuaration value for this request
-	 * @param[in] $name  \b string The site configuration setting's name
-	 * @param[in] $value \b mixed The value to store
+	 * @param $name  \b string The site configuration setting's name
+	 * @param $value \b mixed The value to store
 	 */
 	public function updateSiteConfigParam($name, $value) {
 		$this->sites->{$this->site_domain}->{$name} = $value;
@@ -222,8 +222,8 @@ class Config {
 
 	/**
 	 * Updates a main configuaration value for this request
-	 * @param[in] $name  \b string The main configuration setting's name
-	 * @param[in] $value \b mixed The value to store
+	 * @param $name  \b string The main configuration setting's name
+	 * @param $value \b mixed The value to store
 	 */
 	public function updateConfigParam($name, $value) {
 		$this->sites->{$name} = $value;
@@ -270,7 +270,7 @@ class Config {
 
 	/**
 	 * Gets the current sites base URL
-	 * @param[in] $ssl_override \b boolean Create SSL url is connection is over HTTPS
+	 * @param $ssl_override \b boolean Create SSL url is connection is over HTTPS
 	 * @return \b string The sites base URL
 	 */
 	public function getSiteUrl($ssl_override = FALSE) {
@@ -341,6 +341,10 @@ class Config {
 		throw new ConfigException("HTTP_HOST does not reference a site: $host");
 	}
 
+	/**
+	 * Sets the current locale
+	 * @param $locale  \b string The host to set as the current site
+	 */
 	public function setLocale($locale) {
 		$this->siteConfig()->site_locale = $locale;
 		$formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
@@ -349,6 +353,9 @@ class Config {
 		setlocale(LC_MONETARY, $locale);
 	}
 
+	/**
+	 * Update the modules in the config file
+	 */
 	public function updateConfig() {
 		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
 		require($filename);

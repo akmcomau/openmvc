@@ -65,7 +65,7 @@ class Email {
 
 	/**
 	 * Constructor
-	 * @param[in] $config   \b Config The configuration object
+	 * @param $config   \b Config The configuration object
 	 */
 	public function __construct(Config $config) {
 		$this->config = $config;
@@ -75,8 +75,8 @@ class Email {
 
 	/**
 	 * Create an RFC2822 email address
-	 * @param[in] $email \b string The receipient's email address
-	 * @param[in] $name  \b string The receipient's name
+	 * @param $email \b string The receipient's email address
+	 * @param $name  \b string The receipient's name
 	 */
 	public function createEmailAddress($email, $name) {
 		// @TODO Make the email address compliant
@@ -85,7 +85,7 @@ class Email {
 
 	/**
 	 * Set receipient of the email
-	 * @param[in] $to_email \b mixed The TO email address or an array or email addresses
+	 * @param $to_email \b mixed The TO email address or an array or email addresses
 	 */
 	public function setToEmail($to_email) {
 		if (is_array($to_email)) {
@@ -98,7 +98,7 @@ class Email {
 
 	/**
 	 * Add a receipient of the email
-	 * @param[in] $to_email \b string The TO email address
+	 * @param $to_email \b string The TO email address
 	 */
 	public function addToEmail($to_email) {
 		if (strlen($this->to_email) > 0) $this->to_email .= ',';
@@ -107,7 +107,7 @@ class Email {
 
 	/**
 	 * Set CC of the email
-	 * @param[in] $cc_email \b mixed The CC email address or an array or email addresses
+	 * @param $cc_email \b mixed The CC email address or an array or email addresses
 	 */
 	public function setCcEmail($cc_email) {
 		if (is_array($cc_email)) {
@@ -120,7 +120,7 @@ class Email {
 
 	/**
 	 * Add a receipient of the email
-	 * @param[in] $cc_email \b string The CC email address
+	 * @param $cc_email \b string The CC email address
 	 */
 	public function addCcEmail($cc_email) {
 		if (strlen($this->cc_email) > 0) $this->cc_email .= ',';
@@ -129,7 +129,7 @@ class Email {
 
 	/**
 	 * Set receipient of the email
-	 * @param[in] $bcc_email \b mixed The BCC email address or an array or email addresses
+	 * @param $bcc_email \b mixed The BCC email address or an array or email addresses
 	 */
 	public function setBccEmail($bcc_email) {
 		if (is_array($bcc_email)) {
@@ -142,7 +142,7 @@ class Email {
 
 	/**
 	 * Add a receipient of the email
-	 * @param[in] $bcc_email \b string The BCC email address
+	 * @param $bcc_email \b string The BCC email address
 	 */
 	public function addBccEmail($bcc_email) {
 		if (strlen($this->bcc_email) > 0) $this->bcc_email .= ',';
@@ -151,7 +151,7 @@ class Email {
 
 	/**
 	 * Set the from address of the email
-	 * @param[in] $from_email \b string The FROM email address
+	 * @param $from_email \b string The FROM email address
 	 */
 	public function setFromEmail($from_email) {
 		$this->from_email = $from_email;
@@ -159,7 +159,7 @@ class Email {
 
 	/**
 	 * Set the email's subject
-	 * @param[in] $subject \b string The email's subject
+	 * @param $subject \b string The email's subject
 	 */
 	public function setSubject($subject) {
 		$this->subject = $subject;
@@ -167,7 +167,7 @@ class Email {
 
 	/**
 	 * Set the text message template
-	 * @param[in] $body_template \b Template The Template object for the text message
+	 * @param $body_template \b Template The Template object for the text message
 	 */
 	public function setBodyTemplate(Template $body_template) {
 		$this->body_template = $body_template;
@@ -175,7 +175,7 @@ class Email {
 
 	/**
 	 * Set the HTML message template
-	 * @param[in] $html_template \b Template  The Template object for the HTML message
+	 * @param $html_template \b Template  The Template object for the HTML message
 	 */
 	public function setHtmlTemplate(Template $html_template) {
 		$this->html_template = $html_template;
@@ -183,9 +183,9 @@ class Email {
 
 	/**
 	 * Attach a file to the email
-	 * @param[in] $file_name \b string The filename of the attachment
-	 * @param[in] $file_path \b string The path to the file to attach
-	 * @param[in] $mime_type \b string The mime type of the file
+	 * @param $file_name \b string The filename of the attachment
+	 * @param $file_path \b string The path to the file to attach
+	 * @param $mime_type \b string The mime type of the file
 	 */
 	public function attach($file_name, $file_path, $mime_type) {
 		$attachment = chunk_split(base64_encode(file_get_contents($file_path)));
@@ -195,6 +195,13 @@ class Email {
 			'name'    => $file_name,
 		];
 	}
+
+	/**
+	 * Attach a file to the email, using a string for the file content
+	 * @param $file_name    \b string The filename of the attachment
+	 * @param $file_content \b string The content of the file
+	 * @param $mime_type     \b string The mime type of the file
+	 */
 	public function attachContent($file_name, $file_content, $mime_type) {
 		$attachment = chunk_split(base64_encode($file_content));
 		$this->attachments[] = [

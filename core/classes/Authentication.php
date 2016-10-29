@@ -55,9 +55,9 @@ class Authentication {
 
 	/**
 	 * Constructor
-	 * @param[in] $config   \b Config The configuration object
-	 * @param[in] $database \b Database The database object
-	 * @param[in] $request  \b Request The request object
+	 * @param $config   \b Config The configuration object
+	 * @param $database \b Database The database object
+	 * @param $request  \b Request The request object
 	 */
 	public function __construct(Config $config, Database $database, Request $request) {
 		$this->config   = $config;
@@ -134,7 +134,7 @@ class Authentication {
 
 	/**
 	 * Logs in a customer
-	 * @param[in] $customer \b Customer The customer to login
+	 * @param $customer \b Customer The customer to login
 	 * @throws AuthenticationException if the customer object does not contain a ID
 	 */
 	public function loginCustomer(Customer $customer) {
@@ -162,7 +162,7 @@ class Authentication {
 
 	/**
 	 * Logs in an administrator
-	 * @param[in] $admin \b Administrator The administrator to login
+	 * @param $admin \b Administrator The administrator to login
 	 * @throws AuthenticationException if the administrator object does not contain an ID
 	 */
 	public function loginAdministrator(Administrator $admin) {
@@ -185,6 +185,7 @@ class Authentication {
 
 	/**
 	 * Logs out the administrator and customer
+	 * @param $call_hooks \b bool Should the defined logout hooks be called
 	 */
 	public function logout($call_hooks = TRUE) {
 		$this->logoutCustomer($call_hooks);
@@ -193,6 +194,7 @@ class Authentication {
 
 	/**
 	 * Logs out the customer
+	 * @param $call_hooks \b bool Should the defined logout hooks be called
 	 */
 	public function logoutCustomer($call_hooks = TRUE) {
 		if ($this->customerLoggedIn()) {
@@ -213,6 +215,7 @@ class Authentication {
 
 	/**
 	 * Logs out the administrator
+	 * @param $call_hooks \b bool Should the defined logout hooks be called
 	 */
 	public function logoutAdministrator($call_hooks = TRUE) {
 		if ($this->administratorLoggedIn()) {
@@ -242,7 +245,7 @@ class Authentication {
 
 	/**
 	 * Sets the force password change flag
-	 * @param[in] $enable \b boolean TRUE to set the flag, FALSE to clear it
+	 * @param $enable \b boolean TRUE to set the flag, FALSE to clear it
 	 */
 	public function forcePasswordChange($enable) {
 		if ($enable) {
@@ -255,8 +258,8 @@ class Authentication {
 
 	/**
 	 * Call the authentication hooks
-	 * @param[in] $name   \b string The authentication hook type to call
-	 * @param[in] $params \b array Parameters for the hook
+	 * @param $name   \b string The authentication hook type to call
+	 * @param $params \b array Parameters for the hook
 	 */
 	protected function callHook($name, array $params = []) {
 		$modules = (new Module($this->config))->getEnabledModules();

@@ -40,6 +40,12 @@ class Hook {
 	 */
 	protected $url;
 
+	/**
+	 * Constructor
+	 * @param[in] $config   \b Config   The configuration object
+	 * @param[in] $database \b Database The database object
+	 * @param[in] $request  \b Request  The request object
+	 */
 	public function __construct(Config $config, Database $database, Request $request = NULL) {
 		$this->config   = $config;
 		$this->database = $database;

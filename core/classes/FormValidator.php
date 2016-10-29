@@ -6,20 +6,177 @@ use core\classes\exceptions\FormException;
 
 class FormValidator {
 
+	/**
+	 * The request object
+	 * @var Request $request
+	 */
 	protected $request;
+
+	/**
+	 * The name of the form
+	 * @var string The form's name
+	 */
 	protected $name;
+
+	/**
+	 * The inputs of the form.  This is an array with the key of the elements
+	 * being the name of the input, and its value being its vailidation properties.
+	 * @code
+	 *   $inputs = [
+	 *		 'username' => [
+	 *           'type' => 'string',
+	 *           'required' => TRUE,
+	 *           'min_length' => 6,
+	 *           'max_length' => 32,
+	 *           'message' => 'Enter a username between 6 and 32 characters long',
+	 *       ],
+	 *       ...
+	 *   ]
+	 * @endcode
+	 *
+	 * Valid input types, followed by there extra parameters are:
+	 *
+	 *    - \b string: For string/text input values, e.g. 'This is a string'
+	 *       -# \b min_length: The minimum allowable length
+	 *       -# \b max_length: The maximum allowable length
+	 *
+	 *    - \b integer: For integer input values, e.g. 45
+	 *       -# \b min_value: The minimum allowable value
+	 *       -# \b max_value: The maximum allowable value
+	 *
+	 *    - \b float: For floating point/decimal input values, e.g. 123.456
+	 *       -# \b min_value: The minimum allowable value
+	 *       -# \b max_value: The maximum allowable value
+	 *
+	 *    - \b money: For currency input values, e.g. 12.99
+	 *       -# \b zero_allowed
+	 *
+	 *    - \b date: For date input values, e.g. 05/10/16
+	 *
+	 *    - \b time: For time input values, e.g. 12:00:00
+	 *
+	 *    - \b datetime: For date/time input values, e.g. 05/10/16 12:00:00
+	 *
+	 *    - \b email: For email input values, e.g. name@domain.com
+	 *
+	 *    - \b url: For URL input values, e.g. http://some.domain/some/page
+	 *
+	 *    - \b url-fragment: For URL fragment input values. These are the parts between 2
+	 *      forward slashes in the url, can also be thought of as a URL folder or page.
+	 *      E.g. in http://www.domain.com/fragment1/fragment2/fragment3
+	 *
+	 *    - \b date-segements: For date input values, that are seperated into 3 inputs, one
+	 *      for the day, month and year.
+	 *
+	 *    - \b file: For text input values, that refer to a file location: e.g. /home/user/html/index.html
+	 *
+	 * @var array $inputs
+	 */
 	protected $inputs = [];
+
+	/**
+	 * The validators for the inputs.  This is an array with the key of the elements
+	 * being the name of the input, and its value being its vailidation properties.
+	 * @code
+	 *    $validators = [
+	 *      'email' => [
+	 *           [
+	 *              'type'     => 'function',
+	 *              'message'  => $this->language->get('error_email_taken'),
+	 *              'function' => function($value) use ($model, $customer_obj, $object) {
+	 *                  $customer = $model->getModel($object->customerModelClass);
+	 *                  $customer = $customer->get(['email' => $value]);
+	 *                  if ($customer && $customer->id != $customer_obj->id) {
+	 *                      return FALSE;
+	 *                  }
+	 *                  else {
+	 *                      return TRUE;
+	 *                  }
+	 *              }
+	 *          ],
+	 *      ],
+	 *      'password1' => [
+	 *            [
+	 *                'type'    => 'params-equal',
+	 *                'param'   => 'password2',
+	 *                'message' => $this->language->get('error_password_mismatch'),
+	 *            ],
+	 *            [
+	 *                'type'      => 'regex',
+	 *                'regex'     => '\d',
+	 *                'modifiers' => '',
+	 *                'message'   => $this->language->get('error_password_format'),
+	 *            ],
+	 *        ],
+	 * @endcode
+	 *
+	 * Valid input types, followed by there extra parameters are:
+	 *
+	 *    - \b params-equal: Checks to ensure this inputs value matches another
+	 *       -# \b param: The input name to check against
+	 *
+	 *    - \b regex: Checkes the input value against a regular expression
+	 *       -# \b regex: The regex string
+	 *       -# \b modifiers: The modifiers for the regex
+	 *
+	 *    - \b function: Checkes the input value against a user defined function
+	 *       -# \b function: The function to call, must accept the value as a parameter and return a bool.
+	 * @var array $validators
+	 */
 	protected $validators = [];
+
+	/**
+	 * An array containing all the form errors of the form:
+	 * @code
+	 *    $form_errors = [
+	 *        'input_name' => 'error message',
+	 *        ...
+	 *    ];
+	 * @endcode
+	 * @var array $form_errors
+	 */
 	protected $form_errors = [];
+
+	/**
+	 * The logger object
+	 * @var Logger $logger
+	 */
 	protected $logger = NULL;
 
+	/**
+	 * The notification message from validation
+	 * @var string $notification_message
+	 */
 	protected $notification_message = NULL;
+
+	/**
+	 * The notification message type from validation, error, warn, info or success
+	 * @var string $notification_type
+	 */
 	protected $notification_type = NULL;
+
+	/**
+	 * Should the submit button on the form be disabled
+	 * @var bool $disable_submit_button
+	 */
 	protected $disable_submit_button = FALSE;
 
+	/**
+	 * Suppress the check to ensure the form has been submitted.  The check is that
+	 * the name of the submit button exists in the form.  The button must be named
+	 * with the form name postfixed with '-submit', e.g. 'form-name-submit'.
+	 * @var bool $suppress_submit_check
+	 */
 	protected $suppress_submit_check = FALSE;
 
-	public function __construct($request, $name, array $inputs = NULL, array $validators  = NULL) {
+	/**
+	 * Constructor
+	 * @param $request     \b Request The request object
+	 * @param $name        \b string  The name of the form
+	 * @param $inputs      \b array   An array containing the inputs for the form
+	 * @param $validators  \b array   An array containing the validators for the form
+	 */
+	public function __construct(Request $request, $name, array $inputs = NULL, array $validators  = NULL) {
 		$this->request = $request;
 		$this->name = $name;
 		$this->logger = Logger::getLogger(get_class($this));
@@ -32,51 +189,105 @@ class FormValidator {
 		}
 	}
 
+	/**
+	 * Sets the flag to suppress the check to ensure the form has been submitted.  The check
+	 * is that the name of the submit button exists in the form.  The button must be named
+	 * with the form name postfixed with '-submit', e.g. 'form-name-submit'.
+	 * @param $value \b bool TRUE if the check should be suppressed
+	 */
 	public function suppressSubmitCheck($value) {
 		$this->suppress_submit_check = $value ? TRUE : FALSE;
 	}
 
+	/**
+	 * Sets the form's notification message and type.
+	 * @param $type    \b string The message type: error, warn, info or success
+	 * @param $message \b string The message
+	 */
 	public function setNotification($type, $message) {
 		$this->notification_type = $type;
 		$this->notification_message = $message;
 	}
 
+	/**
+	 * Returns an array of errors that where generated by validation or manually added.
+	 * @return \b bool TRUE if this object represents a table in the database
+	 */
 	public function getErrors() {
 		return $this->form_errors;
 	}
 
+	/**
+	 * Sets the array of errors on the form.
+	 * @param $errors \b array The array of errors for the form
+	 */
 	public function setErrors(array $errors) {
 		$this->form_errors = $errors;
 	}
 
+	/**
+	 * Sets the flag to disable the form's submission.
+	 * @param $value \b bool TRUE if the form's submission should be disabled.
+	 */
 	public function setDisableSubmitButton($value) {
 		$this->disable_submit_button = $value ? TRUE : FALSE;
 	}
 
+	/**
+	 * Add an error to the form's array of validation errors
+	 * @param $name    \b string The name of the input
+	 * @param $message \b string The error message
+	 */
 	public function addError($name, $message) {
 		$this->form_errors[$name] = $message;
 	}
 
+	/**
+	 * Returns an array of the form's inputs
+	 * @return \b array The form's inputs array
+	 */
 	public function getInputs() {
 		return $this->inputs;
 	}
 
+	/**
+	 * Sets the form's inputs array
+	 * @param $errors \b array The array of inputs to set on the form
+	 */
 	public function setInputs(array $inputs) {
 		$this->inputs = $inputs;
 	}
 
+	/**
+	 * Add an input to the form
+	 * @param $name \b string The name of the input
+	 * @param $data \b array  The input definition array
+	 */
 	public function addInput($name, array $data) {
 		$this->inputs[$name] = $data;
 	}
 
+	/**
+	 * Returns an array of the form's validators
+	 * @return \b array The form's validators array
+	 */
 	public function getValidators() {
 		return $this->validators;
 	}
 
+	/**
+	 * Sets the form's validators array
+	 * @param $errors \b array The array of validators to set on the form
+	 */
 	public function setValidators(array $validators) {
 		$this->validators = $validators;
 	}
 
+	/**
+	 * Add a validator to the form
+	 * @param $name \b string The name of the input
+	 * @param $data \b array  The validator definition array
+	 */
 	public function addValidator($name, array $data) {
 		$this->validators[$name][] = $data;
 	}

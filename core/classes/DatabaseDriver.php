@@ -26,22 +26,60 @@ class DatabaseDriver {
 	 */
 	protected $logger;
 
+	/**
+	 * The model object this driver object is for
+	 * @var Model $model
+	 */
 	protected $model;
 
+	/**
+	 * The column name of the primary key for the table
+	 * @var string $primary_key
+	 */
 	protected $primary_key = NULL;
 
+	/**
+	 * An array containing table columns with data types.
+	 * @var array $columns
+	 */
 	protected $columns = NULL;
 
+	/**
+	 * An array containing the indexes for the table.
+	 * @var array $indexes
+	 */
 	protected $indexes = [];
 
+	/**
+	 * An array containing foreign keys for the table.
+	 * @var array $foreign_keys
+	 */
 	protected $foreign_keys = [];
 
+	/**
+	 * An array containing the unique constraints for the table
+	 * @var array $uniques
+	 */
 	protected $uniques = [];
 
+	/**
+	 * An array containing the partial unique constraints for the table
+	 * @var array $uniques
+	 */
 	protected $partial_uniques = [];
 
+	/**
+	 * Extra data for CitusDB
+	 * @var array $objects
+	 */
 	protected $citusdb = NULL;
 
+	/**
+	 * Constructor
+	 * @param $config   \b Config   The configuration object
+	 * @param $database \b Database The database object
+	 * @param $model    \b Model    The model object this driver object is for
+	 */
 	public function __construct(Config $config, Database $database, Model $model) {
 		$this->config   = $config;
 		$this->database = $database;

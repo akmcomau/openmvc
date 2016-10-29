@@ -79,10 +79,6 @@ try {
 	$response->sendHeaders();
 	$response->sendContent();
 }
-catch (RedirectException $ex) {
-	$logger->info($ex->getMessage());
-	header("Location: {$ex->getUrl()}");
-}
 catch (DomainRedirectException $ex) {
 	$config->setSiteDomain($ex->getDomain());
 	$url = new URL($config);

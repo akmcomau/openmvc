@@ -201,12 +201,16 @@ class Model {
 	 */
 	protected static $site_models;
 
+	/**
+	 * The database helper/driver object.
+	 * @var DatabaseDriver $sql_helper
+	 */
 	protected $sql_helper;
 
 	/**
 	 * Constructor
-	 * @param[in] $config   The configuration object
-	 * @param[in] $database The database object
+	 * @param $config   The configuration object
+	 * @param $database The database object
 	 */
 	public function __construct(Config $config, Database $database) {
 		$this->config   = $config;
@@ -228,14 +232,17 @@ class Model {
 	}
 
 	/**
-	 *
+	 * Is this an object that inhertied the model class and represents
+	 * a table in the database
+	 * @return \b bool TRUE if this object represents a table in the database
 	 */
 	public function hasTable() {
 		return $this->table ? TRUE : FALSE;
 	}
 
 	/**
-	 *
+	 * Gets the database table association data
+	 * @return \b array The table association data
 	 */
 	public function getTableData() {
 		return [
@@ -251,7 +258,10 @@ class Model {
 	}
 
 	/**
-	 *
+	 * Returns the object to the database helper.  The database helper is a driver
+	 * for the database that translates database schema to the Models table association data,
+	 * as well as performing database specific queries.
+	 * @return \b DatabaseDriver The driver for the database
 	 */
 	public function sqlHelper() {
 		if (!$this->sql_helper) {
@@ -266,6 +276,10 @@ class Model {
 		return $this->sql_helper;
 	}
 
+	/**
+	 * The magic call function, execute functions on the SQL Helper/Database Driver object
+	 * @return \b mixed Returns the result of the function call
+	 */
 	public function __call ($name, $arguments) {
 		$sqlHelper = $this->sqlHelper();
 		if (method_exists($sqlHelper, $name)) {
@@ -277,7 +291,7 @@ class Model {
 
 	/**
 	 * Finds all the available models for this site and stores them in self::$site_models
-	 * @param[in] $site  [Optional] Get models for a sepecific site, if NULL then
+	 * @param $site  [Optional] Get models for a sepecific site, if NULL then
 	 *                  this will find all models for all sites.
 	 */
 	protected function findAllModels($site = NULL) {
@@ -364,7 +378,7 @@ class Model {
 
 	/**
 	 * Set the record array
-	 * @param[in] $record The array to set as the record array
+	 * @param $record The array to set as the record array
 	 */
 	public function setRecord(array $record) {
 		$this->record = $record;
@@ -372,8 +386,8 @@ class Model {
 
 	/**
 	 * Set an element in the objects array
-	 * @param[in] $key    The element's key
-	 * @param[in] $object The object
+	 * @param $key    The element's key
+	 * @param $object The object
 	 */
 	public function setObjectCache($key, $object) {
 		$this->objects[$key] = $object;
@@ -381,8 +395,8 @@ class Model {
 
 	/**
 	 * Sets an element in the record array
-	 * @param[in] $name  The column name
-	 * @param[in] $value The value for the column
+	 * @param $name  The column name
+	 * @param $value The value for the column
 	 * @throws ModelException if the property does not exist
 	 */
 	public function __set($name, $value) {
@@ -399,7 +413,7 @@ class Model {
 
 	/**
 	 * Gets an element from the record array
-	 * @param[in] $name The column name
+	 * @param $name The column name
 	 * @return \b mixed The value of the column
 	 * @throws ModelException if the property does not exist
 	 */
@@ -427,7 +441,7 @@ class Model {
 
 	/**
 	 * Translate a column name to the database column name.
-	 * @param[in] $name The column name
+	 * @param $name The column name
 	 * @return \b string The database column name or NULL if it could not be translated
 	 */
 	public function getColumnName($name) {
@@ -450,7 +464,7 @@ class Model {
 
 	/**
 	 * Call a database model hook, if one is set
-	 * @param[in] $name The name of the hook
+	 * @param $name The name of the hook
 	 */
 	protected function callHook($name) {
 		if (!$this->config->getSiteDomain()) return;
@@ -557,8 +571,8 @@ class Model {
 
 	/**
 	 * Get a model from the database.  The first record is used to create the model.
-	 * @param[in] $params   The params to lookup the record, see generateWhereClause()
-	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @param $params   The params to lookup the record, see generateWhereClause()
+	 * @param $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
 	 * @return \b Model The model object
 	 */
 	public function get(array $params, array $ordering = NULL) {
@@ -594,7 +608,7 @@ class Model {
 
 	/**
 	 * Get a record count from the database
-	 * @param[in] $params The params to lookup the record, see generateWhereClause() method
+	 * @param $params The params to lookup the record, see generateWhereClause() method
 	 * @return \b integer The number of records found
 	 */
 	public function getCount(array $params = NULL) {
@@ -611,10 +625,10 @@ class Model {
 
 	/**
 	 * Get multiple model objects
-	 * @param[in] $params The params to lookup the record, see generateWhereClause() method
-	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
-	 * @param[in] $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
-	 * @param[in] $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
+	 * @param $params The params to lookup the record, see generateWhereClause() method
+	 * @param $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @param $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
+	 * @param $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
 	 * @return \b array An array of model objects
 	 */
 	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
@@ -639,11 +653,11 @@ class Model {
 
 	/**
 	 * Get multiple model objects as an associative array
-	 * @param[in] $key        The column name of the column to use as the key
-	 * @param[in] $params     The params to lookup the record, see generateWhereClause() method
-	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
-	 * @param[in] $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
-	 * @param[in] $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
+	 * @param $key        The column name of the column to use as the key
+	 * @param $params     The params to lookup the record, see generateWhereClause() method
+	 * @param $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @param $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
+	 * @param $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
 	 * @return \b array An associative array of the models keyed on $key
 	 */
 	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
@@ -668,8 +682,8 @@ class Model {
 
 	/**
 	 * Generate the FROM clause for a SQL statement
-	 * @param[in] $params     The params to lookup the record, see generateWhereClause() method
-	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @param $params     The params to lookup the record, see generateWhereClause() method
+	 * @param $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
 	 * @return \b string A SQL fragment
 	 */
 	public function generateFromClause(array $params = NULL, array $ordering = NULL, array &$in_from = NULL) {
@@ -728,7 +742,7 @@ class Model {
 	 *        isnotnull | Format 4 | column IS NOT NULL
 	 *        upper=    | Format 2 | UPPER(column) = strtoupper(value)
 	 *        lower=    | Format 2 | LOWER(column) = strtolower(value)
-	 * @param[in] $params The params to lookup the record, is an array of the form:
+	 * @param $params The params to lookup the record, is an array of the form:
 	 *                    @code{.php}
 	 *                    $param = [
 	 *                       // Format 1 ... column = value
@@ -753,7 +767,7 @@ class Model {
 	 *                    ];
 	 *                    WHERE *type* is one of the types above
 	 *                    @endcode
-	 * @param[in] $and    If TRUE the clauses should be ANDed together,
+	 * @param $and    If TRUE the clauses should be ANDed together,
 	 *                    otherwise the clauses will be ORed together.
 	 * @return \b string A SQL fragment
 	 */
@@ -893,9 +907,9 @@ class Model {
 
 	/**
 	 * Generate SQL for the LIMIT/OFFSET, ORDER BY and GROUP BY clauses
-	 * @param[in] $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
-	 * @param[in] $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
-	 * @param[in] $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
+	 * @param $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
+	 * @param $pagination An array of the form @code{.php}['limit' => *limit*[, 'offset' => *offset*]]@endcode
+	 * @param $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
 	 * @return \b string An SQL fragment
 	 */
 	protected function getOrderGroupSQL(array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
@@ -947,8 +961,8 @@ class Model {
 
 	/**
 	 * Get a specific model object
-	 * @param[in] $class  The full class name of the model
-	 * @param[in] $record The record array
+	 * @param $class  The full class name of the model
+	 * @param $record The record array
 	 * @return \b string The model object with record array set
 	 */
 	public function getModel($class, array $record = NULL) {

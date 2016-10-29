@@ -95,7 +95,7 @@ class Database extends PDO {
 
 	/**
 	 * Constructor
-	 * @param[in] $config     \b Config The configuration object
+	 * @param $config     \b Config The configuration object
 	 */
 	public function __construct($config, $force_masterdb = FALSE) {
 		// set the defaults (master if this is a master/slave setup)
@@ -246,8 +246,8 @@ class Database extends PDO {
 
 	/**
 	 * Set an element in the objects array
-	 * @param[in] $key   \b string The key of the cached value
-	 * @param[in]$value  \b mixed  The value to store
+	 * @param $key   \b string The key of the cached value
+	 * @param$value  \b mixed  The value to store
 	 */
 	public function setCache($key, $value) {
 		if ($this->cache_enabled) {
@@ -257,7 +257,7 @@ class Database extends PDO {
 
 	/**
 	 * Get an element in the objects array
-	 * @param[in] $key   \b string The key of the cached value
+	 * @param $key   \b string The key of the cached value
 	 * @return \b mixed The cached value or NULL of it is not in the cache store
 	 */
 	public function getCache($key) {
@@ -269,8 +269,8 @@ class Database extends PDO {
 
 	/**
 	 * Quote a variable for use in an SQL statement
-	 * @param[in] $value          \b mixed The value to quote
-	 * @param[in] $parameter_type \b string The parameter type
+	 * @param $value          \b mixed The value to quote
+	 * @param $parameter_type \b string The parameter type
 	 */
 	public function quote($value, $parameter_type = NULL) {
 		if ($this->engine == 'none') {
@@ -291,7 +291,7 @@ class Database extends PDO {
 
 	/**
 	 * Execute an SQL statement
-	 * @param[in] $sql  \b string The SQL statement
+	 * @param $sql  \b string The SQL statement
 	 * @return PDOStatement The result of executing the SQL statement
 	 * @throws DatabaseException If an error was returned
 	 */
@@ -313,7 +313,7 @@ class Database extends PDO {
 	/**
 	 * A specialised query function that executes the query and then returns
 	 * the first field from the first row from the result set. Used for SELECT queries only.
-	 * @param[in] $sql  \b string The SQL statement
+	 * @param $sql  \b string The SQL statement
 	 * @return mixed The value from the database
 	 */
 	public function queryValue($sql, $use_masterdb = FALSE) {
@@ -329,7 +329,7 @@ class Database extends PDO {
 	/**
 	 * A specialised query function that executes the query and then returns
 	 * the first row from the result set. Used for SELECT queries only.
-	 * @param[in] $sql  \b string The SQL statement
+	 * @param $sql  \b string The SQL statement
 	 * @return array A single record
 	 */
 	public function querySingle($sql, $use_masterdb = FALSE) {
@@ -344,7 +344,7 @@ class Database extends PDO {
 	/**
 	 * A specialised query function that executes the query and then returns
 	 * the result set. Used for SELECT queries only.
-	 * @param[in] $sql  \b string The SQL statement
+	 * @param $sql  \b string The SQL statement
 	 * @return array An array of records
 	 */
 	public function queryMulti($sql, $use_masterdb = FALSE) {
@@ -361,8 +361,8 @@ class Database extends PDO {
 	/**
 	 * A specialised query function that executes the query and then returns
 	 * the result set, keyed on a particular field. Used for SELECT queries only.
-	 * @param[in] $sql    \b string The SQL statement
-	 * @param[in] $field  \b string Column to use as the key for the result array
+	 * @param $sql    \b string The SQL statement
+	 * @param $field  \b string Column to use as the key for the result array
 	 * @return array An assoc array of records
 	 */
 	public function queryMultiKeyed($sql, $field, $use_masterdb = FALSE) {
@@ -384,7 +384,7 @@ class Database extends PDO {
 	/**
 	 * A specialised query function that executes the query and then returns
 	 * the first column of each record. Used for SELECT queries only.
-	 * @param[in] $sql  \b string The SQL statement
+	 * @param $sql  \b string The SQL statement
 	 * @return array An list of values
 	 */
 	public function queryList($sql, $use_masterdb = FALSE) {
@@ -413,7 +413,7 @@ class Database extends PDO {
 	 * A specialised query function that executes the query and then returns
 	 * the an assoc array, using the first column as the key and the second
 	 * for the value. Used for SELECT queries only.
-	 * @param[in] $sql  \b string The SQL statement
+	 * @param $sql  \b string The SQL statement
 	 * @return array An list of values
 	 */
 	public function queryKeyValue($sql, $use_masterdb = FALSE) {

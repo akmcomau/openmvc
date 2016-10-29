@@ -3,14 +3,29 @@
 namespace core\classes;
 
 class Encryption {
+	/**
+	 * Encrypt a string using MCRYPT_RIJNDAEL_128
+	 * @param  $string  \b string  The string to encrypt
+	 * @param  $key     \b string  The encryption key
+	 */
 	public static function encrypt($string, $key) {
 		return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB);
 	}
 
+	/**
+	 * Decrypt a string using MCRYPT_RIJNDAEL_128
+	 * @param $string  \b string  The string to decrypt
+	 * @param $key     \b string  The encryption key
+	 */
 	public static function decrypt($string, $key) {
 		return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB);
 	}
 
+	/**
+	 * Use bcrypt to create a password hash
+	 * @param $string \b string  The password string
+	 * @param $cost   \b int     The computational cost
+	 */
 	public static function bcrypt($string, $cost) {
 		if (BCRYPT_IMPLEMENTATION == BCRYPT_IMPLEMENTATION_2A) {
 			if (strlen($cost) == 1) $cost = '0'.$cost;
@@ -26,20 +41,40 @@ class Encryption {
 		}
 	}
 
+	/**
+	 * Verify a password using bcrypt
+	 * @param $string \b string  The password string
+	 * @param $hash   \b int     The bcrypt hash
+	 */
 	public static function bcrypt_verify($string, $hash) {
 		return password_verify($string, $hash);
 	}
 
+	/**
+	 * Convert a string to a hash string
+	 * @param $string \b string  The string to convert
+	 */
 	public static function str2Hex($string) {
 		$hexstr = @unpack("H*", $string);
 		return array_shift($hexstr);
 	}
 
+	/**
+	 * Convert a hex string back to a string
+	 * @param $string \b string  The string to convert
+	 */
 	public static function hex2Str($string) {
 		$hexstr = @pack("H*", $string);
 		return $hexstr;
 	}
 
+	/**
+	 * Convert a large integer from one base to another.  Use when there is
+	 * a loss of precision on large numbers.
+	 * @param $string   \b string  The string to convert
+	 * @param $frombase \b int     The base the number is currently in
+	 * @param $tobase   \b int     The base to convert the number to
+	 */
 	public static function str_baseconvert($str, $frombase=10, $tobase=36) {
 		$str = trim($str);
 		if (intval($frombase) != 10) {
@@ -65,6 +100,11 @@ class Encryption {
 		return $s;
 	}
 
+	/**
+	 * Obfuscate an integer using MCRYPT_3DES
+	 * @param  $integer  \b int     The integer to obfuscate
+	 * @param  $key      \b string  The encryption key
+	 */
 	public static function obfuscate($integer, $key) {
 		$integer = pack('I', $integer);
 		$string = mcrypt_encrypt(MCRYPT_3DES, $key, $integer, MCRYPT_MODE_ECB);
@@ -77,6 +117,11 @@ class Encryption {
 		return $string;
 	}
 
+	/**
+	 * Defuscate a string using MCRYPT_3DES back to an integer
+	 * @param  $string  \b string  The string to defuscate
+	 * @param  $key     \b string  The encryption key
+	 */
 	public static function defuscate($string, $key) {
 		$string = str_replace('-', '', $string);
 		$string = self::str_baseconvert($string, 36, 16);
