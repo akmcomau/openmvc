@@ -234,14 +234,14 @@ Content-Type: multipart/alternative; boundary="PHP-alt-<?php echo $random_hash; 
 
 --PHP-alt-<?php echo $random_hash; ?>
 
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 
 <?php echo $this->body_template->render(); ?>
 
 --PHP-alt-<?php echo $random_hash; ?>
 
-Content-Type: text/html; charset="iso-8859-1"
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 
 <?php echo $this->html_template->render(); ?>
