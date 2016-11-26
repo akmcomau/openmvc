@@ -118,7 +118,7 @@
 	"require": {
 		"apache/log4php": "2.3.0",
 		"twbs/bootstrap": "v3.0.3",
-		"components/font-awesome": "4.4.0",
+		"components/font-awesome": "4.7.0",
 		"components/jquery": "1.11.0",
 		"components/jqueryui": "1.11.4",
 		"medialize/jquery-context-menu": "1.6.7",

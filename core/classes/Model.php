@@ -693,7 +693,7 @@ class Model {
 		$tables = [];
 		if ($in_from == NULL) {
 			$tables = [ $this->table ];
-			$in_from = [];
+			$in_from = [ $this->table => 1];
 		}
 
 		foreach (array_merge($params, $ordering) as $column => $value) {
@@ -705,7 +705,11 @@ class Model {
 				if ($table == '__common_join__') continue;
 
 				if ($column == 'or' || $column == 'and') {
-					$tables[] = $this->generateFromClause($value, NULL, $in_from);
+					$this_table = trim($this->generateFromClause($value, NULL, $in_from));
+					if ($this_table && !isset($in_from[$this_table])) {
+						$tables[] = $this_table;
+						$in_from[$this_table] = 1;
+					}
 				}
 				else if (!isset($in_from[$table]) && in_array($column, $data['where_fields'])) {
 					if (isset($data['join_clause'])) {
@@ -719,6 +723,7 @@ class Model {
 				}
 			}
 		}
+
 		return join(' ', $tables);
 	}
 
