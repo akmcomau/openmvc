@@ -90,6 +90,7 @@ class Customer extends Model {
 		'customer_remember_me',
 		'customer_token',
 		'customer_token_created',
+		'lower(customer_email)',
 	];
 
 	protected $partial_uniques = [

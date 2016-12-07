@@ -234,7 +234,7 @@ class Customer extends Controller {
 		if ($this->request->requestParam('email')) {
 			$model       = new Model($this->config, $this->database);
 			$customer    = $model->getModel($this->customer_class)->get([
-				'email' => $this->request->requestParam('email'),
+				'email' => ['type' => 'lower=', 'value' => $this->request->requestParam('email')],
 			]);
 
 			if ($customer) {

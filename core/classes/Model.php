@@ -514,7 +514,7 @@ class Model {
 				$this->record[$primary_key] = $this->database->lastInsertId();
 			}
 		}
-		$this->logger->debug("Inserted record in $table => ".empty($primary_key) ? 'N/A' : $this->record[$primary_key]);
+		$this->logger->debug("Inserted record in $table => ".(empty($primary_key) ? 'N/A' : $this->record[$primary_key]));
 
 		$this->callHook('insert');
 
