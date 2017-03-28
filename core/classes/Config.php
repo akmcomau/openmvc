@@ -274,10 +274,15 @@ class Config {
 	 * @return \b string The sites base URL
 	 */
 	public function getSiteUrl($ssl_override = FALSE) {
+		$domain = $this->site_domain;
+		if ($this->siteConfig()->force_www_subdomain) {
+			$domain = 'www.'.$domain;
+		}
+
 		if ($ssl_override && $this->isHttps()) {
 			return $this->getSecureSiteUrl();
 		}
-		return 'http://www.'.$this->site_domain;
+		return 'http://'.$domain;
 	}
 
 	/**
@@ -285,10 +290,15 @@ class Config {
 	 * @return \b string The sites base URL
 	 */
 	public function getSecureSiteUrl() {
-		if ($this->siteConfig()->enable_ssl) {
-			return 'https://www.'.$this->site_domain;
+		$domain = $this->site_domain;
+		if ($this->siteConfig()->force_www_subdomain) {
+			$domain = 'www.'.$domain;
 		}
-		return 'http://www.'.$this->site_domain;
+
+		if ($this->siteConfig()->enable_ssl) {
+			return 'https://'.$domain;
+		}
+		return 'http://'.$domain;
 	}
 
 	/**
@@ -314,17 +324,25 @@ class Config {
 		$default_site = NULL;
 		$sites = $this->sites;
 		foreach ($sites as $domain => $site) {
-			if ($redirect && $domain == $host) {
-				throw new DomainRedirectException('www.'.$domain);
+			if ($domain == $host) {
+				if ($redirect && $site->force_www_subdomain) {
+					throw new DomainRedirectException('www.'.$domain);
+				}
+				else {
+					$this->site_domain = $domain;
+					$locale = $this->siteConfig()->locale;
+					$formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+					$this->siteConfig()->site_currency = $formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE);
+					$this->setLocale($locale);
+					return;
+				}
 			}
-			elseif ('www.'.$domain == $host || (!$redirect && $domain == $host)) {
+			elseif ('www.'.$domain == $host || (!($redirect && $site->force_www_subdomain) && $domain == $host)) {
 				$this->site_domain = $domain;
-
 				$locale = $this->siteConfig()->locale;
 				$formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
 				$this->siteConfig()->site_currency = $formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE);
 				$this->setLocale($locale);
-
 				return;
 			}
 

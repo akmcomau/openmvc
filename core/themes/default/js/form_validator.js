@@ -202,7 +202,7 @@ $.extend(FormValidator, {
 				element_value = $('#'+form_id+' *[name="'+array_name+'"]').val()[element_index];
 			}
 			else {
-				if ($($('#'+form_id+' input[name="'+array_name+'"][type="checkbox"]')[element_index])) {
+				if ($('#'+form_id+' input[name="'+array_name+'"][type="checkbox"]')[element_index]) {
 					element_value = $($('#'+form_id+' input[name="'+array_name+'"]')[element_index]).is(':checked');
 					element_value = element_value ? $($('#'+form_id+' *[name="'+array_name+'"]')[element_index]).val() : null;
 				}
@@ -211,7 +211,6 @@ $.extend(FormValidator, {
 				}
 			}
 		}
-		console.log(element_value);
 
 		if (typeof(element.required) == 'undefined') {
 			element.required = true;
@@ -279,7 +278,6 @@ $.extend(FormValidator, {
 				var is_this_valid = element_result[0];
 				var validator_error = element_result[1];
 				is_valid = is_valid & is_this_valid;
-				console.log(element_name + ' ' +is_this_valid);
 
 				if (!is_this_valid) {
 					if (!validator_error) {
