@@ -33,7 +33,7 @@ class Config {
 		require($filename);
 
 		// get the custom config
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		$filename = $this->getConfigFile();
 		require($filename);
 
 		// Convert the config data to objects
@@ -76,6 +76,15 @@ class Config {
 
 		// default value for is_robot
 		$this->configuration['is_robot'] = FALSE;
+	}
+
+	protected function getConfigFile() {
+		if (isset($_SERVER['OPENMVC_CONFIG_FILE'])) {
+			return $_SERVER['OPENMVC_CONFIG_FILE'];
+		}
+		else {
+			return __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		}
 	}
 
 	/**
@@ -122,7 +131,7 @@ class Config {
 	 * @param $module \b array The modules specification
 	 */
 	public function installModule(array $module) {
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		$filename = $this->getConfigFile();
 		require($filename);
 
 		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
@@ -142,7 +151,7 @@ class Config {
 	 * @param $module \b array The modules specification
 	 */
 	public function uninstallModule($module) {
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		$filename = $this->getConfigFile();
 		require($filename);
 
 		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
@@ -163,7 +172,7 @@ class Config {
 	 * @param $module \b array The modules specification
 	 */
 	public function enableModule($module) {
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		$filename = $this->getConfigFile();
 		require($filename);
 
 		if (!isset($_CONFIG['sites'][$this->site_domain]['modules'])) {
@@ -185,7 +194,7 @@ class Config {
 	 * @param $module \b array The modules specification
 	 */
 	public function disableModule($module) {
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		$filename = $this->getConfigFile();
 		require($filename);
 
 		if (!isset($_CONFIG['sites'][$this->site_domain]['modules'])) {
@@ -234,7 +243,7 @@ class Config {
 	 * @return \b array The sites configuration file as an array
 	 */
 	public function getSiteConfig() {
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		$filename = $this->getConfigFile();
 		require($filename);
 
 		if (!isset($_CONFIG['sites'][$this->site_domain]['modules'])) {
@@ -249,7 +258,7 @@ class Config {
 	 * @param $config \b array The sites configuration file as an array
 	 */
 	public function setSiteConfig($config) {
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		$filename = $this->getConfigFile();
 
 		file_put_contents($filename, '<?php $_CONFIG = '.var_export($config, TRUE).';');
 		if (function_exists('opcache_invalidate')) {
@@ -375,7 +384,7 @@ class Config {
 	 * Update the modules in the config file
 	 */
 	public function updateConfig() {
-		$filename = __DIR__.DS.'..'.DS.'config'.DS.'config.php';
+		$filename = $this->getConfigFile();
 		require($filename);
 		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
 
