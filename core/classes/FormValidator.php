@@ -311,7 +311,12 @@ class FormValidator {
 
 	public function getHtmlErrorDiv($name, $class = '') {
 		if (isset($this->form_errors[$name])) {
-			return '<div id="'.$name.'-error" class="form-error visible '.$class.'">'.$this->form_errors[$name].'</div>';
+			if (is_array($this->form_errors[$name])) {
+				return '<div id="'.$name.'-error" class="form-error visible '.$class.'">'.join('<br />', $this->form_errors[$name]).'</div>';
+			}
+			else {
+				return '<div id="'.$name.'-error" class="form-error visible '.$class.'">'.$this->form_errors[$name].'</div>';
+			}
 		}
 		else {
 			return '<div id="'.$name.'-error" class="form-error '.$class.'"></div>';
