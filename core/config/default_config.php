@@ -39,6 +39,7 @@ $_DEFAULT_CONFIG = (object)[
 			'from' => 'info@example.com',
 			'contact_us' => 'info@example.com',
 		],
+		'force_email_rcpt' => FALSE,
 		'default_site' => false,
 		'enable_ssl' => false,
 		'force_ssl' => false,

@@ -43,7 +43,7 @@ class Customers extends Controller {
 			foreach ($values as $name => $value) {
 				if (preg_match('/^search_(email|login)$/', $name, $matches) && $value != '') {
 					$value = strtolower($value);
-					$params[$matches[1]] = ['type'=>'like', 'value'=>'%'.$value.'%'];
+					$params[$matches[1]] = ['type'=>'ilike', 'value'=>'%'.$value.'%'];
 				}
 			}
 			$this->getExtraSearchParams($values, $params);

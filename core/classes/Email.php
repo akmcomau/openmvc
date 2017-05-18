@@ -237,6 +237,7 @@ Content-Type: multipart/alternative; boundary="PHP-alt-<?php echo $random_hash; 
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 
+<?php if ($this->config->siteConfig()->force_email_rcpt) echo 'Email recipient overridden, original recipient: '.$this->to_email."\n\n"; ?>
 <?php echo $this->body_template->render(); ?>
 
 --PHP-alt-<?php echo $random_hash; ?>
@@ -244,6 +245,7 @@ Content-Transfer-Encoding: 7bit
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 
+<?php if ($this->config->siteConfig()->force_email_rcpt) echo '<strong>Email recipient overridden, original recipient: '.htmlspecialchars($this->to_email).'</strong><br /><br />'; ?>
 <?php echo $this->html_template->render(); ?>
 
 --PHP-alt-<?php echo $random_hash; ?>--
@@ -269,6 +271,10 @@ Content-Disposition: attachment
 <?php
 
 		$message = ob_get_clean();
+
+		if ($this->config->siteConfig()->force_email_rcpt) {
+			$this->to_email = $this->config->siteConfig()->force_email_rcpt;
+		}
 
 		if (mail($this->to_email, $this->subject, $message, $headers)) {
 			$this->logger->info('Sent email to: '.$this->to_email.' => '.$this->subject);
