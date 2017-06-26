@@ -71,7 +71,7 @@
 								<td><?php echo htmlspecialchars($customer->active ? $text_active : $text_not_active); ?></td>
 								<td>
 									<a href="<?php echo $this->url->getUrl('administrator/Customers', 'login', [$customer->id]); ?>" class="btn btn-primary" title="<?php echo $text_login_as_customer; ?>"><i class="fa fa-user"></i></a>
-									<a href="<?php echo $this->url->getUrl('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary" title="<?php echo $text_edit; ?>""><i class="fa fa-edit"></i></a>
+									<a href="<?php echo $this->url->getUrl('administrator/Customers', 'edit', [$customer->id]); ?>" class="btn btn-primary" title="<?php echo $text_edit; ?>"><i class="fa fa-edit"></i></a>
 								</td>
 							</tr>
 							<?php } ?>

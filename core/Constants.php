@@ -13,7 +13,10 @@ define('ADMINISTRATOR_TYPE_SUPER',  1);
 define('BCRYPT_IMPLEMENTATION_DEFAULT', 1);
 define('BCRYPT_IMPLEMENTATION_2A', 1);
 
-if (file_exists(__DIR__.'/config/constants.php')) {
+if (isset($_SERVER['OPENMVC_CONSTANTS_FILE'])) {
+	require($_SERVER['OPENMVC_CONSTANTS_FILE']);
+}
+elseif (file_exists(__DIR__.'/config/constants.php')) {
 	require(__DIR__.'/config/constants.php');
 }
 

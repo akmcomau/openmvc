@@ -75,6 +75,10 @@ class Authentication {
 		$this->callHook('init_authentication', [$this]);
 	}
 
+	public function getDatabase() {
+		return $this->database;
+	}
+
 	/**
 	 * Check if the session is logged in as either an administrator or customer
 	 * @return \b boolean TRUE if the session is logged in, FALSE otherwise
