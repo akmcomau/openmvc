@@ -72,6 +72,21 @@ h4 small {
 label {
 	font-weight: normal;
 }
+ul.row > li, ol.row > li {
+	list-style: none;
+}
+.ct-widget .ct-tool--sub:before {
+	content: "▼";
+	font-weight: 700;
+}
+.ct-widget .ct-tool--sup:before {
+	content: "▲";
+	font-weight: 700;
+}
+.ct-widget .ct-tool--button:before {
+	content: "☐";
+	font-weight: 700;
+}
 /* --------------------------------------------------
  * Common styles
  *-------------------------------------------------- */
