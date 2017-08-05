@@ -8,6 +8,15 @@ window.addEventListener('load', function() {
 	editor = ContentTools.EditorApp.get();
 	editor.init('*[data-editable]', 'data-name');
 
+	editor.addEventListener('start', function (ev) {
+		$('body').append('<button id="make-editable-btn" class="btn btn-primary" style="position: absolute; top: 20px; left: 150px;" onclick="MakeEditable();">Make All Text Editable</button>');
+		MakeEditable();
+	});
+
+	editor.addEventListener('stop', function (ev) {
+		$('#make-editable-btn').remove();
+	});
+
 	editor.addEventListener('saved', function (ev) {
 		var name, payload, regions, xhr;
 
@@ -24,7 +33,7 @@ window.addEventListener('load', function() {
 		payload = new FormData();
 		for (name in regions) {
 			if (regions.hasOwnProperty(name)) {
-				payload.append(name, regions[name]);
+				payload.append(name, $('#'+name).html());
 			}
 		}
 
@@ -50,3 +59,19 @@ window.addEventListener('load', function() {
 	});
 
 });
+
+
+function MakeEditable() {
+	$('#main-content *').removeClass('ce-element--type-static');
+	$('#main-content h1').attr('contenteditable', '');
+	$('#main-content h2').attr('contenteditable', '');
+	$('#main-content h3').attr('contenteditable', '');
+	$('#main-content h4').attr('contenteditable', '');
+	$('#main-content h5').attr('contenteditable', '');
+	$('#main-content h6').attr('contenteditable', '');
+	$('#main-content h7').attr('contenteditable', '');
+	$('#main-content p').attr('contenteditable', '').addClass('ce-element ce-element--type-text');
+	$('#main-content div').attr('contenteditable', '');
+	$('#main-content img').attr('contenteditable', '');
+	$('#main-content table').attr('contenteditable', '');
+}

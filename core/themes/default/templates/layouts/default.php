@@ -149,7 +149,7 @@
 		<hr />
 	</noscript></div>
 
-	<div id="main-content" class="<?php echo $page_class; ?>" <?php if ($editable) echo 'data-editable data-name="main-content"'; ?>>
+	<div id="main-content" class="<?php echo isset($page_class) ? $page_class : ''; ?>" <?php if ($editable) echo 'data-editable data-name="main-content"'; ?>>
 		<?php echo $page_content; ?>
 	</div>
 
