@@ -41,6 +41,15 @@
 	<?php foreach ($meta_tags as $property => $value) {
 		echo '<meta property="'.$property.'" content="'.htmlspecialchars($value).'" />';
 	} ?>
+
+	<?php if ($administrator_logged_in) { ?>
+		<script type="text/javascript">
+			var edit_url = '<?php echo $this->url->getUrl('administrator\Pages', 'edit', [$controller_name, $method_name, $sub_page, 'save']); ?>';
+		</script>
+		<link href="http://cdn.jsdelivr.net/contenttools/1.3.1/content-tools.min.css" rel="stylesheet" media="screen" />
+		<script src="http://cdn.jsdelivr.net/contenttools/1.3.1/content-tools.min.js"></script>
+		<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/js/content-tools.js'); ?>"></script>
+	<?php } ?>
 </head>
 <body>
 <?php if ($administrator_logged_in) { ?>
@@ -140,7 +149,7 @@
 		<hr />
 	</noscript></div>
 
-	<div id="main-content">
+	<div id="main-content" class="<?php echo $page_class; ?>" <?php if ($editable) echo 'data-editable data-name="main-content"'; ?>>
 		<?php echo $page_content; ?>
 	</div>
 

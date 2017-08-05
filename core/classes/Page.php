@@ -126,6 +126,7 @@ class Page {
 	public function getPage($controller = NULL, $method = NULL) {
 		if (is_null($controller) || is_null($method)) {
 			return [
+				'type'             => 'default',
 				'url'              => $this->url->getUrl('Root', 'page', ['--NOT_SET--']),
 				'meta_tags'        => ['title'=>'', 'description'=>'', 'keywords'=>''],
 				'link_text'        => '',
@@ -156,6 +157,7 @@ class Page {
 		}
 
 		return [
+			'type'             => 'default',
 			'url'              => $this->url->getUrl($controller, $method),
 			'meta_tags'        => $meta_tags,
 			'link_text'        => $this->url->getLinkText($controller, $method),

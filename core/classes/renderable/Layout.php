@@ -25,6 +25,7 @@ class Layout extends Renderable {
 	protected $controller;
 	protected $method;
 	protected $sub_page;
+	protected $page_class;
 	protected $template_data = [];
 	protected $responsive = TRUE;
 	protected $fixed_width = FALSE;
@@ -38,6 +39,7 @@ class Layout extends Renderable {
 		$this->template = $template;
 		$this->url      = new URL($config);
 		$this->authentication = $auth;
+		$this->page_class = $this->config->siteConfig()->page_class;
 	}
 
 	public function getTemplateData($key = NULL) {
@@ -69,16 +71,26 @@ class Layout extends Renderable {
 	}
 
 	public function render() {
-		$controller = '';
+		$controller_name = $this->controller;
+		$method_name = $this->method;
 		$method = [ urlencode($this->controller), urlencode($this->method) ];
+		$sub_page = '-';
+		$editable = FALSE;
 		if ($this->sub_page) {
 			$method[] = $this->sub_page;
+			$sub_page = $this->sub_page;
+			$editable = TRUE;
 		}
 
 		$title = $this->meta_tags['orig_title'];
 		unset($this->meta_tags['orig_title']);
 
 		$data = [
+			'controller_name'         => $controller_name,
+			'method_name'             => $method_name,
+			'sub_page'                => $sub_page,
+			'editable'                => $editable,
+			'page_class'              => $this->page_class,
 			'method'                  => $method,
 			'title'                   => $title,
 			'meta_tags'               => $this->meta_tags,

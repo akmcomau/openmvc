@@ -105,10 +105,11 @@ class Pages extends Controller {
 		$this->response->setContent($template->render());
 	}
 
-	public function edit($controller, $method, $sub_page = NULL) {
+	public function edit($controller, $method, $sub_page = '-', $action = NULL) {
 		$this->language->loadLanguageFile('administrator/pages.php');
 		$form_page = $this->getPageForm(FALSE);
 
+		if ($sub_page == '-') $sub_page = NULL;
 		if ($sub_page) $method .= '/'.$sub_page;
 
 		$page  = new Page($this->config, $this->database);
@@ -118,7 +119,12 @@ class Pages extends Controller {
 		$page_category = $model->getModel('\core\classes\models\PageCategory');
 		$data['categories'] = $page_category->getAsOptions($this->allowedSiteIDs());
 
-		if ($form_page->validate()) {
+		if ($action == 'save' && $data['misc_page']) {
+			$data['content'] = $_REQUEST['main-content'];
+			$page->update($data, TRUE);
+			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['update-success']));
+		}
+		elseif ($form_page->validate()) {
 			$this->updateFromRequest($form_page, $data);
 			$page->update($data, TRUE);
 			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['update-success']));

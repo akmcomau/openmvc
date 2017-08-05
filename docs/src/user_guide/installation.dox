@@ -31,7 +31,7 @@ Site Setup
       sudo apt-get install apache2
 
       # Install PHP
-      sudo apt-get install php5
+      sudo apt-get install php5 php5-pgsql php5-curl php5-gd php5-intl php5-mcrypt
 
       # Install PostgreSQL ... only if you are using PostgreSQL
       sudo apt-get install postgresql

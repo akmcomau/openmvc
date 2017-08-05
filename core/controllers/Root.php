@@ -52,13 +52,7 @@ class Root extends Controller {
 			if (isset($page_data['parent_template'])) {
 				$template->setParentTemplate($page_data['parent_template']);
 			}
-
-			if ($this->config->siteConfig()->page_div_class === FALSE) {
-				$this->response->setContent($template->render());
-			}
-			else {
-				$this->response->setContent('<div class="'.$this->config->siteConfig()->page_div_class.'">'.$template->render().'</div>');
-			}
+			$this->response->setContent($template->render());
 		}
 		catch (TemplateException $ex) {
 			$this->logger->info('Misc page template not found');
