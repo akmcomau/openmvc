@@ -18,6 +18,7 @@ class FileManager extends Controller {
 	protected $permissions = [
 		'index' => ['administrator'],
 		'editor' => ['administrator'],
+		'uploadImage' => ['administrator'],
 		'config' => ['administrator'],
 		'rpc' => ['administrator'],
 	];
@@ -110,6 +111,25 @@ class FileManager extends Controller {
 
 		$template = $this->getTemplate('pages/administrator/file_manager_editor.php', $data);
 		$this->response->setContent($template->render());
+	}
+
+	public function uploadImage() {
+		if (isset($_FILES['image'])) {
+			$root_path = __DIR__.'/../../..';
+			$namespace = $this->config->siteConfig()->namespace;
+			$theme = $this->config->siteConfig()->theme;
+			$image_path = '/sites/'.$namespace.'/themes/'.$theme.'/images/';
+			$filename = $image_path.$_FILES['image']['name'];
+			copy($_FILES['image']['tmp_name'], $root_path.$filename);
+			$_SESSION['last_ct_image'] = [
+				'size' => getimagesize($root_path.$filename),
+				'url' => $filename,
+			];
+			$this->response->setJsonContent($this, json_encode($_SESSION['last_ct_image']));
+			return;
+		}
+
+		$this->response->setJsonContent($this, json_encode($_SESSION['last_ct_image']));
 	}
 
 	protected function upload($root_path, $glob_path, $path_id, $sub_path, &$errors) {

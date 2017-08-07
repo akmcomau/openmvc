@@ -6,5 +6,8 @@ $_URLS = [
 		'index' => [
 			'link_text' => ['en' => 'File Manager'],
 		],
+		'uploadImage' => [
+			'aliases' => ['en' => 'upload-image'],
+		],
 	],
 ];
