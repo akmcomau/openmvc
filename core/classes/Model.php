@@ -1259,6 +1259,9 @@ class Model {
 		foreach ($this->partial_uniques as $name => $columns) {
 			// look over all the uniques looking for this one
 			$orig_columns = $columns;
+			$index_columns = $columns;
+			array_shift($index_columns);
+			$part_uni_name = $this->sqlHelper()->indexConstraintName($index_columns).'_part_uni';
 			$found = FALSE;
 			foreach ($schema['indexes'] as $curr_name => $curr_columns) {
 				if (!is_array($columns)) {
@@ -1269,7 +1272,7 @@ class Model {
 				sort($columns);
 				$diff1 = array_diff($columns, $curr_columns);
 				$diff2 = array_diff($curr_columns, $columns);
-				if (count(array_merge($diff1, $diff2)) == 0) {
+				if (count(array_merge($diff1, $diff2)) == 0 || $part_uni_name == $curr_name) {
 					$found = TRUE;
 					break;
 				}
@@ -1277,7 +1280,7 @@ class Model {
 
 			// new unique
 			if (!$found) {
-				//$updates['add_partial_unique'][$name] = $orig_columns;
+				$updates['add_partial_unique'][$name] = $orig_columns;
 			}
 		}
 

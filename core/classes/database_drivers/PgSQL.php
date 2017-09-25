@@ -488,7 +488,7 @@ class PgSQL extends DatabaseDriver {
 		$this->database->executeQuery($sql, TRUE);
 	}
 
-	protected function indexConstraintName($columns) {
+	public function indexConstraintName($columns) {
 		if (!is_array($columns)) {
 			$columns = [$columns];
 		}
