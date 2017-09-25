@@ -122,6 +122,14 @@
 								<?php echo $form->getHtmlErrorDiv('parent_template'); ?>
 							</div>
 						</div>
+						<hr class="separator-2column" />
+						<div class="row">
+							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_banner_image; ?></div>
+							<div class="col-md-9 col-sm-9 ">
+								<input type="text" class="form-control" name="banner_image" value="<?php echo htmlspecialchars($banner_image); ?>" />
+								<?php echo $form->getHtmlErrorDiv('banner_image'); ?>
+							</div>
+						</div>
 						<?php if ($misc_page) { ?>
 							<hr class="separator-2column" />
 							<div class="row">

@@ -19,6 +19,7 @@ $_LANGUAGE = [
 	'method_name' => 'Method',
 	'method_alias' => 'Method Alias',
 	'parent_template' => 'Parent Template',
+	'banner_image' => 'Banner Image',
 	'link_text' => 'Link Text',
 	'content' => 'Content',
 	'preview' => 'Content Preview',

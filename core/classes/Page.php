@@ -138,6 +138,7 @@ class Page {
 				'content'          => '',
 				'category'         => '',
 				'parent_template'  => '',
+				'banner_image'     => '',
 			];
 		}
 
@@ -169,6 +170,7 @@ class Page {
 			'content'          => '',
 			'category'         => $category_id,
 			'parent_template'  => $this->url->parentTemplate($controller, $method),
+			'banner_image'     => $this->url->bannerImage($controller, $method),
 		];
 	}
 
@@ -318,6 +320,13 @@ class Page {
 		}
 		else {
 			$method_map['parent_template'] = $data['parent_template'];
+		}
+
+		if (empty($data['banner_image'])) {
+			$method_map['banner_image'] = '';
+		}
+		else {
+			$method_map['banner_image'] = $data['banner_image'];
 		}
 
 		if (empty($data['category'])) {

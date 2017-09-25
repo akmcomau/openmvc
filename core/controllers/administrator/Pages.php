@@ -164,6 +164,7 @@ class Pages extends Controller {
 		$data['meta_tags']['og:image'] = $form_page->getValue('meta_og:image');
 
 		$data['parent_template'] = $form_page->getValue('parent_template');
+		$data['banner_image'] = $form_page->getValue('banner_image');
 
 		$data['controller_alias'] = $form_page->getValue('controller_alias');
 		if ($form_page->getValue('method_name')) {
@@ -219,6 +220,10 @@ class Pages extends Controller {
 				'required' => FALSE,
 			],
 			'parent_template' => [
+				'type' => 'string',
+				'required' => FALSE,
+			],
+			'banner_image' => [
 				'type' => 'string',
 				'required' => FALSE,
 			],

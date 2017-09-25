@@ -440,6 +440,16 @@ class URL {
 		return '';
 	}
 
+	public function bannerImage($controller, $method) {
+		if (!isset(self::$url_map['forward'][$controller])) {
+			$controller = str_replace('/', '\\', $controller);
+		}
+		if (isset(self::$url_map['forward'][$controller]['methods'][$method]['banner_image'])) {
+			return self::$url_map['forward'][$controller]['methods'][$method]['banner_image'];
+		}
+		return '';
+	}
+
 	public function seoController($controller) {
 		if (!isset(self::$url_map['forward'][$controller])) {
 			$controller = str_replace('/', '\\', $controller);
