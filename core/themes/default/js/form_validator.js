@@ -76,9 +76,10 @@ $.extend(FormValidator, {
 	},
 	displayValidationError: function (form_id, element, element_name, element_index, message) {
 		var array_name = element_name+'-error';
-		console.log(element);
 		if (element.is_array) {
-			array_name += '-'+element_index;
+			if (typeof(element.one_error) == 'undefined' || !element.one_error) {
+				array_name += '-'+element_index;
+			}
 		}
 		var error = $('#'+form_id+' #'+array_name);
 		error.html(message);
