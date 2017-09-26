@@ -32,6 +32,11 @@ class Address extends Model {
 			'data_type'      => 'bigint',
 			'null_allowed'   => TRUE,
 		],
+		'address_company' => [
+			'data_type'      => 'text',
+			'data_length'    => '128',
+			'null_allowed'   => TRUE,
+		],
 		'address_first_name' => [
 			'data_type'      => 'text',
 			'data_length'    => '128',
@@ -41,6 +46,16 @@ class Address extends Model {
 			'data_type'      => 'text',
 			'data_length'    => '128',
 			'null_allowed'   => FALSE,
+		],
+		'address_phone' => [
+			'data_type'      => 'text',
+			'data_length'    => '32',
+			'null_allowed'   => TRUE,
+		],
+		'address_email' => [
+			'data_type'      => 'text',
+			'data_length'    => '128',
+			'null_allowed'   => TRUE,
 		],
 		'address_line1' => [
 			'data_type'      => 'text',
