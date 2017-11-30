@@ -39,8 +39,8 @@ class Root extends Controller {
 			}
 		}
 
-		$data = ['controller' => $this];
-		if (is_array($extra_data)) $data = $extra_data;
+		$data = ['controller' => $this, 'model' => $this->model];
+		if (is_array($extra_data)) $data = arary_merge($data, $extra_data);
 		if (isset($page_data['data'])) {
 			foreach ($page_data['data'] as $property => $method) {
 				$data[$property] = $this->$method();
