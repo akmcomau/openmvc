@@ -917,7 +917,7 @@ class Model {
 	 * @param $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
 	 * @return \b string An SQL fragment
 	 */
-	protected function getOrderGroupSQL(array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
+	public function getOrderGroupSQL(array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
 		$sql = '';
 		if ($grouping) {
 			foreach ($grouping as &$column) {
