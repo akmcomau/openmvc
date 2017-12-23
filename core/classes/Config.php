@@ -365,8 +365,6 @@ class Config {
 			throw new DomainRedirectException('www.'.$default_site->domain);
 		}
 
-		print_r($this->configuration);
-
 		throw new ConfigException("HTTP_HOST does not reference a site: $host");
 	}
 
