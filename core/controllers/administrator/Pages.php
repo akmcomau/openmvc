@@ -119,7 +119,11 @@ class Pages extends Controller {
 		$page_category = $model->getModel('\core\classes\models\PageCategory');
 		$data['categories'] = $page_category->getAsOptions($this->allowedSiteIDs());
 
-		if ($action == 'save' && $data['misc_page']) {
+		if (
+			$action == 'save' && (
+				$data['misc_page'] ||
+				($this->config->siteConfig()->editable_homepage && $controller == 'Root' && $method == 'index')
+			)) {
 			$data['content'] = $_REQUEST['main-content'];
 			$page->update($data, TRUE);
 			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['update-success']));

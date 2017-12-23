@@ -370,9 +370,17 @@ class Page {
 		}
 
 		// Update the template file
-		if ($data['misc_page']) {
+		if (
+			$data['misc_page'] ||
+			($this->config->siteConfig()->editable_homepage && $controller == 'Root' && $method == 'index')
+		) {
 			$theme_path = $root_path.'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS.'pages'.DS.'misc'.DS;
-			$theme_file = $theme_path.$data['method'].'.php';
+			if ($this->config->siteConfig()->editable_homepage && $controller == 'Root' && $method == 'index') {
+				$theme_file = $theme_path.'homepage.php';
+			}
+			else {
+				$theme_file = $theme_path.$data['method'].'.php';
+			}
 
 			$data['content'] = preg_replace('/(\n\r?)+/', "\n", $data['content']);
 

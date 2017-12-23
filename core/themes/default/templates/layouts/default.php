@@ -42,7 +42,7 @@
 		echo '<meta property="'.$property.'" content="'.htmlspecialchars($value).'" />';
 	} ?>
 
-	<?php if ($administrator_logged_in) { ?>
+	<?php if ($this->config->siteConfig()->contenttools_page_edit && $administrator_logged_in) { ?>
 		<script type="text/javascript">
 			var edit_url = '<?php echo $this->url->getUrl('administrator\Pages', 'edit', [$controller_name, $method_name, $sub_page, 'save']); ?>';
 		</script>

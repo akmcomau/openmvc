@@ -81,6 +81,9 @@ class Layout extends Renderable {
 			$sub_page = $this->sub_page;
 			$editable = TRUE;
 		}
+		elseif ($this->config->siteConfig()->editable_homepage && $controller_name == 'Root' && $method_name == 'index') {
+			$editable = TRUE;
+		}
 
 		$title = $this->meta_tags['orig_title'];
 		unset($this->meta_tags['orig_title']);

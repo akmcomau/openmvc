@@ -130,7 +130,7 @@
 								<?php echo $form->getHtmlErrorDiv('banner_image'); ?>
 							</div>
 						</div>
-						<?php if ($misc_page) { ?>
+						<?php if ($this->config->siteConfig()->ckeditor_page_edit && $misc_page) { ?>
 							<hr class="separator-2column" />
 							<div class="row">
 								<div class="col-md-3 col-sm-3 title-2column">

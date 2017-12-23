@@ -39,6 +39,9 @@ function log_display_exception($display_error, $logger, $ex) {
 	global $request;
 	global $response;
 
+	http_response_code(500);
+	header("HTTP/1.1 500 Internal Server Error");
+
 	$logger->error("Error during dispatch: $ex");
 	if ($display_error && (php_sapi_name() === 'cli')) {
 		echo "\n".$ex."\n";

@@ -17,7 +17,7 @@
 
 	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jquery/jquery.min.js'); ?>"></script>
 	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/jqueryui/jquery-ui.js'); ?>"></script>
-	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/bootstrap/js/bootstrap.min.js'); ?>"></script>
+	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/packages/bootstrap/dist/js/bootstrap.min.js'); ?>"></script>
 	<script src="<?php echo $this->url->getStaticUrl('/core/themes/default/js/form_validator.js'); ?>"></script>
 
 	<?php if ($this->config->siteConfig()->enable_latex) { ?>

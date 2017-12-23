@@ -17,7 +17,12 @@ class Root extends Controller {
 	}
 
 	public function index() {
-		$template = $this->getTemplate('pages/homepage.php');
+		if ($this->config->siteConfig()->editable_homepage) {
+			$template = $this->getTemplate('pages/misc/homepage.php');
+		}
+		else {
+			$template = $this->getTemplate('pages/homepage.php');
+		}
 		$this->response->setContent($template->render());
 	}
 
@@ -128,6 +133,7 @@ class Root extends Controller {
 	public function error401() {
 		$this->logger->info('Return error 401');
 		$this->language->loadLanguageFile('error.php');
+		http_response_code(401);
 		header("HTTP/1.1 401 Permission Denied");
 		$template = $this->getTemplate('pages/error_401.php');
 		$this->response->setContent($template->render());
@@ -136,6 +142,7 @@ class Root extends Controller {
 	public function error404() {
 		$this->logger->info('Return error 404');
 		$this->language->loadLanguageFile('error.php');
+		http_response_code(404);
 		header("HTTP/1.1 404 Not Found");
 		$template = $this->getTemplate('pages/error_404.php');
 		$this->response->setContent($template->render());
@@ -144,6 +151,7 @@ class Root extends Controller {
 	public function error500() {
 		$this->logger->info('Return error 500');
 		$this->language->loadLanguageFile('error.php');
+		http_response_code(500);
 		header("HTTP/1.1 500 Internal Server Error");
 		$template = $this->getTemplate('pages/error_500.php');
 		$this->response->setContent($template->render());
