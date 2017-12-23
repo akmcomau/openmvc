@@ -374,6 +374,7 @@ class Page {
 			$data['misc_page'] ||
 			($this->config->siteConfig()->editable_homepage && $controller == 'Root' && $method == 'index')
 		) {
+			// get the path to the template
 			$theme_path = $root_path.'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS.'pages'.DS.'misc'.DS;
 			if ($this->config->siteConfig()->editable_homepage && $controller == 'Root' && $method == 'index') {
 				$theme_file = $theme_path.'homepage.php';
@@ -382,7 +383,30 @@ class Page {
 				$theme_file = $theme_path.$data['method'].'.php';
 			}
 
+			// remove multiple consecutive line breaks
 			$data['content'] = preg_replace('/(\n\r?)+/', "\n", $data['content']);
+
+			// dont do absolute links to page links on this domain
+			$data['content'] = preg_replace('|href\s*=\s*"http://'.$this->config->getSiteDomain().'/|', 'href="/', $data['content']);
+			$data['content'] = preg_replace('|href\s*=\s*"https://'.$this->config->getSiteDomain().'/|', 'href="/', $data['content']);
+			$data['content'] = preg_replace('|href\s*=\s*"http://www.'.$this->config->getSiteDomain().'/|', 'href="/', $data['content']);
+			$data['content'] = preg_replace('|href\s*=\s*"https://www.'.$this->config->getSiteDomain().'/|', 'href="/', $data['content']);
+
+			$data['content'] = preg_replace('|href\s*=\s*"http://'.$this->config->siteConfig()->domain.'/|', 'href="/', $data['content']);
+			$data['content'] = preg_replace('|href\s*=\s*"https://'.$this->config->siteConfig()->domain.'/|', 'href="/', $data['content']);
+			$data['content'] = preg_replace('|href\s*=\s*"http://www.'.$this->config->siteConfig()->domain.'/|', 'href="/', $data['content']);
+			$data['content'] = preg_replace('|href\s*=\s*"https://www.'.$this->config->siteConfig()->domain.'/|', 'href="/', $data['content']);
+
+			// dont do absolute links to iamges on this domain
+			$data['content'] = preg_replace('|src\s*=\s*"http://'.$this->config->getSiteDomain().'/|', 'src="/', $data['content']);
+			$data['content'] = preg_replace('|src\s*=\s*"https://'.$this->config->getSiteDomain().'/|', 'src="/', $data['content']);
+			$data['content'] = preg_replace('|src\s*=\s*"http://www.'.$this->config->getSiteDomain().'/|', 'src="/', $data['content']);
+			$data['content'] = preg_replace('|src\s*=\s*"https://www.'.$this->config->getSiteDomain().'/|', 'src="/', $data['content']);
+
+			$data['content'] = preg_replace('|src\s*=\s*"http://'.$this->config->siteConfig()->domain.'/|', 'src="/', $data['content']);
+			$data['content'] = preg_replace('|src\s*=\s*"https://'.$this->config->siteConfig()->domain.'/|', 'src="/', $data['content']);
+			$data['content'] = preg_replace('|src\s*=\s*"http://www.'.$this->config->siteConfig()->domain.'/|', 'src="/', $data['content']);
+			$data['content'] = preg_replace('|src\s*=\s*"https://www.'.$this->config->siteConfig()->domain.'/|', 'src="/', $data['content']);
 
 			if (!is_dir($theme_path)) {
 				mkdir($theme_path, 0775, TRUE);
