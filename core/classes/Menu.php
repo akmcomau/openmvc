@@ -75,6 +75,14 @@ class Menu {
 		}
 	}
 
+	public function setCssClassUL($class) {
+		$this->ul_class = $class;
+	}
+
+	public function setCssClassA($class) {
+		$this->a_class = $class;
+	}
+
 	public function insert_menu($after, $key, $data) {
 		$array = &$this->menu_data;
 		if (is_array($after)) {
