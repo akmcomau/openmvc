@@ -227,7 +227,8 @@ class Menu {
 			}
 
 			$attr = $children ? ' class="dropdown-toggle" data-toggle="dropdown"' : '';
-			print '<a href="'.$item['url'].'"'.$attr.'>'.$html.'</a>';
+			$a_class = (isset($item['a_class']) ? ' '.$item['a_class'] : '');
+			print '<a class="'.$a_class.'" href="'.$item['url'].'"'.$attr.'>'.$html.'</a>';
 
 			if ($children) {
 				$this->recursiveBootstrapMenu($children, 1);

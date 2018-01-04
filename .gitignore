@@ -13,6 +13,7 @@ composer/composer.phar
 composer/vendor/
 composer/components/
 logs/*.log
+logs/*_log
 logs/*.log.*
 sites/*
 modules/*
