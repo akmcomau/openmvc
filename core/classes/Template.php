@@ -75,7 +75,7 @@ class Template {
 		$filename = $this->getAbsoluteFilename();
 
 		// default data for the template
-		$this->data['page_div_class'] = $this->config->siteConfig()->page_div_class;
+		$this->data['page_class'] = $this->config->siteConfig()->page_class;
 		$this->data['site_url'] = $this->config->getSiteUrl();
 		extract($this->data);
 
