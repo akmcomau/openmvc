@@ -205,6 +205,10 @@ class PgSQL extends DatabaseDriver {
 				$type = 'INET';
 				break;
 
+			case 'earth':
+				$type = 'EARTH';
+				break;
+
 			default:
 				throw new ModelException("Invalid data type: ".$data['data_type']);
 				break;
@@ -280,6 +284,9 @@ class PgSQL extends DatabaseDriver {
 			case 'bytea':
 				return 'blob';
 				break;
+
+			case 'USER-DEFINED':
+				return 'earth';
 		}
 
 		throw new \ErrorException("Unknown Postgres data type: $type");
