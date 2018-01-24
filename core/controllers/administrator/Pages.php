@@ -175,8 +175,10 @@ class Pages extends Controller {
 			$data['method'] = $form_page->getValue('method_name');
 		}
 		$data['method_alias'] = $form_page->getValue('method_alias');
-		$data['content'] = $form_page->getValue('content');
 		$data['link_text'] = $form_page->getValue('link_text');
+
+		// Not storing content
+		unset($data['content']);
 
 		$data['category'] = $form_page->getValue('category');
 		if ((int)$data['category'] == 0) $data['category'] = NULL;

@@ -371,8 +371,10 @@ class Page {
 
 		// Update the template file
 		if (
-			$data['misc_page'] ||
-			($this->config->siteConfig()->editable_homepage && $controller == 'Root' && $method == 'index')
+			isset($data['content']) && (
+				$data['misc_page'] ||
+				($this->config->siteConfig()->editable_homepage && $controller == 'Root' && $method == 'index')
+			)
 		) {
 			// get the path to the template
 			$theme_path = $root_path.'sites'.DS.$site->namespace.DS.'themes'.DS.$theme.DS.'templates'.DS.'pages'.DS.'misc'.DS;
