@@ -257,6 +257,14 @@ class Model {
 		];
 	}
 
+	public function quote($value) {
+		if ($this->database->getEngine() == 'pgsql' && preg_match('/^E\'\\\\/', $value)) {
+			// dont quote escaped values
+			return $value;
+		}
+		return $this->database->quote($value);
+	}
+
 	/**
 	 * Returns the object to the database helper.  The database helper is a driver
 	 * for the database that translates database schema to the Models table association data,
@@ -498,7 +506,7 @@ class Model {
 			}
 			elseif (array_key_exists($column, $this->record)) {
 				$columns[] = $column;
-				$values[]  = $this->database->quote($this->record[$column]);
+				$values[]  = $this->quote($this->record[$column]);
 			}
 		}
 
@@ -541,11 +549,11 @@ class Model {
 		$values  = [];
 		foreach (array_keys($this->columns) as $column) {
 			if ($column != $primary_key && array_key_exists($column, $this->record)) {
-				$values[]  = $column.'='.$this->database->quote($this->record[$column]);
+				$values[]  = $column.'='.$this->quote($this->record[$column]);
 			}
 		}
 
-		$sql = "UPDATE $table SET ".join(',', $values)." WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
+		$sql = "UPDATE $table SET ".join(',', $values)." WHERE $primary_key = ".$this->quote($this->record[$primary_key]);
 		$this->database->executeQuery($sql, TRUE);
 
 		$this->callHook('update');
@@ -565,7 +573,7 @@ class Model {
 
 		$this->callHook('delete');
 
-		$sql = "DELETE FROM $table WHERE $primary_key = ".$this->database->quote($this->record[$primary_key]);
+		$sql = "DELETE FROM $table WHERE $primary_key = ".$this->quote($this->record[$primary_key]);
 		$this->database->executeQuery($sql, TRUE);
 	}
 
@@ -820,21 +828,21 @@ class Model {
 			if (is_array($value)) {
 				switch ($value['type']) {
 					case 'like':
-						$where[] = $column.' LIKE '.$this->database->quote($value['value']);
+						$where[] = $column.' LIKE '.$this->quote($value['value']);
 						break;
 
 					case 'likelower':
-						$where[] = 'LOWER('.$column.') LIKE '.$this->database->quote(strtolower($value['value']));
+						$where[] = 'LOWER('.$column.') LIKE '.$this->quote(strtolower($value['value']));
 						break;
 
 					case 'ilike':
-						$where[] = $column.' ILIKE '.$this->database->quote($value['value']);
+						$where[] = $column.' ILIKE '.$this->quote($value['value']);
 						break;
 
 					case 'in':
 						if (is_array($value['value']) && count($value['value']) > 0) {
 							foreach ($value['value'] as &$val) {
-								$val = $this->database->quote($val);
+								$val = $this->quote($val);
 							}
 							$where[] = $column.' IN ('.join(',', $value['value']).')';
 						}
@@ -848,7 +856,7 @@ class Model {
 						if ($value['value']) {
 							if ($value['value'] && is_array($value['value'])) {
 								foreach ($value['value'] as &$val) {
-									$val = $this->database->quote($val);
+									$val = $this->quote($val);
 								}
 								$where[] = $column.' NOT IN ('.join(',', $value['value']).')';
 							}
@@ -864,31 +872,31 @@ class Model {
 						break;
 
 					case 'upper=':
-						$where[] = 'UPPER('.$column.')='.$this->database->quote(strtoupper($value['value']));
+						$where[] = 'UPPER('.$column.')='.$this->quote(strtoupper($value['value']));
 						break;
 
 					case 'lower=':
-						$where[] = 'LOWER('.$column.')='.$this->database->quote(strtolower($value['value']));
+						$where[] = 'LOWER('.$column.')='.$this->quote(strtolower($value['value']));
 						break;
 
 					case '>':
-						$where[] = $column.'>'.$this->database->quote($value['value']);
+						$where[] = $column.'>'.$this->quote($value['value']);
 						break;
 
 					case '>=':
-						$where[] = $column.'>='.$this->database->quote($value['value']);
+						$where[] = $column.'>='.$this->quote($value['value']);
 						break;
 
 					case '<':
-						$where[] = $column.'<'.$this->database->quote($value['value']);
+						$where[] = $column.'<'.$this->quote($value['value']);
 						break;
 
 					case '<=':
-						$where[] = $column.'<='.$this->database->quote($value['value']);
+						$where[] = $column.'<='.$this->quote($value['value']);
 						break;
 
 					case '!=':
-						$where[] = $column.'!='.$this->database->quote($value['value']);
+						$where[] = $column.'!='.$this->quote($value['value']);
 						break;
 				}
 			}
@@ -897,7 +905,7 @@ class Model {
 					$where[] = $column.' IS NULL';
 				}
 				else {
-					$where[] = $column.'='.$this->database->quote($value);
+					$where[] = $column.'='.$this->quote($value);
 				}
 			}
 		}
