@@ -258,7 +258,17 @@ class Model {
 	}
 
 	public function quote($value) {
-		if ($this->database->getEngine() == 'pgsql' && preg_match('/^E\'\\\\/', $value)) {
+		if (is_resource($value)) {
+			// send out binary data
+			$value = bin2hex(stream_get_contents($value));
+			$result = "E'\\\\x";
+			for($i=0; $i<strlen($value); $i++) {
+				$result .= $value[$i];
+			}
+			$result .= "'";
+			return $result;
+		}
+		elseif ($this->database->getEngine() == 'pgsql' && preg_match('/^E\'\\\\/', $value)) {
 			// dont quote escaped values
 			return $value;
 		}
