@@ -9,7 +9,12 @@ $display_errors = TRUE;
 
 function log_request_start($config, $logger) {
 	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ' FORWARDED: '.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
-	$logger->info('Start Request ['.$ip.'] '.($config->is_robot ? ' [ROBOT]' : '').': '.$_SERVER['REQUEST_URI'].' => '.json_encode($_GET));
+	if (php_sapi_name() == 'cli') {
+		$logger->info('Start Script ['.$ip.'] : '.$_SERVER['PHP_SELF'].' => '.json_encode($argv));
+	}
+	else {
+		$logger->info('Start Request ['.$ip.'] '.($config->is_robot ? ' [ROBOT]' : '').': '.$_SERVER['REQUEST_URI'].' => '.json_encode($_GET));
+	}
 
 	// log the useragent if the session was just created
 	if (!isset($_SESSION['created'])) {
@@ -90,15 +95,17 @@ function shutdown_error_handler() {
 		log_display_exception($display_errors, $logger, $ex);
 	}
 
+	// get response time
+	$script_time = number_format(microtime(TRUE) - $script_start, 6);
+
 	// run the after_request hook
 	if ($config) {
-		Dispatcher::afterRequest();
+		Dispatcher::afterRequest($script_time);
 	}
 
 	// Log the end of the script
-	$script_time = number_format(microtime(TRUE) - $script_start, 6);
 	if (php_sapi_name() == 'cli') {
-		$logger->debug("End Request: $script_time");
+		$logger->debug("End Script: $script_time");
 	}
 	else {
 		$logger->info("End Request: $script_time");

@@ -359,15 +359,20 @@ class Dispatcher {
 	/**
 	 * Execute the 'After Request' hooks
 	 */
-	public static function afterRequest() {
+	public static function afterRequest($script_time) {
 		if (self::$static_config) {
 			$modules = (new Module(self::$static_config))->getEnabledModules();
 			foreach ($modules as $module) {
 				if (isset($module['hooks']['request']['after_request'])) {
-					$class = $module['namespace'].'\\'.$module['hooks']['request']['after_request'];
-					self::$static_logger->debug("Calling Hook: ".get_class($class)."::after_request");
-					$class = new $class(self::$static_config, self::$static_database, self::$static_request);
-					call_user_func_array(array($class, 'after_request'), [self::$static_request]);
+					try {
+						$class = $module['namespace'].'\\'.$module['hooks']['request']['after_request'];
+						self::$static_logger->debug("Calling Hook: ".$class."::after_request");
+						$class = new $class(self::$static_config, self::$static_database, self::$static_request);
+						call_user_func_array(array($class, 'after_request'), [$script_time]);
+					}
+					catch (\Exception $ex) {
+						self::$static_logger->debug("Error during Hook::after_request: ".$ex);
+					}
 				}
 			}
 		}
