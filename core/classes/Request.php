@@ -19,6 +19,8 @@ class Request {
 	protected $method_params = NULL;
 	protected $database = NULL;
 
+	protected $events = [];
+
 	protected $authentication;
 	protected $url;
 	protected $config;
@@ -162,5 +164,18 @@ class Request {
 		unset($this->get_params['method']);
 		unset($this->get_params['controller']);
 		unset($this->get_params['params']);
+	}
+
+	public function getEvents() {
+		return $this->events;
+	}
+
+	public function addEvent($name, $int = NULL, $double = NULL, $text = NULL) {
+		$this->events[] = [
+			'name'  => $name,
+			'int' => $int,
+			'double' => $double,
+			'text'  => $text
+		];
 	}
 }

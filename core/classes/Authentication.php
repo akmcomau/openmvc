@@ -162,6 +162,9 @@ class Authentication {
 		}
 
 		$this->callHook('after_loginCustomer', [$customer]);
+
+		// Register an analytics event
+		$this->request->addEvent('Customer Login', $this->getCustomerID());
 	}
 
 	/**
@@ -185,6 +188,9 @@ class Authentication {
 		$this->logger->info("Administrator logged in: ".$this->getAdministratorID());
 
 		$this->callHook('after_loginAdministrator', [$admin]);
+
+		// Register an analytics event
+		$this->request->addEvent('Administrator Login', $this->getAdministratorID());
 	}
 
 	/**
@@ -214,6 +220,9 @@ class Authentication {
 			if ($call_hooks) {
 				$this->callHook('after_logoutCustomer', [$customer_id]);
 			}
+
+			// Register an analytics event
+			$this->request->addEvent('Customer Logout', $customer_id);
 		}
 	}
 
@@ -235,6 +244,9 @@ class Authentication {
 			if ($call_hooks) {
 				$this->callHook('after_logoutAdministrator', [$admin_id]);
 			}
+
+			// Register an analytics event
+			$this->request->addEvent('Administrator Logout', $admin_id);
 		}
 	}
 

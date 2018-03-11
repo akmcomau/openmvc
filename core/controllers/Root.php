@@ -106,6 +106,9 @@ class Root extends Controller {
 			$email->setBodyTemplate($body);
 			$email->setHtmlTemplate($html);
 
+			// create the event
+			$this->request->addEvent('Contact Us', NULL, NULL, $this->request->postParam('email'));
+
 			if ($email->send()) {
 				throw new RedirectException($this->url->getUrl('Root', 'contactUsSent'));
 			}
