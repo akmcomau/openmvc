@@ -120,6 +120,16 @@ class Template {
 		if (file_exists($theme_file)) {
 			return $theme_file;
 		}
+
+		// check for the template in the default theme
+		if (property_exists($this->config->siteConfig(), 'default_theme')) {
+			$theme_default_path = 'sites'.DS.$site->namespace.DS.'themes'.DS.$this->config->siteConfig()->default_theme.DS.'templates'.DS;
+			$theme_default_file = $root_path.$theme_default_path.$filename;
+			if (file_exists($theme_default_file)) {
+				return $theme_default_file;
+			}
+		}
+
 		if (file_exists($default_file)) {
 			return $default_file;
 		}

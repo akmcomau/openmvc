@@ -58,7 +58,11 @@ class Config {
 			$site_data->domain = $domain;
 			if (property_exists($site_data, 'domains')) {
 				foreach ($site_data->domains as $domain) {
-					$clones[$domain] = &$site_data;
+					$clones[$domain] = clone $site_data;
+					if (property_exists($site_data, 'themes') && property_exists($site_data->themes, $domain)) {
+						$clones[$domain]->default_theme = $site_data->theme;
+						$clones[$domain]->theme = $site_data->themes->$domain;
+					}
 				}
 			}
 		}
