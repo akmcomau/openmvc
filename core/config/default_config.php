@@ -83,6 +83,9 @@ $_DEFAULT_CONFIG = (object)[
 		'language' => 'en',
 		'records_per_page' => 20,
 		'num_pagination_links' => 11,
+		'contact_enable_recaptcha' => false,
+		'contact_recaptcha_secret' => '',
+		'contact_recaptcha_site_key' => '',
 		'contact_fields' => [
 			'name' => ['type'=>'string', 'message_text_tag' => 'error_name'],
 			'email' => ['type'=>'email', 'message_text_tag' => 'error_email'],

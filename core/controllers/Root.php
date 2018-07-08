@@ -91,29 +91,74 @@ class Root extends Controller {
 		$form = $this->contactUsForm();
 
 		if ($form->validate()) {
-			$this->logger->info('Contact Us submitted from: '.$this->request->postParam('email'));
-			$data = [];
-			foreach ($site_params->contact_fields as $property => $stuff) {
-				$data['fields'][$this->language->get($property)] = $this->request->postParam($property);
+			// check the recaptcha
+			$recaptcha_success = TRUE;
+			if ($this->config->siteConfig()->contact_enable_recaptcha) {
+				$recaptcha_success = FALSE;
+				if (isset($_REQUEST['g-recaptcha-response']) && !empty($_REQUEST['g-recaptcha-response'])) {
+					$url = 'https://www.google.com/recaptcha/api/siteverify';
+
+					$post_data = [
+						'secret'   => $this->config->siteConfig()->contact_recaptcha_secret,
+						'response' => $_REQUEST['g-recaptcha-response'],
+						'remoteip' => $_SERVER['REMOTE_ADDR'],
+					];
+
+					$options = array(
+						'http' => array(
+							'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+							'method'  => 'POST',
+							'content' => http_build_query($post_data)
+						)
+					);
+
+					$context  = stream_context_create($options);
+					$result = file_get_contents($url, false, $context);
+					if ($result !== FALSE) {
+						$result = json_decode($result);
+						if ($result && is_object($result) && property_exists($result, 'success') && $result->success) {
+							$recaptcha_success = TRUE;
+						}
+					}
+				}
 			}
 
-			$body = $this->getTemplate('emails/enquiry.txt.php', $data);
-			$html = $this->getTemplate('emails/enquiry.html.php', $data);
-			$email = new Email($this->config);
-			$email->setFromEmail($this->request->postParam('email'));
-			$email->setToEmail($this->config->siteConfig()->email_addresses->contact_us);
-			$email->setSubject($this->config->siteConfig()->name.': Website Enquiry');
-			$email->setBodyTemplate($body);
-			$email->setHtmlTemplate($html);
-
-			// create the event
-			$this->request->addEvent('Contact Us', NULL, NULL, $this->request->postParam('email'));
-
-			if ($email->send()) {
-				throw new RedirectException($this->url->getUrl('Root', 'contactUsSent'));
+			if (!$recaptcha_success) {
+				throw new SoftRedirectException(__CLASS__, 'contactUs', [json_encode(['recaptcha' => $this->language->get('error_recaptcha')])]);
 			}
-			else {
-				throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error500');
+
+			if ($recaptcha_success) {
+				// Send the emails
+				$this->logger->info('Contact Us submitted from: '.$this->request->postParam('email'));
+				$data = [];
+				foreach ($site_params->contact_fields as $property => $stuff) {
+					$data['fields'][$this->language->get($property)] = $this->request->postParam($property);
+				}
+
+				$body = $this->getTemplate('emails/enquiry.txt.php', $data);
+				$html = $this->getTemplate('emails/enquiry.html.php', $data);
+				$email1 = new Email($this->config);
+				$email1->setFromEmail($this->config->siteConfig()->email_addresses->contact_us);
+				$email1->setToEmail($this->config->siteConfig()->email_addresses->contact_us);
+				$email1->setSubject($this->config->siteConfig()->name.': Website Enquiry');
+				$email1->setBodyTemplate($body);
+				$email1->setHtmlTemplate($html);
+
+				$body = $this->getTemplate('emails/enquiry_customer.txt.php', $data);
+				$html = $this->getTemplate('emails/enquiry_customer.html.php', $data);
+				$email2 = new Email($this->config);
+				$email2->setFromEmail($this->config->siteConfig()->email_addresses->contact_us);
+				$email2->setToEmail($this->request->postParam('email'));
+				$email2->setSubject($this->config->siteConfig()->name.': Website Enquiry');
+				$email2->setBodyTemplate($body);
+				$email2->setHtmlTemplate($html);
+
+				if ($email1->send() && $email2->send()) {
+					throw new RedirectException($this->url->getUrl('Root', 'contactUsSent'));
+				}
+				else {
+					throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error500');
+				}
 			}
 		}
 
