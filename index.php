@@ -29,6 +29,16 @@ try {
 		$config->setRobot(TRUE);
 	}
 
+	// is this from a campaign
+	if (isset($_REQUEST['utm_source'])) {
+		$_SESSION['from_campaign'] =
+			(isset($_REQUEST['utm_source']) ? $_REQUEST['utm_source'] : '--').' || '.
+			(isset($_REQUEST['utm_medium']) ? $_REQUEST['utm_medium'] : '--').' || '.
+			(isset($_REQUEST['utm_campaign']) ? $_REQUEST['utm_campaign'] : '--').' || '.
+			(isset($_REQUEST['utm_term']) ? $_REQUEST['utm_term'] : '--').' || '.
+			(isset($_REQUEST['utm_content']) ? $_REQUEST['utm_content'] : '--');
+	}
+
 	// log the start of the request
 	if (!(isset($_GET['no_session']) && $_GET['no_session'])) {
 		log_request_start($config, $logger);
