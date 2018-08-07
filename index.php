@@ -38,6 +38,9 @@ try {
 			(isset($_REQUEST['utm_term']) ? $_REQUEST['utm_term'] : '--').' || '.
 			(isset($_REQUEST['utm_content']) ? $_REQUEST['utm_content'] : '--');
 	}
+	else if (isset($_REQUEST['gclid'])) {
+		$_SESSION['from_campaign'] = 'Adwords - '.$_REQUEST['gclid'];
+	}
 
 	// log the start of the request
 	if (!(isset($_GET['no_session']) && $_GET['no_session'])) {
