@@ -70,6 +70,12 @@ class Model {
 	protected $primary_key    = NULL;
 
 	/**
+	 * The column name of the distribution key for the CitusDB table
+	 * @var string $primary_key
+	 */
+	protected $distribution_key    = NULL;
+
+	/**
 	 * During a database creation should this table be created
 	 * @var bool $create_schema
 	 */
@@ -551,6 +557,7 @@ class Model {
 	public function update() {
 		$table       = $this->table;
 		$primary_key = $this->primary_key;
+		$distribution_key = $this->distribution_key;
 
 		if (!isset($this->record[$primary_key])) {
 			throw new ModelException("Object has no primary key: ".print_r($this, TRUE));
@@ -558,7 +565,7 @@ class Model {
 
 		$values  = [];
 		foreach (array_keys($this->columns) as $column) {
-			if ($column != $primary_key && array_key_exists($column, $this->record)) {
+			if ($column != $distribution_key && $column != $primary_key && array_key_exists($column, $this->record)) {
 				$values[]  = $column.'='.$this->quote($this->record[$column]);
 			}
 		}
