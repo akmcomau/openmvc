@@ -86,12 +86,12 @@ class Pages extends Controller {
 		$data = $page->getPage();
 
 		if ($form_page->validate()) {
-			$this->updateFromRequest($form_page, $data);
+			$this->updateFromRequest($form_page, $data, TRUE);
 			$page->update($data, FALSE);
 			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['add-success']));
 		}
 		elseif ($form_page->isSubmitted()) {
-			$this->updateFromRequest($form_page, $data);
+			$this->updateFromRequest($form_page, $data, TRUE);
 			$form_page->setNotification('error', $this->language->get('notification_add_error'));
 		}
 
@@ -129,12 +129,12 @@ class Pages extends Controller {
 			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['update-success']));
 		}
 		elseif ($form_page->validate()) {
-			$this->updateFromRequest($form_page, $data);
+			$this->updateFromRequest($form_page, $data, FALSE);
 			$page->update($data, TRUE);
 			throw new RedirectException($this->url->getUrl('administrator/Pages', 'index', ['update-success']));
 		}
 		elseif ($form_page->isSubmitted()) {
-			$this->updateFromRequest($form_page, $data);
+			$this->updateFromRequest($form_page, $data, FALSE);
 			$form_page->setNotification('error', $this->language->get('notification_update_error'));
 		}
 
@@ -161,7 +161,7 @@ class Pages extends Controller {
 		}
 	}
 
-	protected function updateFromRequest(FormValidator $form_page, &$data) {
+	protected function updateFromRequest(FormValidator $form_page, &$data, $update_content) {
 		$data['meta_tags']['title'] = $form_page->getValue('meta_title');
 		$data['meta_tags']['description'] = $form_page->getValue('meta_description');
 		$data['meta_tags']['keywords'] = $form_page->getValue('meta_keywords');
@@ -177,8 +177,13 @@ class Pages extends Controller {
 		$data['method_alias'] = $form_page->getValue('method_alias');
 		$data['link_text'] = $form_page->getValue('link_text');
 
-		// Not storing content
-		unset($data['content']);
+		if ($update_content) {
+			$data['content'] = ""; //$form_page->getValue('content');
+		}
+		else {
+			// Not storing content
+			unset($data['content']);
+		}
 
 		$data['category'] = $form_page->getValue('category');
 		if ((int)$data['category'] == 0) $data['category'] = NULL;
