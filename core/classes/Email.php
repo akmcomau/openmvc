@@ -52,10 +52,22 @@ class Email {
 	protected $body_template = NULL;
 
 	/**
-	 * The template to use for the HTLM body of this email
+	 * The content to use for the text body of this email
+	 * @var string $body_content
+	 */
+	protected $body_content = NULL;
+
+	/**
+	 * The template to use for the HTML body of this email
 	 * @var string $html_template
 	 */
 	protected $html_template = NULL;
+
+	/**
+	 * The content to use for the HTML body of this email
+	 * @var string $html_content
+	 */
+	protected $html_content = NULL;
 
 	/**
 	 * Holds all the attachments on the email
@@ -174,11 +186,27 @@ class Email {
 	}
 
 	/**
+	 * Set the text message content
+	 * @param $body_content \b String The content for the text message
+	 */
+	public function setBodyContent($body_content) {
+		$this->body_content = $body_content;
+	}
+
+	/**
 	 * Set the HTML message template
 	 * @param $html_template \b Template  The Template object for the HTML message
 	 */
 	public function setHtmlTemplate(Template $html_template) {
 		$this->html_template = $html_template;
+	}
+
+	/**
+	 * Set the HTML message content
+	 * @param $html_content \b String  The content for the HTML message
+	 */
+	public function setHtmlContent($html_content) {
+		$this->html_content = $html_content;
 	}
 
 	/**
@@ -230,6 +258,7 @@ class Email {
 ?>
 --PHP-mixed-<?php echo $random_hash; ?>
 
+<?php if ($this->body_template || $this->body_content) { ?>
 Content-Type: multipart/alternative; boundary="PHP-alt-<?php echo $random_hash; ?>"
 
 --PHP-alt-<?php echo $random_hash; ?>
@@ -238,17 +267,26 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 
 <?php if ($this->config->siteConfig()->force_email_rcpt) echo 'Email recipient overridden, original recipient: '.$this->to_email."\n\n"; ?>
-<?php echo $this->body_template->render(); ?>
+<?php
+if ($this->body_template) echo $this->body_template->render();
+elseif ($this->body_content) echo $this->body_content;
+?>
 
 --PHP-alt-<?php echo $random_hash; ?>
 
+<?php } /* End If body content */ ?>
+<?php if ($this->html_template || $this->html_content) { ?>
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 
 <?php if ($this->config->siteConfig()->force_email_rcpt) echo '<strong>Email recipient overridden, original recipient: '.htmlspecialchars($this->to_email).'</strong><br /><br />'; ?>
-<?php echo $this->html_template->render(); ?>
+<?php
+if ($this->html_template) echo $this->html_template->render();
+elseif ($this->html_content) echo $this->html_content;
+?>
 
 --PHP-alt-<?php echo $random_hash; ?>--
+<?php } /* End If HTML content */ ?>
 <?php
 
 		if (count($this->attachments)) {
