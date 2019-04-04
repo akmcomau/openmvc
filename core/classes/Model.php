@@ -418,6 +418,21 @@ class Model {
 	}
 
 	/**
+	 * Get an element in the objects array
+	 * @param $key     The element's key
+	 *
+	 * @return $object The cached object
+	 */
+	public function getObjectCache($key) {
+		if (isset($this->objects[$key])) {
+			return $this->objects[$key];
+		}
+		else {
+			return NULL;
+		}
+	}
+
+	/**
 	 * Sets an element in the record array
 	 * @param $name  The column name
 	 * @param $value The value for the column
