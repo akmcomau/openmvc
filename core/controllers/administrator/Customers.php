@@ -82,6 +82,77 @@ class Customers extends Controller {
 		$this->response->setContent($template->render());
 	}
 
+	public function csv() {
+		if ($this->config->database->engine == 'none') {
+			$template = $this->getTemplate('pages/administrator/database_required.php');
+			$this->response->setContent($template->render());
+			return;
+		}
+
+		$this->language->loadLanguageFile('administrator/customers.php');
+		$form_search = $this->getCustomerSearchForm();
+
+		$pagination = new Pagination($this->request, 'username');
+
+		$params = ['site_id' => ['type'=>'in', 'value'=>$this->allowedSiteIDs()]];
+		if ($form_search->validate()) {
+			$values = $form_search->getSubmittedValues();
+			foreach ($values as $name => $value) {
+				if (preg_match('/^search_(email|login)$/', $name, $matches) && $value != '') {
+					$value = strtolower($value);
+					$params[$matches[1]] = ['type'=>'ilike', 'value'=>'%'.$value.'%'];
+				}
+			}
+			$this->getExtraSearchParams($values, $params);
+		}
+
+		// get all the customers
+		$model     = new Model($this->config, $this->database);
+		$customer  = $model->getModel($this->customerModelClass);
+		$customers = $customer->getMulti($params, $pagination->getOrdering());
+
+		// The fields to put in the CSV
+		$fields = [
+			'company'      => 'Company',
+			'first_name'   => 'First Name',
+			'last_name'    => 'Last Name',
+			'login'        => 'Username',
+			'email'        => 'Email',
+			'phone'        => 'Phone',
+			'active'       => 'Active',
+		];
+
+		// open a temp file to store the CSV
+		$csv = fopen('php://temp/maxmemory:'. (5*1024*1024), 'r+');
+
+		// Create the header
+		fputcsv($csv, array_values($fields));
+
+		// add the data
+		foreach ($customers as $customer) {
+			$row = [
+				$customer->getCompany()->name,
+				$customer->first_name,
+				$customer->last_name,
+				$customer->login,
+				$customer->email,
+				$customer->phone,
+				$customer->active ? 'Active' : 'Inactive',
+			];
+			fputcsv($csv, array_values($row));
+		}
+
+		// Extract the content
+		rewind($csv);
+		$content = stream_get_contents($csv);
+
+		header('Content-type: text/tab-separated-values');
+		header("Content-Disposition: attachment;filename=customers-".date('Y-m-d').".csv");
+
+		$this->layout = NULL;
+		$this->response->setContent($content);
+	}
+
 	public function add() {
 		if ($this->config->database->engine == 'none') {
 			$template = $this->getTemplate('pages/administrator/database_required.php');
