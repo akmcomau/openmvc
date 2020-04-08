@@ -147,7 +147,7 @@ class Customers extends Controller {
 		$content = stream_get_contents($csv);
 
 		header('Content-type: text/tab-separated-values');
-		header("Content-Disposition: attachment;filename=customers-".date('Y-m-d').".csv");
+		header("Content-Disposition: attachment;filename=customers-".$this->config->siteConfig()->name."-".date('Y-m-d').".csv");
 
 		$this->layout = NULL;
 		$this->response->setContent($content);
