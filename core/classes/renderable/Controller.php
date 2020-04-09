@@ -105,7 +105,7 @@ class Controller extends Renderable {
 		return $this->url = $url;
 	}
 
-public function getRequest() {
+	public function getRequest() {
 		return $this->request;
 	}
 

@@ -2,6 +2,7 @@
 
 use core\classes\Dispatcher;
 use core\classes\URL;
+use core\classes\Database;
 
 $script_start = microtime(TRUE);
 $suppress_exceptions = NULL;
@@ -46,6 +47,9 @@ function log_display_exception($display_error, $logger, $ex) {
 
 	http_response_code(500);
 	header("HTTP/1.1 500 Internal Server Error");
+
+	$GLOBALS['script-error'] = TRUE;
+	$GLOABLS['script-exception'] = $ex;
 
 	$logger->error("Error during dispatch: $ex");
 	if ($display_error && (php_sapi_name() === 'cli')) {
@@ -100,15 +104,15 @@ function shutdown_error_handler() {
 
 	// run the after_request hook
 	if ($config) {
-		Dispatcher::afterRequest($script_time);
+		Dispatcher::afterRequest($script_time, Database::$db_time);
 	}
 
 	// Log the end of the script
 	if (php_sapi_name() == 'cli') {
-		$logger->debug("End Script: $script_time");
+		$logger->info("End Script: $script_time / DB Time: ".Database::$db_time);
 	}
 	else {
-		$logger->info("End Request: $script_time");
+		$logger->info("End Request: $script_time / DB Time: ".Database::$db_time);
 	}
 }
 set_error_handler("exception_error_handler");

@@ -93,6 +93,8 @@ class Database extends PDO {
 	 */
 	protected $creating_database = FALSE;
 
+	static public $db_time = 0;
+
 	/**
 	 * Constructor
 	 * @param $config     \b Config The configuration object
@@ -301,7 +303,11 @@ class Database extends PDO {
 		}
 
 		$this->logger->debug("Executing SQL: $sql");
+		$start = microtime(TRUE);
 		$statement = $this->query($sql);
+		$exec_time = microtime(TRUE) - $start;
+		Database::$db_time += $exec_time;
+		$this->logger->debug("SQL Time: $exec_time");
 		if (!$statement) {
 			$message = "SQL ERROR: {$this->errorCode()} ".join("\n", $this->errorInfo())."\nSQL: $sql";
 			$this->logger->error($message);

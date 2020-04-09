@@ -99,5 +99,6 @@ $_DEFAULT_CONFIG = (object)[
 			'/themes/default/css/' => 'files',
 			'/themes/default/js/' => 'files',
 		],
+		'hooks' => [],
 	]
 ];

@@ -14,8 +14,8 @@ use core\classes\Logger;
 use core\classes\Request;
 use core\classes\URL;
 
-include('core/Robots.php');
 include('core/ErrorHandler.php');
+include('core/Robots.php');
 include('core/Constants.php');
 include('core/classes/AutoLoader.php');
 AutoLoader::init();
