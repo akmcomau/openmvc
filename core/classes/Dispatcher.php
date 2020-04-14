@@ -71,6 +71,13 @@ class Dispatcher {
 		$this->logger   = Logger::getLogger(__CLASS__);
 	}
 
+	public static function initStaticDispatcher(Config $config, Database $database, Request $request) {
+		self::$static_logger   = Logger::getLogger(__CLASS__);
+		self::$static_config   = $config;
+		self::$static_database = $database;
+		self::$static_request  = $request;
+	}
+
 	/**
 	 * Set the database object
 	 * @param $database  The database object
