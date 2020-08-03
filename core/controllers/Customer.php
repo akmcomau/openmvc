@@ -386,7 +386,7 @@ class Customer extends Controller {
 		$this->response->setContent($template->render());
 	}
 
-	protected function getDetailsForm(CustomerModel $customer) {
+	protected function getDetailsForm($customer) {
 		$inputs = [
 			'first_name' => [
 				'type' => 'string',
@@ -432,7 +432,7 @@ class Customer extends Controller {
 					'type'     => 'function',
 					'message'  => $this->language->get('error_phone'),
 					'function' => function($value) {
-						if (preg_match('/[^0-9+()-]/', $value)) {
+						if (preg_match('/[^ 0-9+()-]/', $value)) {
 							return FALSE;
 						}
 						else {
