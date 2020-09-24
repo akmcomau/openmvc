@@ -95,7 +95,7 @@ class Model {
 
 	/**
 	 * An array containing table columns with data types.<br>
-	 * Valid data types: smallint, int, bigint, numeric, date, datetime, bool, text, blob <br>
+	 * Valid data types: smallint, int, bigint, numeric, time, date, datetime, bool, text, blob <br>
 	 * This is an array of the form:
 	 * @code{.php}
 	 *    $columns = [

@@ -185,6 +185,10 @@ class PgSQL extends DatabaseDriver {
 				$type = 'DATE';
 				break;
 
+			case 'time':
+				$type = 'TIME WITHOUT time zone';
+				break;
+
 			case 'datetime':
 				$type = 'TIMESTAMP WITH time zone';
 				break;
@@ -263,6 +267,10 @@ class PgSQL extends DatabaseDriver {
 
 			case 'double precision':
 				return 'double';
+				break;
+
+			case 'time without time zone':
+				return 'time';
 				break;
 
 			case 'timestamp with time zone':
