@@ -337,6 +337,8 @@ class Model {
 			$core_controllers = [];
 			$root_path = __DIR__.DS.'..'.DS.'..'.DS;
 			$root_path_regex = preg_replace("/$regex_DS/", addslashes($regex_DS), $root_path);
+			$root_path_regex = str_replace("(", "\(", $root_path_regex);
+			$root_path_regex = str_replace(")", "\)", $root_path_regex);
 
 			$dirs = [];
 			$dirs[] = $root_path.'core'.DS.'classes'.DS.'models'.DS;
