@@ -2,6 +2,8 @@
 
 namespace core\classes;
 
+/* https://www.php.net/manual/en/function.openssl-encrypt.php */
+
 class Encryption {
 	/**
 	 * Encrypt a string using MCRYPT_RIJNDAEL_128
@@ -9,7 +11,13 @@ class Encryption {
 	 * @param  $key     \b string  The encryption key
 	 */
 	public static function encrypt($string, $key) {
-		return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB);
+		if (strlen($string) % 16) {
+			$string = str_pad($string, strlen($string) + 16 - strlen($string) % 16, "\0");
+		}
+		if (strlen($key) % 16) {
+			$key = str_pad($key, strlen($key) + 16 - strlen($key) % 16, "\0");
+		}
+		return openssl_encrypt($string, "aes-128-ecb", $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
 	}
 
 	/**
@@ -18,7 +26,13 @@ class Encryption {
 	 * @param $key     \b string  The encryption key
 	 */
 	public static function decrypt($string, $key) {
-		return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $string, MCRYPT_MODE_ECB);
+		if (strlen($string) % 16) {
+			$string = str_pad($string, strlen($string) + 16 - strlen($string) % 16, "\0");
+		}
+		if (strlen($key) % 16) {
+			$key = str_pad($key, strlen($key) + 16 - strlen($key) % 16, "\0");
+		}
+		return rtrim(openssl_decrypt($string, "aes-128-ecb", $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING));
 	}
 
 	/**
@@ -27,7 +41,7 @@ class Encryption {
 	 * @param $cost   \b int     The computational cost
 	 */
 	public static function bcrypt($string, $cost) {
-		if (BCRYPT_IMPLEMENTATION == BCRYPT_IMPLEMENTATION_2A) {
+		if (BCRYPT_IMPLEMENTATION == BCRYPT_IMPLEMENTATION_2A && FALSE) {
 			if (strlen($cost) == 1) $cost = '0'.$cost;
 			$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890';
 			$salt = '$2a$'.$cost.'$';
@@ -37,7 +51,7 @@ class Encryption {
 			return crypt($string, $salt);
 		}
 		else {
-		   return password_hash($string, PASSWORD_BCRYPT, ['cost' => $cost]);
+			return password_hash($string, PASSWORD_BCRYPT, ['cost' => $cost]);
 		}
 	}
 
@@ -107,7 +121,7 @@ class Encryption {
 	 */
 	public static function obfuscate($integer, $key) {
 		$integer = pack('I', $integer);
-		$string = mcrypt_encrypt(MCRYPT_3DES, $key, $integer, MCRYPT_MODE_ECB);
+		$string = openssl_encrypt($integer, "des-ede3", $key, OPENSSL_RAW_DATA);
 		$string = self::str2Hex($string);
 		$string = self::str_baseconvert($string, 16, 36);
 		$string = chunk_split(strtoupper($string), 4, '-');
@@ -127,7 +141,7 @@ class Encryption {
 		$string = self::str_baseconvert($string, 36, 16);
 		if (strlen($string) % 2) $string = '0'.$string;
 		$string = self::hex2Str($string);
-		$string = mcrypt_decrypt(MCRYPT_3DES, $key, $string, MCRYPT_MODE_ECB);
+		$string = openssl_decrypt($string, "des-ede3", $key, OPENSSL_RAW_DATA);
 		$string = unpack('I', $string);
 		return $string[1];
 	}
