@@ -9,11 +9,13 @@ $suppress_exceptions = NULL;
 $display_errors = TRUE;
 
 function log_request_start($config, $logger) {
-	$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ' FORWARDED: '.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
+	global $argv;
+
 	if (php_sapi_name() == 'cli') {
-		$logger->info('Start Script ['.$ip.'] : '.$_SERVER['PHP_SELF'].' => '.json_encode($argv));
+		$logger->info('Start Script : '.$_SERVER['PHP_SELF'].' => '.json_encode($argv));
 	}
 	else {
+		$ip = $_SERVER['REMOTE_ADDR'].(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? ' FORWARDED: '.$_SERVER['HTTP_X_FORWARDED_FOR'] : '');
 		$logger->info('Start Request ['.$ip.'] '.($config->is_robot ? ' [ROBOT]' : '').': '.$_SERVER['REQUEST_URI'].' => '.json_encode($_GET));
 	}
 
