@@ -60,7 +60,8 @@ class Customer extends Controller {
 			'register' => $form_register,
 			'controller' => $controller,
 			'method' => $method,
-			'params' => $params,
+			'params' => json_encode(explode('/', $params)),
+			'get_params' => http_build_query($_GET),
 			'remember_me' => $remember_me,
 		];
 
@@ -82,15 +83,12 @@ class Customer extends Controller {
 		setcookie('rememberme', $details, $expire, '/', $this->config->getSiteDomain());
 	}
 
-	public function login($controller = NULL, $method = NULL, $param = NULL) {
+	public function login($controller = NULL, $method = NULL, $params = NULL) {
 		if ($this->authentication->customerLoggedIn()) {
 			throw new RedirectException($this->url->getUrl('Customer'));
 		}
-		$params = NULL;
-		if ($param) {
-			$params = [ $param ];
-		}
 
+		$params = json_decode($params);
 		$this->language->loadLanguageFile('customer.php');
 
 		$bcrypt_cost   = $this->config->siteConfig()->bcrypt_cost;
@@ -122,6 +120,7 @@ class Customer extends Controller {
 					$this->request->session->set('login-redirect-controller', $controller);
 					$this->request->session->set('login-redirect-method', $method);
 					$this->request->session->set('login-redirect-params', $params);
+					$this->request->session->set('login-redirect-get', http_build_query($_GET));
 				}
 
 				if ($this->config->siteConfig()->post_login_redirect) {
@@ -151,7 +150,8 @@ class Customer extends Controller {
 			'register' => $form_register,
 			'controller' => $controller,
 			'method' => $method,
-			'params' => $param,
+			'params' => json_encode(explode('/', $params)),
+			'get_params' => http_build_query($_GET),
 			'remember_me' => $remember_me,
 		];
 
@@ -163,10 +163,14 @@ class Customer extends Controller {
 		$controller = $this->request->session->get('login-redirect-controller');
 		$method = $this->request->session->get('login-redirect-method');
 		$params = $this->request->session->get('login-redirect-params');
+		$get_params = $this->request->session->get('login-redirect-get');
 
 		$url = $this->url->getUrl('Customer');
 		if ($controller) {
 			$url = $this->url->getUrl($controller, $method, $params);
+			if ($get_params) {
+				$url .= '?'.$get_params;
+			}
 		}
 
 		$data = ['url' => $url];

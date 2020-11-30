@@ -1,4 +1,4 @@
-<form id="form-login" class="form-login-register" action="<?php echo $this->url->getUrl('Customer', 'login', [$controller, $method, $params]); ?>" method="post">
+<form id="form-login" class="form-login-register" action="<?php echo $this->url->getUrl('Customer', 'login', [$controller, $method, $params]); ?>?<?php echo $get_params; ?>" method="post">
 <div class="widget">
 	<div class="widget-header">
 		<h3><?php echo $text_login_header; ?></h3>
