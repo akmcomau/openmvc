@@ -123,7 +123,7 @@ class Customer extends Controller {
 					$this->request->session->set('login-redirect-get', http_build_query($_GET));
 				}
 
-				if ($this->config->siteConfig()->post_login_redirect) {
+				if ($controller && $this->config->siteConfig()->post_login_redirect) {
 					throw new RedirectException($this->url->getUrl('Customer', 'loginRedirect'));
 				}
 				else if ($controller) {
