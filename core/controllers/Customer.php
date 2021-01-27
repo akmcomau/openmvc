@@ -126,9 +126,6 @@ class Customer extends Controller {
 				if ($controller && $this->config->siteConfig()->post_login_redirect) {
 					throw new RedirectException($this->url->getUrl('Customer', 'loginRedirect'));
 				}
-				else if ($controller) {
-					throw new RedirectException($this->url->getUrl($controller, $method, $params));
-				}
 				else {
 					throw new RedirectException($this->url->getUrl('Customer'));
 				}
