@@ -147,7 +147,7 @@ class Customer extends Controller {
 			'register' => $form_register,
 			'controller' => $controller,
 			'method' => $method,
-			'params' => (!is_null($params)) ? json_encode(explode('/', $params)) : NULL,
+			'params' => NULL,//(!is_null($params)) ? json_encode(explode('/', $params)) : NULL,
 			'get_params' => http_build_query($_GET),
 			'remember_me' => $remember_me,
 		];
