@@ -5,7 +5,13 @@ namespace core\classes;
 use ErrorException;
 use Logger as Log4phpLogger;
 
-class Logger extends Log4phpLogger {
+class Logger {
+
+	private $logger;
+
+    function __construct(Log4phpLogger $logger) {
+		$this->logger = $logger;
+    }
 
 	public static function init() {
 		// Add some data to the server method
@@ -69,5 +75,49 @@ class Logger extends Log4phpLogger {
 			throw new ErrorException("Could not read Log4php config file: $filename");
 		}
 		return $_LOG4PHP;
+	}
+
+	public static function getLogger($class = NULL) {
+		$logger = Log4phpLogger::getLogger($class);
+
+		return new Logger($logger);
+	}
+
+	public function __call ($name, $arguments) {
+		return call_user_func_array([$this->logger, $name], $arguments);
+	}
+
+	protected function prepareMultiLine($message) {
+		return preg_replace('/^/m', '	', $message);
+	}
+
+	public function trace($message, $throwable = NULL) {
+		$message = $this->prepareMultiLine($message);
+		$this->logger->trace($message, $throwable);
+	}
+
+	public function debug($message, $throwable = NULL) {
+		$message = $this->prepareMultiLine($message);
+		$this->logger->debug($message, $throwable);
+	}
+
+	public function info($message, $throwable = NULL) {
+		$message = $this->prepareMultiLine($message);
+		$this->logger->info($message, $throwable);
+	}
+
+	public function warn($message, $throwable = NULL) {
+		$message = $this->prepareMultiLine($message);
+		$this->logger->warn($message, $throwable);
+	}
+
+	public function error($message, $throwable = NULL) {
+		$message = $this->prepareMultiLine($message);
+		$this->logger->error($message, $throwable);
+	}
+
+	public function fatal($message, $throwable = NULL) {
+		$message = $this->prepareMultiLine($message);
+		$this->logger->fatal($message, $throwable);
 	}
 }
