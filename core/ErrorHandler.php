@@ -3,6 +3,7 @@
 use core\classes\Dispatcher;
 use core\classes\URL;
 use core\classes\Database;
+use core\classes\Logger;
 
 $script_start = microtime(TRUE);
 $suppress_exceptions = NULL;
