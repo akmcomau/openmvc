@@ -38,7 +38,6 @@ class FileManager extends Controller {
 		$root_path = __DIR__.'/../../..';
 		chdir($root_path);
 
-
 		$errors = "";
 		$this->upload($root_path, $glob_path, $path_id, $sub_path, $errors);
 		$this->delete($root_path, $glob_path, $path_id, $sub_path, $errors);

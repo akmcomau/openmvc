@@ -363,7 +363,7 @@ class FormValidator {
 		return TRUE;
 	}
 
-	public function checkFormValue($data, $value) {
+	public function checkFormValue($name, $data, $value) {
 		$is_this_valid = TRUE;
 		switch ($data['type']) {
 			case 'integer':
@@ -484,7 +484,7 @@ class FormValidator {
 			$is_this_valid = FALSE;
 		}
 		else {
-			$is_this_valid = $this->checkFormValue($data, $value);
+			$is_this_valid = $this->checkFormValue($name, $data, $value);
 		}
 
 		// run the validators
