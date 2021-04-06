@@ -493,14 +493,24 @@ class FormValidator {
 				switch($validator['type']) {
 					case 'params-equal':
 						if ($value != $this->request->requestParam($validator['param'])) {
-							$this->form_errors[$name] = $validator['message'];
+							if ($index) {
+								$this->form_errors[$name.'['.$index.']'] = $validator['message'];
+							}
+							else {
+								$this->form_errors[$name] = $validator['message'];
+							}
 							$is_this_valid = FALSE;
 						}
 						break;
 
 					case 'regex':
 						if (!empty($value) && !preg_match('/'.$validator['regex'].'/'.$validator['modifiers'], $value)) {
-							$this->form_errors[$name] = $validator['message'];
+							if ($index) {
+								$this->form_errors[$name.'['.$index.']'] = $validator['message'];
+							}
+							else {
+								$this->form_errors[$name] = $validator['message'];
+							}
 							$is_this_valid = FALSE;
 						}
 						break;
@@ -508,7 +518,7 @@ class FormValidator {
 					case 'function':
 						if (!$validator['function']($value, $this)) {
 							if ($index) {
-								$this->form_errors[$name][$index] = $validator['message'];
+								$this->form_errors[$name.'['.$index.']'] = $validator['message'];
 							}
 							else {
 								$this->form_errors[$name] = $validator['message'];
@@ -521,14 +531,25 @@ class FormValidator {
 		}
 
 		if (!$is_this_valid) {
-			$this->logger->debug("Form field not valid: $name");
-			if (!isset($this->form_errors[$name])) {
+			if ($index) {
+				$this->logger->debug("Form field not valid: $name [$index]");
+			}
+			else {
+				$this->logger->debug("Form field not valid: $name");
+			}
+
+			$isset = isset($this->form_errors[$name]);
+			if ($index) {
+				$isset = isset($this->form_errors[$name.'['.$index.']']);
+			}
+
+			if (!$isset) {
 				if (isset($data['message'])) {
 					if ($index) {
-						$this->form_errors[$name] = $data['message'];
+						$this->form_errors[$name.'['.$index.']'] = $data['message'];
 					}
 					else {
-						$this->form_errors[$name][$index] = $data['message'];
+						$this->form_errors[$name] = $data['message'];
 					}
 				}
 				else {
@@ -545,7 +566,7 @@ class FormValidator {
 		$this->form_errors = [];
 		$form_valid = TRUE;
 
-		if (!$this->suppress_submit_check && is_null($this->request->requestParam($this->name.'-submit'))) {
+		if (!$this->suppress_submit_check && !isset($_REQUEST[$this->name.'-submit'])) {
 			return FALSE;
 		}
 
