@@ -213,6 +213,12 @@ class Model {
 	 */
 	protected $sql_helper;
 
+	protected $apc_enabled;
+
+	protected $apc_ttl;
+
+	protected $memcached_enabled;
+
 	/**
 	 * Constructor
 	 * @param $config   The configuration object
@@ -234,6 +240,15 @@ class Model {
 			if (property_exists($this->config->database->citusdb_config, $this->table)) {
 				$this->citusdb = $this->config->database->citusdb_config->{$this->table};
 			}
+		}
+
+		if (property_exists($this->config->database, 'apc_enabled') && $this->config->database->apc_enabled) {
+			$this->apc_enabled = TRUE;
+			$this->apc_ttl = $this->config->database->apc_ttl;
+		}
+
+		if (property_exists($this->config->database, 'memcached_enabled') && $this->config->database->memcached_enabled) {
+			$this->memcached_enabled = TRUE;
 		}
 	}
 
@@ -425,13 +440,271 @@ class Model {
 	 *
 	 * @return $object The cached object
 	 */
-	public function getObjectCache($key) {
-		if (isset($this->objects[$key])) {
+	public function getObjectCache($key, &$success = NULL) {
+		/* return the entire cache */
+		if (is_null($key)) {
+			$success = TRUE;
+			return $this->objects;
+		}
+
+		/* check the model's cache */
+		else if (isset($this->objects[$key])) {
+			$success = TRUE;
 			return $this->objects[$key];
 		}
+		/* Nothing was found */
 		else {
+			$success = FALSE;
 			return NULL;
 		}
+	}
+
+	public function toArray($data) {
+		/* If this is a model */
+		if (is_object($data)) {
+			$result = [
+				'type'    => 'model',
+				'class'   => get_class($data),
+				'record'  => $data->getRecord(),
+				'objects' => [],
+			];
+
+			/* loop over the object cache */
+			foreach ($data->objects as $key => $object) {
+				$added = FALSE;
+
+				/* If this is an model */
+				if (is_object($object)) {
+					/* Add the object */
+					$added = TRUE;
+					$result['objects'][$key] = $this->toArray($object);
+				}
+				/* If this is an array of models */
+				else if (is_array($object) && count($object) > 0 && is_object($object[array_keys($object)[0]])) {
+					/* Add the meta data */
+					$added = TRUE;
+					$result['objects'][$key] = [
+						'type'    => 'model_arr',
+						'models' => [],
+					];
+
+					/* Add the object's data */
+					foreach ($object as $sub_key => $obj) {
+						$result['objects'][$key]['models'][$sub_key] = $this->toArray($obj);
+					}
+				}
+
+				/* If the values is not yet added, it must just be a normal variable */
+				if (!$added) {
+					$result['objects'][$key] = [
+						'type' => 'var',
+						'var' => $object,
+					];
+				}
+			}
+
+			/* Return the toArray object */
+			return $result;
+		}
+
+		/* Else if this is an array of models */
+		else if (is_array($data) && count($data) > 0 && is_object($data[array_keys($data)[0]])) {
+			$result = [
+				'type' => 'model_arr',
+				'models' => [],
+			];
+
+			foreach ($data as $key => $object) {
+				$result['models'][$key] = $this->toArray($object);
+			}
+
+			return $result;
+		}
+
+		/* Else this is not an object or an array of object */
+		/* so it must just be a normal variable */
+		else {
+			/* return the toArray data */
+			return ['type' => 'var', 'var' => $data];
+		}
+	}
+
+	public function fromArray($data) {
+		/* If this is a model */
+		if ($data['type'] == 'model') {
+			$model = $this->getModel($data['class'], $data['record']);
+
+			foreach ($data['objects'] as $key => $object) {
+				$model->setObjectCache($key, $this->fromArray($object));
+			}
+
+			return $model;
+		}
+
+		/* If this is an array of models */
+		else if ($data['type'] == 'model_arr') {
+			$result = [];
+
+			foreach ($data['models'] as $key => $object) {
+				$result[$key] = $this->fromArray($object);
+			}
+
+			return $result;
+		}
+
+		/* If this is just a variable */
+		else if ($data['type'] == 'var') {
+			return $data['var'];
+		}
+
+		return NULL;
+	}
+
+	public function deleteModelCache($key) {
+		/* store this value in the APC cache */
+		if ($this->apc_enabled) {
+			apcu_store(apcu_delete($key));
+		}
+
+		/* store this value in the memcached servers */
+		if ($this->memcached_enabled) {
+
+		}
+	}
+
+	public function deleteModelCachePrefix($key_prefix) {
+		/* store this value in the APC cache */
+		if ($this->apc_enabled) {
+			apcu_store(apcu_delete(new APCUIterator("#^$key_prefix#")));
+		}
+
+		/* store this value in the memcached servers */
+		if ($this->memcached_enabled) {
+
+		}
+	}
+
+	public function setModelCache($key, $model) {
+		try {
+			$value = NULL;
+			if ($this->apc_enabled || $this->memcached_enabled) {
+				$this->logger->debug('Setting APC Cached value for: '.$key);
+
+				// JSON encode the value (JSON is faster than serialize())
+				$value = json_encode($this->toArray($model));
+
+				/* If the data is too large, then compress it */
+				if (CACHE_GZIP_ENABLE && strlen($value) > CACHE_GZIP_THRESHOLD) {
+					// GZIP level 1 compression for fast encoding
+					$value = 'Z'.gzencode($value, CACHE_GZIP_LEVEL, ZLIB_ENCODING_GZIP);
+				}
+			}
+
+			/* store this value in the APC cache */
+			if ($this->apc_enabled) {
+				apcu_store($key, $value, CACHE_TTL);
+			}
+
+			/* store this value in the memcached servers */
+			if ($this->memcached_enabled) {
+
+			}
+		}
+		catch (\Exception $ex) {
+			$this->logger->error('Error getting cache value: '.$ex->getMessage()."\n".$ex->getTraceAsString());
+			return NULL;
+		}
+	}
+
+	public function getModelCache ($key, &$success) {
+		try {
+			$success = FALSE;
+
+			/* fetch the value via APC */
+			if ($this->apc_enabled) {
+				$cached = apcu_fetch($key, $success);
+				if ($success) {
+					$this->logger->debug('Got APC Cached value for: '.$key);
+
+					if (CACHE_GZIP_ENABLE && $cached{0} == 'Z') {
+						$cached = gzdecode(substr($cached, 1));
+					}
+
+					return $this->fromArray(json_decode($cached, TRUE));
+				}
+			}
+
+			/* fetch the value via memcached */
+			if ($this->memcached_enabled) {
+
+			}
+
+			$this->logger->debug('No cached value for: '.$key);
+			return NULL;
+		}
+		catch (\Exception $ex) {
+			$this->logger->error('Error getting cache value: '.$ex->getMessage()."\n".$ex->getTraceAsString());
+			$success = FALSE;
+			return NULL;
+		}
+	}
+
+	public function toString($return = FALSE, $html = FALSE) {
+		return $this->print_r($this, $return, $html, 0);
+	}
+
+	public function print_r($var, $return = FALSE, $html = FALSE, $level = 0) {
+		$spaces = "";
+		$space = $html ? "&nbsp;" : " ";
+		$newline = $html ? "<br />" : "\n";
+		for ($i = 1; $i <= 6; $i++) {
+			$spaces .= $space;
+		}
+
+		$tabs = $spaces;
+		$tabs1 = '';
+		for ($i = 1; $i <= $level; $i++) {
+			$tabs .= $spaces;
+			$tabs1 .= $spaces;
+		}
+
+		if (is_array($var)) {
+			$title = "Array";
+			$data = $var;
+		}
+		elseif (is_object($var)) {
+			$title = get_class($var)." Object";
+			$data = $var->getRecord();
+		}
+
+		if (is_array($var) || is_object($var)) {
+			$output = $title . ' {' . $newline;
+		}
+		else {
+			$output = $title . $newline;
+		}
+
+		if (is_object($var) && is_subclass_of($var, '\core\classes\Model')) {
+			$output .= $tabs."[record] => " . $this->print_r($var->getRecord(), TRUE, FALSE, $level+1);
+			$output .= $tabs."[objects] => " . $this->print_r($var->getObjectCache(NULL), TRUE, FALSE, $level+1) . $newline;
+		}
+		else {
+			foreach($data as $key => $value) {
+				if (is_array($value) || is_object($value)) {
+					$level++;
+					$value = $this->print_r($value, TRUE, $html, $level);
+					$level--;
+				}
+				$output .= $tabs . "[" . $key . "] => " . $value . $newline;
+			}
+		}
+
+		if (is_array($var) || is_object($var)) {
+			$output .= $tabs1.'}'.$newline;
+		}
+
+		if ($return) return $output;
+		else echo $output;
 	}
 
 	/**
@@ -1015,10 +1288,8 @@ class Model {
 	public function getModel($class, array $record = NULL) {
 		$model = new $class($this->config, $this->database);
 		if ($record) {
-			if ($this->logger->isDebugEnabled()) {
-				$this->logger->debug("Creating Model: $class => ".json_encode($record));
-			}
 			$model->setRecord($record);
+			$this->logger->debug("Created Model: $class with ID: ".$model->id);
 		}
 		return $model;
 	}
