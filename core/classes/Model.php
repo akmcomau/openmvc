@@ -1289,7 +1289,7 @@ class Model {
 		$model = new $class($this->config, $this->database);
 		if ($record) {
 			$model->setRecord($record);
-			$this->logger->debug("Created Model: $class with ID: ".$model->id);
+			$this->logger->debug("Created Model: $class");
 		}
 		return $model;
 	}
