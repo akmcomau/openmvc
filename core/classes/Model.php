@@ -2,6 +2,7 @@
 
 namespace core\classes;
 
+use APCUIterator;
 use ReflectionClass;
 use core\classes\exceptions\AutoloaderException;
 use core\classes\exceptions\ModelException;
@@ -563,7 +564,7 @@ class Model {
 	public function deleteModelCache($key) {
 		/* store this value in the APC cache */
 		if ($this->apc_enabled) {
-			apcu_store(apcu_delete($key));
+			apcu_delete($key);
 		}
 
 		/* store this value in the memcached servers */
@@ -575,7 +576,7 @@ class Model {
 	public function deleteModelCachePrefix($key_prefix) {
 		/* store this value in the APC cache */
 		if ($this->apc_enabled) {
-			apcu_store(apcu_delete(new APCUIterator("#^$key_prefix#")));
+			apcu_delete(new APCUIterator("#^$key_prefix#"));
 		}
 
 		/* store this value in the memcached servers */
@@ -588,8 +589,6 @@ class Model {
 		try {
 			$value = NULL;
 			if ($this->apc_enabled || $this->memcached_enabled) {
-				$this->logger->debug('Setting APC Cached value for: '.$key);
-
 				// JSON encode the value (JSON is faster than serialize())
 				$value = json_encode($this->toArray($model));
 
@@ -602,7 +601,10 @@ class Model {
 
 			/* store this value in the APC cache */
 			if ($this->apc_enabled) {
-				apcu_store($key, $value, CACHE_TTL);
+				$this->logger->debug('Setting APC Cached value for: '.$key);
+				if (!apcu_store($key, $value, CACHE_TTL)) {
+					$this->logger->error('Failed to cache to APC: '.$key);
+				}
 			}
 
 			/* store this value in the memcached servers */
