@@ -180,6 +180,7 @@ class Database extends PDO {
 		// create DSN and call parent constructor
 		$dsn = $this->engine.':dbname='.$this->database.";host=".$this->hostname;
 		if ($this->port) $dsn .= ";port=".$this->port;
+		$this->logger->debug("DB Connection String: $dsn");
 		parent::__construct($dsn, $this->username, $this->password, $options);
 
 		// if citusdb is enabled then set the replication factor and num shards
