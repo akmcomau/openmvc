@@ -91,11 +91,18 @@ $.extend(FormValidator, {
 		this._validators[form_id] = validators;
 		this._disables[form_id] = disable_button;
 	},
-	checkElementValue: function (element, element_value) {
+	checkElementValue: function (element, element_name, element_value) {
 		is_this_valid = true;
 		switch (element.type) {
 			case 'integer':
-				if (!this.isInteger(element_value)) {
+				if (typeof(element.is_array) != 'undefined' && element.is_array) {
+					element_value.forEach(function(item, index) {
+						if (!FormValidator.isInteger(item)) {
+							is_this_valid = false;
+						}
+					});
+				}
+				else if (!this.isInteger(element_value)) {
 					is_this_valid = false;
 				}
 				else if (typeof(element.max_value) != 'undefined' && element_value > element.max_value) {
@@ -225,7 +232,7 @@ $.extend(FormValidator, {
 			is_this_valid = false;
 		}
 		else {
-			is_this_valid = this.checkElementValue(element, element_value);
+			is_this_valid = this.checkElementValue(element, element_name, element_value);
 		}
 
 		if (is_this_valid) {
