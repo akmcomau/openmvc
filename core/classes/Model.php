@@ -717,10 +717,20 @@ class Model {
 	 */
 	public function __set($name, $value) {
 		if (isset($this->columns[$this->table.'_'.$name])) {
-			$this->record[$this->table.'_'.$name] = $value;
+			if ($this->table.'_'.$name == $this->primary_key && is_null($value)) {
+				unset($this->record[$this->table.'_'.$name]);
+			}
+			else {
+				$this->record[$this->table.'_'.$name] = $value;
+			}
 		}
 		elseif (isset($this->columns[$name])) {
-			$this->record[$name] = $value;
+			if ($name == $this->primary_key && is_null($value)) {
+				unset($this->record[$name]);
+			}
+			else {
+				$this->record[$name] = $value;
+			}
 		}
 		else {
 			throw new ModelException("Undefined model property: $name on ".get_class($this));
