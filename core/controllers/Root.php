@@ -208,11 +208,13 @@ class Root extends Controller {
 	public function getAllMethods() {
 		$methods = parent::getAllMethods();
 		$url_map = $this->url->getUrlMap();
-		$controller_map = $url_map['forward']['Root'];
-		if (isset($controller_map['methods'])) {
-			foreach ($controller_map['methods'] as $method => $data) {
-				if (!in_array($method, $methods)) {
-					$methods[] = $method;
+		if (isset($url_map['forward']['Root'])) {
+			$controller_map = $url_map['forward']['Root'];
+			if (isset($controller_map['methods'])) {
+				foreach ($controller_map['methods'] as $method => $data) {
+					if (!in_array($method, $methods)) {
+						$methods[] = $method;
+					}
 				}
 			}
 		}

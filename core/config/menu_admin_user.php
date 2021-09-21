@@ -13,14 +13,14 @@ $_MENU = [
 		],
 		'administrator' => [
 			'url' => 'javascript:;',
-			'text' => $this->authentication->administratorLoggedIn()['administrator_name'],
+			'text' => $this->authentication->administratorLoggedIn() ? $this->authentication->administratorLoggedIn()['administrator_name'] : '',
 			'icon' => 'fa fa-user',
 			'children' => [
 				'profile' => [
 					'controller' => 'administrator/Administrators',
 					'method' => 'edit',
 					'text_tag' => 'profile',
-					'params' => [$this->authentication->administratorLoggedIn()['administrator_id']],
+					'params' => [$this->authentication->administratorLoggedIn() ? $this->authentication->administratorLoggedIn()['administrator_id'] : ''],
 				],
 				'logout' => [
 					'controller' => 'Administrator',
