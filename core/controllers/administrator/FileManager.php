@@ -29,7 +29,7 @@ class FileManager extends Controller {
 
 		$path_id = $this->request->requestParam('path') ? $this->request->requestParam('path') : 0;
 		$sub_path = $this->request->requestParam('sub_path');
-		if (strlen($sub_path) && $sub_path{0} == '/') {
+		if (strlen($sub_path) && $sub_path[0] == '/') {
 			$sub_path = '/'.substr($sub_path, 1);
 		}
 
@@ -84,7 +84,7 @@ class FileManager extends Controller {
 
 		$path_id = $this->request->requestParam('path') ? $this->request->requestParam('path') : 0;
 		$sub_path = $this->request->requestParam('sub_path');
-		if (strlen($sub_path) && $sub_path{0} == '/') {
+		if (strlen($sub_path) && $sub_path[0] == '/') {
 			$sub_path = '/'.substr($sub_path, 1);
 		}
 

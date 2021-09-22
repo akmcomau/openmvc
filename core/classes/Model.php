@@ -628,7 +628,7 @@ class Model {
 				if ($success) {
 					$this->logger->debug('Got APC Cached value for: '.$key);
 
-					if (CACHE_GZIP_ENABLE && $cached{0} == 'Z') {
+					if (CACHE_GZIP_ENABLE && $cached[0] == 'Z') {
 						$cached = gzdecode(substr($cached, 1));
 					}
 

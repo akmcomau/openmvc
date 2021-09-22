@@ -37,14 +37,14 @@ class Logger {
 
 	public static function clean($path, $regex, $ttl) {
 		// ensure the path ends in a slash and a star
-		if ($path{strlen($path)-1} != '/') {
+		if ($path[strlen($path)-1] != '/') {
 			$path .= '/';
 		}
 		$path .= '*';
 
 		// get the glob string
 		$glob = '';
-		if ($path{0} == '/') {
+		if ($path[0] == '/') {
 			$glob = $path;
 		}
 		else {

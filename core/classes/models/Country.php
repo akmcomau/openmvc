@@ -118,7 +118,7 @@ class Country extends Model {
 			if (strlen($line) > 0) {
 				$parts = str_getcsv($line, "\t");
 
-				if ($parts[0]{0} == '#') {
+				if ($parts[0][0] == '#') {
 					$parts[0] = substr($parts[0], 1);
 					$headers = $parts;
 				}
