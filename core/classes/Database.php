@@ -330,7 +330,10 @@ class Database extends PDO {
 
 		$statement = $this->executeQuery($sql, $use_masterdb);
 		$returnArray = $statement->fetch(PDO::FETCH_NUM);
-		return $returnArray[0];
+		if (is_array($returnArray)) {
+			return $returnArray[0];
+		}
+		return NULL;
 	}
 
 	/**

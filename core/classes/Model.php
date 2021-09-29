@@ -1494,7 +1494,7 @@ class Model {
 		// look for deleted indexes
 		foreach ($schema['indexes'] as $name => $columns) {
 			// skip primary key
-			if ($name == $schema['primary_key']['name']) {
+			if ($schema['primary_key'] && $name == $schema['primary_key']['name']) {
 				continue;
 			}
 
