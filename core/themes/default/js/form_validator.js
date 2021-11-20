@@ -96,8 +96,8 @@ $.extend(FormValidator, {
 		switch (element.type) {
 			case 'integer':
 				if (typeof(element.is_array) != 'undefined' && element.is_array) {
-					element_value.forEach(function(item, index) {
-						if (!FormValidator.isInteger(item)) {
+					$("*[name='"+element_name+"[]']").children().each(function() {
+						if (!FormValidator.isInteger($(this).val())) {
 							is_this_valid = false;
 						}
 					});
