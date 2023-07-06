@@ -96,8 +96,13 @@ $.extend(FormValidator, {
 		switch (element.type) {
 			case 'integer':
 				if (typeof(element.is_array) != 'undefined' && element.is_array) {
-					$("*[name='"+element_name+"[]']").children().each(function() {
+					$("input[name='"+element_name+"[]']").children().each(function() {
 						if (!FormValidator.isInteger($(this).val())) {
+							is_this_valid = false;
+						}
+					});
+					$("select[name='"+element_name+"[]']").children().each(function() {
+						if ($(this).is('selected') && !FormValidator.isInteger($(this).val())) {
 							is_this_valid = false;
 						}
 					});
