@@ -51,6 +51,12 @@ try {
 	$config->setSiteDomain($_SERVER['HTTP_HOST']);
 	$display_errors = $config->siteConfig()->display_errors;
 
+	if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+		$config->siteConfig()->enable_ssl = true;
+		$config->siteConfig()->force_ssl = true;
+	}
+
+
 	// clean up log files if required
 	if ($config->siteConfig()->logger_clean_enable) {
 		try {
