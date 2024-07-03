@@ -3,8 +3,13 @@
 namespace core\classes\models;
 
 use core\classes\Model;
+use core\classes\Config;
+use core\classes\Database;
 
 class Address extends Model {
+
+	public $latitude;
+	public $longitude;
 
 	protected $table       = 'address';
 	protected $primary_key = 'address_id';
@@ -84,6 +89,14 @@ class Address extends Model {
 			'data_type'      => 'int',
 			'null_allowed'   => FALSE,
 		],
+		'address_formatted' => [
+			'data_type'      => 'text',
+			'null_allowed'   => TRUE,
+		],
+		'address_location' => [
+			'data_type'      => 'earth',
+			'null_allowed'   => TRUE,
+		]
 	];
 	protected $indexes = [
 		'customer_id',
@@ -100,6 +113,23 @@ class Address extends Model {
 		'country_id'   => ['country',  'country_id'],
 	];
 
+	public function getModel($class, array $record = NULL) {
+		$result = parent::getModel($class, $record);
+		if (get_class($result) == '\core\classes\models\Address' || get_class($result) == 'core\classes\models\Address') {
+			$result->getLocation();
+		}
+		return $result;
+	}
+
+	public function insert() {
+		parent::insert();
+		$this->setLocation($this->latitude, $this->longitude);
+	}
+
+	public function update() {
+		parent::update();
+		$this->setLocation($this->latitude, $this->longitude);
+	}
 
 	public function getCountry() {
 		if (isset($this->objects['country'])) {
@@ -132,5 +162,34 @@ class Address extends Model {
 			'id' => $this->city_id,
 		]);
 		return $this->objects['city'];
+	}
+
+	public function getLocation() {
+		$sql = "
+			SELECT latitude(address_location) AS latitude, longitude(address_location) AS longitude
+			FROM
+				address
+			WHERE
+				address_id = ".(int)$this->id;
+		$result = $this->database->querySingle($sql);
+
+		if ($result) {
+			$this->latitude  = $result['latitude'];
+			$this->longitude = $result['longitude'];
+		}
+
+		return $result;
+	}
+
+	public function setLocation($latitude, $longitude) {
+		$sql = "
+			UPDATE address
+			SET address_location = ll_to_earth(".(float)$latitude.', '.(float)$longitude.")
+			WHERE address_id = ".(int)$this->id;
+
+		$this->database->executeQuery($sql);
+
+		$this->latitude  = $latitude;
+		$this->longitude = $longitude;
 	}
 }

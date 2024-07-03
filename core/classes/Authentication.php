@@ -281,7 +281,7 @@ class Authentication {
 		$modules = (new Module($this->config))->getEnabledModules();
 
 		if (
-			property_exists($this->config->siteConfig(), 'hooks') &&
+			property_exists($this->config->siteConfig(), 'hooks') && is_object($this->config->siteConfig()->hooks) &&
 			property_exists($this->config->siteConfig()->hooks, 'authentication') &&
 			property_exists($this->config->siteConfig()->hooks->authentication, $name)
 		) {
