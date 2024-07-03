@@ -311,6 +311,9 @@ class Model {
 			elseif ($this->database->getEngine() == 'pgsql') {
 				$this->sql_helper = new database_drivers\PgSQL($this->config, $this->database, $this);
 			}
+			elseif ($this->database->getEngine() == 'dblib') {
+				$this->sql_helper = new database_drivers\DbLib($this->config, $this->database, $this);
+			}
 		}
 
 		return $this->sql_helper;
@@ -1298,7 +1301,7 @@ class Model {
 	 * @return \b string The model object with record array set
 	 */
 	public function getModel($class, array $record = NULL) {
-		$model = new $class($this->config, $this->database);
+	$model = new $class($this->config, $this->database);
 		if ($record) {
 			$model->setRecord($record);
 			$this->logger->debug("Created Model: $class");

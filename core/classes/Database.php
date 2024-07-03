@@ -16,7 +16,7 @@ class Database extends PDO {
 	protected $config;
 
 	/**
-	 * The database engine to use, either: mysql, pgsql, none
+	 * The database engine to use, either: mysql, pgsql, dblib, none
 	 * @var string $engine
 	 */
 	protected $engine;
@@ -111,7 +111,7 @@ class Database extends PDO {
 		$this->password   = $config->database->password;
 		$this->persistant = property_exists($config->database, 'persistant') ? $config->database->persistant : NULL;
 
-		if ($this->engine != 'mysql' && $this->engine != 'pgsql' && $this->engine != 'none') {
+		if ($this->engine != 'mysql' && $this->engine != 'pgsql' && $this->engine != 'dblib' && $this->engine != 'none') {
 			throw new DatabaseException('Invalid database engine: '.$this->engine);
 		}
 
@@ -387,6 +387,22 @@ class Database extends PDO {
 		$keyed = [];
 		foreach ($result as $record) {
 			$keyed[$record[$field]] = $record;
+		}
+		return $keyed;
+	}
+
+	public function queryMultiKeyedArr($sql, $field, $use_masterdb = FALSE) {
+		if ($this->engine == 'none') {
+			return [];
+		}
+
+		$statement = $this->executeQuery($sql, $use_masterdb);
+		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
+		if (!$result) return [];
+
+		$keyed = [];
+		foreach ($result as $record) {
+			$keyed[$record[$field]][] = $record;
 		}
 		return $keyed;
 	}

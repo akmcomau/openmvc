@@ -169,7 +169,7 @@ class Menu {
 		return $value;
 	}
 
-	protected function preprocessMenuData(&$item) {
+	protected function preprocessMenuData(&$item, $request = NULL) {
 		if (isset($item['controller']) && isset($item['method'])) {
 			$params = [];
 			if (isset($item['params'])) $params = $item['params'];
@@ -181,14 +181,34 @@ class Menu {
 		if (isset($item['hash'])) {
 			$item['url'] .= '#'.$item['hash'];
 		}
-		unset($item['controller']);
-		unset($item['method']);
-		unset($item['params']);
 
 		if (isset($item['text_tag'])) {
 			$item['text'] = $this->language->get($item['text_tag']);
 		}
 		unset($item['text_tag']);
+
+		$method_name = '';
+		if ($request) {
+			$method_name = $request->getMethodName();
+			if ($request->getControllerName() == 'Root' && $request->getMethodName() == 'page' && count($request->getMethodParams())) {
+				$method_name .= '/'.$request->getMethodParams()[0];
+			}
+		}
+
+		if (
+			$request &&
+			$request->getControllerName() == $item['controller'] &&
+			$method_name == $item['method']
+		) {
+			$item['active'] = TRUE;
+		}
+		else {
+			$item['active'] = FALSE;
+		}
+
+		unset($item['controller']);
+		unset($item['method']);
+		unset($item['params']);
 	}
 
 	public function echoBootstrapMenu($ul_class = NULL) {
@@ -264,5 +284,72 @@ class Menu {
 			print '</li>';
 		}
 		print '</ul>';
+	}
+
+
+	public function echoBootstrapMenu2($request = NULL) {
+		$template = $this->template->render();
+		$template_dropdown = $this->template_dropdown->render();
+
+		foreach ($this->menu_data as $item) {
+			$children = NULL;
+			if (isset($item['children']) && is_array($item['children'])) {
+				$children = $item['children'];
+			}
+			unset($item['children']);
+
+			$this->preprocessMenuData($item, $request);
+
+			$class = $children ? 'has-sub' : '';
+			$class = $item['active'] ? ' active' : '';
+			$class .= isset($item['class']) ? ' '.$item['class'] : '';
+			print '<div class="menu-item '.$class.'">';
+			print '<a href="'.$item['url'].'" class="menu-link">';
+
+			if ($children) {
+				$html = $template_dropdown;
+			}
+			else {$html = $template;
+				$html = $template;
+			}
+
+			foreach ($item as $key => $value) {
+				$html = preg_replace('/\[%\s*'.$key.'\s*%\]/', htmlspecialchars($value), $html);
+			}
+
+			$attr = $children ? ' class="dropdown-toggle" data-toggle="dropdown"' : '';
+			$a_class = (isset($item['a_class']) ? ' '.$item['a_class'] : '');
+			print $html;
+			print '</a>';
+
+			if ($children) {
+				$this->recursiveBootstrapMenu2($children, 1);
+			}
+
+			print '</div>';
+		}
+	}
+
+	protected function recursiveBootstrapMenu2(array $menu, $depth) {
+		print '<div class="menu-submenu">';
+		foreach ($menu as $key => $item) {
+			$this->preprocessMenuData($item);
+
+			$children = NULL;
+			if (isset($item['children']) && is_array($item['children'])) {
+				$children = $item['children'];
+			}
+			$class = $children ? 'dropdown-submenu' : '';
+			$a_class = $this->a_class.(isset($item['class']) ? ' '.$item['class'] : '');
+			print '<div class="menu-item active">';
+			print '<a href="'.$item['url'].'" class="menu-link">'.$item['text'].'</a>';
+			print '</div>';
+
+			if ($children) {
+				$this->recursiveBootstrapMenu($children, $depth++);
+			}
+
+		}
+		print '</div>';
 	}
 }
