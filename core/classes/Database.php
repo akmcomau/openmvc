@@ -116,7 +116,7 @@ class Database extends PDO {
 		}
 
 		// Make persistent if needed
-		$options = [];
+		$options = [/*PDO::ATTR_TIMEOUT => 300*/];
 		if ($this->persistant) {
 			$options = [PDO::ATTR_PERSISTENT => true];
 		}
@@ -185,11 +185,11 @@ class Database extends PDO {
 
 		// if citusdb is enabled then set the replication factor and num shards
 		if (property_exists($this->config->database, 'citusdb') && $this->config->database->citusdb) {
-			$sql = "SET citus.shard_replication_factor = ".(int)$this->config->database->citusdb_replicas;
-			$this->executeQuery($sql);
+			//$sql = "SET citus.shard_replication_factor = ".(int)$this->config->database->citusdb_replicas;
+			//$this->executeQuery($sql);
 
-			$sql = "SET citus.shard_max_size = ".$this->quote($this->config->database->citusdb_shard_size);
-			$this->executeQuery($sql);
+			//$sql = "SET citus.shard_max_size = ".$this->quote($this->config->database->citusdb_shard_size);
+			//$this->executeQuery($sql);
 		}
 	}
 
@@ -275,7 +275,7 @@ class Database extends PDO {
 	 * @param $value          \b mixed The value to quote
 	 * @param $parameter_type \b string The parameter type
 	 */
-	public function quote($value, $parameter_type = NULL) {
+	public function quote($value, $parameter_type = NULL): string {
 		if ($this->engine == 'none') {
 			return '';
 		}
@@ -289,7 +289,12 @@ class Database extends PDO {
 		elseif (is_null($value)) {
 			return 'NULL';
 		}
-		return parent::quote($value, $parameter_type);
+		if ($parameter_type === NULL) {
+			return parent::quote($value);
+		}
+		else {
+			return parent::quote($value, $parameter_type);
+		}
 	}
 
 	/**

@@ -13,7 +13,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_login; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="login" value="<?php echo htmlspecialchars($administrator->login); ?>" />
+								<input type="text" class="form-control" name="login" value="<?php echo htmlspecialchars($administrator->login ?? ''); ?>" />
 								<?php echo $form->getHtmlErrorDiv('login'); ?>
 							</div>
 						</div>
@@ -21,7 +21,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_email; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="email" value="<?php echo htmlspecialchars($administrator->email); ?>" />
+								<input type="text" class="form-control" name="email" value="<?php echo htmlspecialchars($administrator->email ?? ''); ?>" />
 								<?php echo $form->getHtmlErrorDiv('email'); ?>
 							</div>
 						</div>
@@ -29,7 +29,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_first_name; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="first_name" value="<?php echo htmlspecialchars($administrator->first_name); ?>" />
+								<input type="text" class="form-control" name="first_name" value="<?php echo htmlspecialchars($administrator->first_name ?? ''); ?>" />
 								<?php echo $form->getHtmlErrorDiv('first_name'); ?>
 							</div>
 						</div>
@@ -37,7 +37,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_last_name; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="last_name" value="<?php echo htmlspecialchars($administrator->last_name); ?>" />
+								<input type="text" class="form-control" name="last_name" value="<?php echo htmlspecialchars($administrator->last_name ?? ''); ?>" />
 								<?php echo $form->getHtmlErrorDiv('last_name'); ?>
 							</div>
 						</div>
@@ -45,7 +45,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_phone; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="phone" value="<?php echo htmlspecialchars($administrator->phone); ?>" />
+								<input type="text" class="form-control" name="phone" value="<?php echo htmlspecialchars($administrator->phone ?? ''); ?>" />
 								<?php echo $form->getHtmlErrorDiv('phone'); ?>
 							</div>
 						</div>

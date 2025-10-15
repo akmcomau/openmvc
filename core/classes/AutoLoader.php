@@ -21,6 +21,11 @@ class AutoLoader {
 			if (file_exists($filename)) {
 				include($filename);
 			}
+
+			$logger_path = $root_path.DS.'composer/vendor/apache/log4php/src/main/php/'.$class.'.php';
+			if (file_exists($logger_path)) {
+				include($logger_path);
+			}
 		});
 
 		// autoload main composer

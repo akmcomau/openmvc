@@ -46,7 +46,7 @@ class Encryption {
 			$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890';
 			$salt = '$2a$'.$cost.'$';
 			for ($i=0; $i<22; $i++) {
-				$salt .= $chars{rand(0, strlen($chars)-1)};
+				$salt .= $chars[rand(0, strlen($chars)-1)];
 			}
 			return crypt($string, $salt);
 		}

@@ -88,7 +88,7 @@ class Customer extends Controller {
 			throw new RedirectException($this->url->getUrl('Customer'));
 		}
 
-		$params = json_decode($params);
+		$params = json_decode($params ?? '');
 		$this->language->loadLanguageFile('customer.php');
 
 		$bcrypt_cost   = $this->config->siteConfig()->bcrypt_cost;

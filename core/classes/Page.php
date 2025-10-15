@@ -18,6 +18,9 @@ class Page {
 	 */
 	protected $database;
 
+	protected $url;
+	protected $logger;
+
 	public function __construct(Config $config, Database $database) {
 		$this->config   = $config;
 		$this->database = $database;
@@ -25,7 +28,7 @@ class Page {
 		$this->logger   = Logger::getLogger(__CLASS__);
 	}
 
-	public function getPageList(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
+	public function getPageList(array|null $params = NULL, array|null $ordering = NULL, array|null $pagination = NULL) {
 		$model = new Model($this->config, $this->database);
 		$categories = $model->getModel('\core\classes\models\PageCategoryLink');
 		$page_categories = $categories->getPageCategories();

@@ -238,7 +238,7 @@ class Model {
 		}
 
 		if (property_exists($this->config->database, 'citusdb') && $this->config->database->citusdb) {
-			if (property_exists($this->config->database->citusdb_config, $this->table)) {
+			if ($this->table && property_exists($this->config->database->citusdb_config, $this->table)) {
 				$this->citusdb = $this->config->database->citusdb_config->{$this->table};
 			}
 		}
@@ -290,7 +290,7 @@ class Model {
 			$result .= "'";
 			return $result;
 		}
-		elseif ($this->database->getEngine() == 'pgsql' && preg_match('/^E\'\\\\/', $value)) {
+		elseif ($this->database->getEngine() == 'pgsql' && preg_match('/^E\'\\\\/', $value ?? '')) {
 			// dont quote escaped values
 			return $value;
 		}

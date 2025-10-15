@@ -37,7 +37,7 @@ class Controller extends Renderable {
 
 	protected $permissions = [];
 
-	public function __construct(Config $config, Database $database = NULL, Request $request = NULL, Response $response = NULL) {
+	public function __construct(Config $config, ?Database $database = NULL, ?Request $request = NULL, ?Response $response = NULL) {
 
 		// Controller has been created for meta data, don't need much
 		if (is_null($request)) {
@@ -121,11 +121,11 @@ class Controller extends Renderable {
 		return $this->layout;
 	}
 
-	public function getTemplate($filename, array $data = NULL, $path = NULL) {
+	public function getTemplate($filename, ?array $data = NULL, ?string $path = NULL) {
 		return new Template($this->config, $this->language, $filename, $data, $path);
 	}
 
-	public function setLayout(Layout $layout = NULL) {
+	public function setLayout(?Layout $layout = NULL) {
 		$this->layout = $layout;
 	}
 
@@ -224,7 +224,7 @@ class Controller extends Renderable {
 		return $controller_methods;
 	}
 
-	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
+	public function getAllUrls(?string $include_filter = NULL, ?string $exclude_filter = NULL) {
 		$urls = [];
 		$controller = $this->url->getControllerClassName('\\'.get_class($this));
 		foreach ($this->getAllMethods() as $method) {
@@ -256,7 +256,7 @@ class Controller extends Renderable {
 		return NULL;
 	}
 
-	protected function siteProtection(Model $model = NULL, $method = NULL) {
+	protected function siteProtection(?Model $model = NULL, ?string $method = NULL) {
 		if (!is_null($model) && !is_null($method)) {
 			$model = $model->$method();
 		}

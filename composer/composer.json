@@ -1,6 +1,9 @@
 {
 	"config": {
-		"secure-http": false
+		"secure-http": false,
+		"allow-plugins": {
+			"robloach/component-installer": true
+		}
 	},
 	"repositories": [
 		{
@@ -102,7 +105,7 @@
 				}
 			}
 		},
-        {
+	        {
 			"type":"package",
 			"package": {
 				"name": "ajaxorg/ace-builds",
@@ -113,10 +116,22 @@
 					"reference":"master"
 				}
 			}
+		},
+	        {
+			"type":"package",
+			"package": {
+				"name": "apache/log4php",
+				"version":"2.3.0.3",
+				"source": {
+					"url": "https://github.com/armando-basile/logging-log4php.git",
+					"type": "git",
+					"reference":"master"
+				}
+			}
 		}
 	],
 	"require": {
-		"apache/log4php": "2.3.0",
+		"apache/log4php": "2.3.0.3",
 		"twbs/bootstrap": "v3.0.3",
 		"components/font-awesome": "4.7.0",
 		"components/jquery": "1.11.0",
@@ -136,4 +151,3 @@
 		"ajaxorg/ace-builds": "v1.2.3"
 	}
 }
-

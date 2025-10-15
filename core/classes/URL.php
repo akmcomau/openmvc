@@ -6,6 +6,7 @@ use ErrorException;
 
 class URL {
 	protected static $url_map = NULL;
+	protected $config = NULL;
 	protected $logger = NULL;
 
 	public function __construct(Config $config, $gen_url_map = TRUE) {
@@ -344,7 +345,7 @@ class URL {
 		$params_string = '';
 		foreach ($params as $value) {
 			// not allowed to have '/' characters in the value
-			$value = str_replace('/', '-', $value);
+			$value = str_replace('/', '-', $value ?? '');
 
 			$params_string .= urlencode($value).'/';
 		}

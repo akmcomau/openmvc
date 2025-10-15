@@ -74,6 +74,8 @@ class DatabaseDriver {
 	 */
 	protected $citusdb = NULL;
 
+	protected $table;
+
 	/**
 	 * Constructor
 	 * @param $config   \b Config   The configuration object

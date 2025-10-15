@@ -11,7 +11,7 @@
 							<div class="col-md-6">
 								<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_email; ?></div>
 								<div class="col-md-9 col-sm-9 ">
-									<input type="text" class="form-control" name="search_email" value="<?php echo htmlspecialchars($form->getValue('search_email')); ?>" />
+									<input type="text" class="form-control" name="search_email" value="<?php echo htmlspecialchars($form->getValue('search_email') ?? ''); ?>" />
 									<?php echo $form->getHtmlErrorDiv('search_email'); ?>
 								</div>
 							</div>
@@ -25,7 +25,7 @@
 								</div>
 								<div class="col-md-9 col-sm-9 ">
 									<div class="spacer-2column visible-sm"></div>
-									<input type="text" class="form-control" name="search_login" value="<?php echo htmlspecialchars($form->getValue('search_login')); ?>" />
+									<input type="text" class="form-control" name="search_login" value="<?php echo htmlspecialchars($form->getValue('search_login') ?? ''); ?>" />
 									<?php echo $form->getHtmlErrorDiv('search_login'); ?>
 								</div>
 							</div>

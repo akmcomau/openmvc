@@ -43,20 +43,20 @@ class PgSQL extends DatabaseDriver {
 		if ($this->citusDbEnabled()) {
 			if ($this->citusdb) {
 				if ($this->citusdb->distribution_type == 'hash') {
-					$sql = "SELECT master_create_distributed_table("
+					$sql = "SELECT create_distributed_table("
 						.$this->database->quote($this->table).","
 						.$this->database->quote($this->citusdb->distribution_field).","
 						."'hash');\n";
 					$this->database->executeQuery($sql, TRUE);
 
-					$sql = "SELECT master_create_worker_shards("
+					$sql = "SELECT create_worker_shards("
 						.$this->database->quote($this->table).","
 						.(int)$this->citusdb->num_shards.","
 						.(int)$this->config->database->citusdb_replicas.");\n";
 					$this->database->executeQuery($sql, TRUE);
 				}
 				elseif ($this->citusdb->distribution_type == 'append') {
-					$sql = "SELECT master_create_distributed_table("
+					$sql = "SELECT create_distributed_table("
 						.$this->database->quote($this->table).","
 						.$this->database->quote($this->citusdb->distribution_field).","
 						."'append');\n";
@@ -65,8 +65,6 @@ class PgSQL extends DatabaseDriver {
 					$sql = "SET citus.shard_replication_factor = ".(int)$this->config->database->citusdb_replicas;
 					$this->database->executeQuery($sql, TRUE);
 
-					$sql = "SELECT master_create_empty_shard(".$this->database->quote($this->table).");";
-					$this->database->executeQuery($sql, TRUE);
 				}
 				else {
 					throw new ModelException('Invalid CitusDB Distribution Type');
