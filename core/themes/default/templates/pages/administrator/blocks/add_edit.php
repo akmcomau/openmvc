@@ -14,7 +14,7 @@
 						<div class="row">
 							<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_title; ?></div>
 							<div class="col-md-9 col-sm-9 ">
-								<input type="text" class="form-control" name="title" value="<?php echo htmlspecialchars($block->title); ?>" />
+								<input type="text" class="form-control" name="title" value="<?php echo htmlspecialchars($block->title ?? ''); ?>" />
 								<?php echo $form->getHtmlErrorDiv('title'); ?>
 							</div>
 						</div>
@@ -25,7 +25,7 @@
 							<div class="row">
 								<div class="col-md-3 col-sm-3 title-2column"><?php echo $text_tag; ?></div>
 								<div class="col-md-9 col-sm-9 ">
-									<input type="text" class="form-control" name="tag" value="<?php echo htmlspecialchars($block->tag); ?>" />
+									<input type="text" class="form-control" name="tag" value="<?php echo htmlspecialchars($block->tag ?? ''); ?>" />
 									<?php echo $form->getHtmlErrorDiv('tag'); ?>
 								</div>
 							</div>
@@ -63,7 +63,7 @@
 								<?php } ?>
 							</div>
 							<div class="col-md-9 col-sm-9 ">
-								<textarea class="form-control ckeditor" name="content"><?php echo htmlspecialchars($block->content); ?></textarea>
+								<textarea class="form-control ckeditor" name="content"><?php echo htmlspecialchars($block->content ?? ''); ?></textarea>
 								<?php echo $form->getHtmlErrorDiv('content'); ?>
 							</div>
 						</div>

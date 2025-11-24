@@ -11,7 +11,7 @@
 							<div class="col-md-12">
 								<div class="col-md-4 col-sm-4 title-2column"><?php echo $text_file; ?></div>
 								<div class="col-md-6 col-sm-6 ">
-									<input type="text" class="form-control" name="search_file" value="<?php echo htmlspecialchars($form->getValue('search_file')); ?>" />
+									<input type="text" class="form-control" name="search_file" value="<?php echo htmlspecialchars($form->getValue('search_file') ?? ''); ?>" />
 									<?php echo $form->getHtmlErrorDiv('search_file'); ?>
 								</div>
 							</div>
