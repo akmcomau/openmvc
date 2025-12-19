@@ -111,7 +111,7 @@ class Customer extends Controller {
 					$this->rememberMeCookie($customer);
 				}
 				else {
-					setcookie('rememberme', NULL, -1, '/', $this->config->getSiteDomain());
+					setcookie('rememberme', '', -1, '/', $this->config->getSiteDomain());
 				}
 
 				// save the controller for login redirect
