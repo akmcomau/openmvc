@@ -905,7 +905,7 @@ class Model {
 	 * @param $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
 	 * @return \b Model The model object
 	 */
-	public function get(array $params, array $ordering = NULL) {
+	public function get(?array $params, ?array $ordering = NULL) {
 		// check for a cached object
 		if ($this->cacheable) {
 			$cache_key = md5(get_class($this).print_r($params, TRUE));
@@ -941,7 +941,7 @@ class Model {
 	 * @param $params The params to lookup the record, see generateWhereClause() method
 	 * @return \b integer The number of records found
 	 */
-	public function getCount(array $params = NULL) {
+	public function getCount(?array $params = NULL) {
 		$table = $this->table;
 		$sql   = "SELECT COUNT(*) as cnt FROM ".$this->generateFromClause($params);
 		if ($params) {
@@ -961,7 +961,7 @@ class Model {
 	 * @param $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
 	 * @return \b array An array of model objects
 	 */
-	public function getMulti(array $params = NULL, array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
+	public function getMulti(?array $params = NULL, ?array $ordering = NULL, ?array $pagination = NULL, ?array $grouping = NULL) {
 		$table = $this->table;
 		$sql   = "SELECT $table.* FROM ".$this->generateFromClause($params, $ordering);
 		if ($params) {
@@ -990,7 +990,7 @@ class Model {
 	 * @param $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
 	 * @return \b array An associative array of the models keyed on $key
 	 */
-	public function getMultiKeyed($key, array $params = NULL, array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
+	public function getMultiKeyed($key, ?array $params = NULL, ?array $ordering = NULL, ?array $pagination = NULL, ?array $grouping = NULL) {
 		$table = $this->table;
 		$sql   = "SELECT $table.* FROM ".$this->generateFromClause($params, $ordering);
 		if ($params) {
