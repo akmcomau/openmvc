@@ -326,18 +326,18 @@ class URL {
 		return $this->config->getSiteUrl().$url;
 	}
 
-	public function getUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+	public function getUrl($controller_name = NULL, $method_name = NULL, ?array $params = NULL, ?array $get_params = NULL) {
 		if ($this->usingSSL() || ($this->config->siteConfig()->enable_ssl && $this->config->siteConfig()->force_ssl)) {
 			return $this->getSecureUrl($controller_name, $method_name, $params, $get_params);
 		}
 		return $this->config->getSiteUrl().$this->getRelativeUrl($controller_name, $method_name, $params, $get_params);
 	}
 
-	public function getSecureUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+	public function getSecureUrl($controller_name = NULL, $method_name = NULL, ?array $params = NULL, ?array $get_params = NULL) {
 		return $this->config->getSecureSiteUrl().$this->getRelativeUrl($controller_name, $method_name, $params, $get_params);
 	}
 
-	public function getRelativeUrl($controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+	public function getRelativeUrl($controller_name = NULL, $method_name = NULL, ?array $params = NULL, ?array $get_params = NULL) {
 		if (!$controller_name) $controller_name = 'Root';
 		if (!$method_name)     $method_name     = 'index';
 		if (!$params)          $params          = [];
@@ -394,7 +394,7 @@ class URL {
 		return (strlen($url) == 0) ? '/' : $url;
 	}
 
-	public function getLink($class, $controller_name = NULL, $method_name = NULL, array $params = NULL, array $get_params = NULL) {
+	public function getLink($class, $controller_name = NULL, $method_name = NULL, ?array $params = NULL, ?array $get_params = NULL) {
 		$url = $this->getUrl($controller_name, $method_name, $params, $get_params);
 		$text = $this->getLinkText($controller_name, $method_name);
 

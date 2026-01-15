@@ -93,7 +93,7 @@ class Block extends Model {
 		return $this->content;
 	}
 
-	public function setCategory(BlockCategory $category = NULL) {
+	public function setCategory(?BlockCategory $category = NULL) {
 		$this->objects['category'] = $category;
 	}
 

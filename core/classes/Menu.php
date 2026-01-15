@@ -43,7 +43,7 @@ class Menu {
 	protected $menu_data = [];
 	protected $filename = [];
 
-	public function __construct(Config $config, Language $language, Authentication $authentication = NULL) {
+	public function __construct(Config $config, Language $language, ?Authentication $authentication = NULL) {
 		$this->config = $config;
 		$this->language = $language;
 		$this->authentication = $authentication;

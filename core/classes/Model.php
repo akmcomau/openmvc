@@ -1016,7 +1016,7 @@ class Model {
 	 * @param $ordering   An array of the form @code{.php}['*column_name*' => '*asc|desc*', ...]@endcode
 	 * @return \b string A SQL fragment
 	 */
-	public function generateFromClause(array $params = NULL, array $ordering = NULL, array &$in_from = NULL) {
+	public function generateFromClause(?array $params = NULL, ?array $ordering = NULL, ?array &$in_from = NULL) {
 		if (!$params) $params = [];
 		if (!$ordering) $ordering = [];
 
@@ -1247,7 +1247,7 @@ class Model {
 	 * @param $grouping   An array of the form @code{.php}['*column_name1*', '*column_name2*', ...]@endcode
 	 * @return \b string An SQL fragment
 	 */
-	public function getOrderGroupSQL(array $ordering = NULL, array $pagination = NULL, array $grouping = NULL) {
+	public function getOrderGroupSQL(?array $ordering = NULL, ?array $pagination = NULL, ?array $grouping = NULL) {
 		$sql = '';
 		if ($grouping) {
 			foreach ($grouping as &$column) {
@@ -1300,7 +1300,7 @@ class Model {
 	 * @param $record The record array
 	 * @return \b string The model object with record array set
 	 */
-	public function getModel($class, array $record = NULL) {
+	public function getModel($class, ?array $record = NULL) {
 	$model = new $class($this->config, $this->database);
 		if ($record) {
 			$model->setRecord($record);

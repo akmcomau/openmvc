@@ -183,7 +183,7 @@ class Category extends Model {
 		return [];
 	}
 
-	public function getAsMenu($template, $language, $controller, $method, $method_params = [], $include_children, $params = [], $li_class = '', $site_id = NULL) {
+	public function getAsMenu($template, $language, $controller, $method, $method_params = [], $include_children = TRUE, $params = [], $li_class = '', $site_id = NULL) {
 		$options = $this->getAsMenuArray($controller, $method, $method_params, $include_children, $params, $li_class, $site_id);
 		$menu = new Menu($this->config, $language);
 		$menu->setTemplate($template);

@@ -113,7 +113,7 @@ class Address extends Model {
 		'country_id'   => ['country',  'country_id'],
 	];
 
-	public function getModel($class, array $record = NULL) {
+	public function getModel($class, ?array $record = NULL) {
 		$result = parent::getModel($class, $record);
 		if (get_class($result) == '\core\classes\models\Address' || get_class($result) == 'core\classes\models\Address') {
 			$result->getLocation();

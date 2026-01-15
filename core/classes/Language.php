@@ -145,7 +145,7 @@ class Language {
 		return $this->loaded_files;
 	}
 
-	public function getLanguageFiles(array $params = NULL, array $ordering = NULL, array $pagination = NULL) {
+	public function getLanguageFiles(?array $params = NULL, ?array $ordering = NULL, ?array $pagination = NULL) {
 		$site = $this->config->siteConfig();
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
 		$base_core_path = $root_path.'core'.DS.'language'.DS.$site->language.DS;
