@@ -116,6 +116,10 @@ class Config {
 		}
 	}
 
+	public function getRobot() {
+		return $this->configuration['is_robot'];
+	}
+
 	/**
 	 * Gets the configuation object for a module
 	 * @param $module \b string The modules name

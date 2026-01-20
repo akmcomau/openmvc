@@ -151,7 +151,9 @@ class Dispatcher {
 		// check for force password change flag
 	    if ($controller->getAuthentication()->forcePasswordChangeEnabled()) {
 			if (!preg_match('/\Customer$/', $controller_class) || $method_name != 'change_password') {
-				throw new RedirectException($this->url->getUrl('Customer', 'change_password'));
+				//throw new RedirectException($this->url->getUrl('Customer', 'change_password'));
+				header('Location: '.$this->url->getUrl('Customer', 'change_password'));
+				exit;
 			}
 		}
 

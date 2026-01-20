@@ -294,6 +294,10 @@ class Customer extends Controller {
 	}
 
 	public function reset($customer_id, $token) {
+		if ($this->config->getRobot()) {
+			throw new RedirectException($this->url->getUrl('Customer', 'login', ['invalid_token']));
+		}
+
 		$customer_id = Encryption::defuscate($customer_id, $this->config->siteConfig()->secret);
 		$model = new Model($this->config, $this->database);
 		$customer = $model->getModel($this->customer_class)->get([
