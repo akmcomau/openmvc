@@ -176,7 +176,7 @@ class FormValidator {
 	 * @param $inputs      \b array   An array containing the inputs for the form
 	 * @param $validators  \b array   An array containing the validators for the form
 	 */
-	public function __construct(Request $request, $name, array $inputs = NULL, array $validators  = NULL) {
+	public function __construct(Request $request, $name, ?array $inputs = NULL, ?array $validators  = NULL) {
 		$this->request = $request;
 		$this->name = $name;
 		$this->logger = Logger::getLogger(get_class($this));
