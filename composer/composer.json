@@ -123,7 +123,7 @@
 				"name": "apache/log4php",
 				"version":"2.3.0.3",
 				"source": {
-					"url": "https://github.com/armando-basile/logging-log4php.git",
+					"url": "https://github.com/akmcomau/log4php.git",
 					"type": "git",
 					"reference":"master"
 				}
