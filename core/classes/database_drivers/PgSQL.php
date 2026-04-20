@@ -328,7 +328,7 @@ class PgSQL extends DatabaseDriver {
 		foreach ($columns_raw as $column) {
 			// is this an autoincrement field
 			$auto_increment = FALSE;
-			if (preg_match('/^nextval/', $column['column_default'])) {
+			if (preg_match('/^nextval/', $column['column_default'] ?? '')) {
 				$column['column_default'] = NULL;
 				$auto_increment = TRUE;
 			}
@@ -366,7 +366,7 @@ class PgSQL extends DatabaseDriver {
 		$raw_indexes = $this->database->queryMulti($sql);
 		foreach ($raw_indexes as $index) {
 			if ($index['indrelid'] == $this->table) {
-				preg_match('/^{(.*)}$/', $index['indkey_names'], $matches);
+				preg_match('/^{(.*)}$/', $index['indkey_names'] ?? '', $matches);
 				$array = str_getcsv($matches[1]);
 				$indexes[$index['indname']] = $array;
 			}
