@@ -367,7 +367,7 @@ class PgSQL extends DatabaseDriver {
 		foreach ($raw_indexes as $index) {
 			if ($index['indrelid'] == $this->table) {
 				preg_match('/^{(.*)}$/', $index['indkey_names'] ?? '', $matches);
-				$array = str_getcsv($matches[1]);
+				$array = str_getcsv($matches[1], ",", "\"", "\\");
 				$indexes[$index['indname']] = $array;
 			}
 		}
