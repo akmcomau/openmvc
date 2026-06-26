@@ -51,6 +51,10 @@ class Pagination {
 		}
 	}
 
+	public function setRecordsPerPage($num) {
+		$this->records_per_page = $num;
+	}
+
 	public function getFirstRecordNumber() {
 		return $this->current_page;
 	}
