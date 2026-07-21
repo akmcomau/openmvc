@@ -1258,7 +1258,9 @@ class Model {
 		if ($ordering && count($ordering)) {
 			$ordering_sql = [];
 			foreach ($ordering as $column => $direction) {
-				$orig_direction = $direction;
+				// Only 'asc'/'ASC' or 'desc'/'DESC' are ever accepted; anything else
+				// (including the literal string 'SQL') falls back to a safe default
+				// instead of being treated as a signal to skip escaping.
 				$direction = (strtolower($direction) == 'asc') ? 'ASC' : 'DESC';
 				if ($column == 'random()') {
 					if ($this->database->getEngine() == 'mysql') {
@@ -1269,13 +1271,14 @@ class Model {
 					}
 				}
 				else {
-					$orig_column = $column;
+					// getColumnName() only returns a value for columns that are
+					// explicitly whitelisted on this model (or a declared relationship).
+					// If it doesn't match a known column, the value is discarded rather
+					// than being concatenated into the SQL string. There is no
+					// unescaped raw-SQL fallback here any more.
 					$column = $this->getColumnName($column);
 					if ($column) {
 						$ordering_sql[] = "$column $direction";
-					}
-					elseif ($orig_direction == 'SQL') {
-						$ordering_sql[] = $orig_column;
 					}
 				}
 			}

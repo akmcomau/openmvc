@@ -73,8 +73,24 @@ class Language {
 
 	public function updateFile($file, array $strings) {
 		$file = str_replace('\\', '/', $file);
+
+		// Reject any '..' traversal segment outright. $file/$path come from
+		// the language editor's URL parameters and must never be able to
+		// point outside the site's language directory.
+		foreach (explode('/', $file) as $part) {
+			if ($part === '..') {
+				throw new \core\classes\exceptions\LanguageException("Invalid language file path: $file");
+			}
+		}
+		// Language files are always plain PHP arrays of strings, so only
+		// allow the expected extension.
+		if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) !== 'php') {
+			throw new \core\classes\exceptions\LanguageException("Invalid language file path: $file");
+		}
+
 		$site = $this->config->siteConfig();
 		$root_path = __DIR__.DS.'..'.DS.'..'.DS;
+		$base_dir = $root_path.'sites'.DS.$site->namespace.DS.'language'.DS.$this->language;
 		$theme_path = 'sites'.DS.$site->namespace.DS.'language'.DS.$this->language.DS;
 		$theme_file = $root_path.$theme_path.$file;
 
@@ -88,6 +104,16 @@ class Language {
 		if (!is_dir($theme_path)) {
 			mkdir($theme_path, 0775, TRUE);
 		}
+
+		// Final belt-and-suspenders check: confirm the resolved write target
+		// really is inside the site's language directory.
+		$real_base = realpath($base_dir);
+		$real_target_dir = realpath(dirname($theme_file));
+		if ($real_base === FALSE || $real_target_dir === FALSE ||
+			($real_target_dir !== $real_base && strpos($real_target_dir, $real_base.DIRECTORY_SEPARATOR) !== 0)) {
+			throw new \core\classes\exceptions\LanguageException("Invalid language file path: $file");
+		}
+
 		file_put_contents($theme_file, '<?php $_LANGUAGE = '.var_export($strings, TRUE).';');
 		if (function_exists('opcache_invalidate')) {
 			opcache_invalidate($theme_file);

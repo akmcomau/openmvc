@@ -103,7 +103,9 @@ class Customer extends Model {
 	}
 
 	public function generateToken() {
-		$this->customer_token = md5($this->id.time());
+		// Use a cryptographically secure random token instead of md5(id.time()),
+		// which is guessable in a tiny brute-force window.
+		$this->customer_token = bin2hex(random_bytes(32));
 		$this->customer_token_created = date('c');
 		$this->update();
 

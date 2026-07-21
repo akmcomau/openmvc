@@ -44,7 +44,13 @@ class Pagination {
 			$this->current_page = (int)$this->request->requestParam('page');
 		}
 		if ($this->request->requestParam('direction')) {
-			$this->direction = $this->request->requestParam('direction');
+			// Defense in depth: only 'asc'/'desc' are ever legitimate values here.
+			// (Model::getOrderGroupSQL() also refuses anything else, but we don't
+			// want 'direction=SQL' to even reach the model layer.)
+			$requested_direction = strtolower((string)$this->request->requestParam('direction'));
+			if (in_array($requested_direction, ['asc', 'desc'], TRUE)) {
+				$this->direction = $requested_direction;
+			}
 		}
 		if ($this->request->requestParam('ordering')) {
 			$this->ordering = $this->request->requestParam('ordering');

@@ -302,9 +302,17 @@ class Customer extends Controller {
 		$model = new Model($this->config, $this->database);
 		$customer = $model->getModel($this->customer_class)->get([
 			'id' => $customer_id,
-			'token' => $token,
 		]);
-		if (!$customer) {
+
+		// Timing-safe token comparison, and reject if the token is missing/expired.
+		// Tokens older than 1 hour are no longer valid.
+		$token_valid = $customer
+			&& $customer->customer_token
+			&& hash_equals((string)$customer->customer_token, (string)$token)
+			&& $customer->customer_token_created
+			&& (strtotime($customer->customer_token_created) > strtotime('-1 hour'));
+
+		if (!$token_valid) {
 			throw new RedirectException($this->url->getUrl('Customer', 'login', ['invalid_token']));
 		}
 
