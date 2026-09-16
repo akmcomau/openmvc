@@ -391,6 +391,13 @@ class Page {
 			// remove multiple consecutive line breaks
 			$data['content'] = preg_replace('/(\n\r?)+/', "\n", $data['content']);
 
+			// This content is written to a .php file that Template::render()
+			// later require()s verbatim, so any PHP open tag here would execute
+			// as code. Neutralise them (but leave '<?xml' processing
+			// instructions, e.g. in embedded SVG, untouched) so saved content
+			// can only ever be markup.
+			$data['content'] = preg_replace('/<\?(?!xml\b)/i', '&lt;?', $data['content']);
+
 			// dont do absolute links to page links on this domain
 			$data['content'] = preg_replace('|href\s*=\s*"http://'.$this->config->getSiteDomain().'/|', 'href="/', $data['content']);
 			$data['content'] = preg_replace('|href\s*=\s*"https://'.$this->config->getSiteDomain().'/|', 'href="/', $data['content']);

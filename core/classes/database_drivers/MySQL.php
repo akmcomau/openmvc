@@ -227,4 +227,16 @@ class MySQL extends DatabaseDriver {
 	protected function setTimezone($timezone) {
 		throw new \ErrorException('TODO');
 	}
+
+	public function begin() {
+		$this->database->executeQuery('START TRANSACTION;');
+	}
+
+	public function commit() {
+		$this->database->executeQuery('COMMIT;');
+	}
+
+	public function rollback() {
+		$this->database->executeQuery('ROLLBACK;');
+	}
 }

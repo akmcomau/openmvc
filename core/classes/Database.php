@@ -308,14 +308,19 @@ class Database extends PDO {
 			return NULL;
 		}
 
+		// route to the master connection when requested (e.g. writes), rather
+		// than whichever connection this instance happens to be (possibly a
+		// randomly-selected read slave)
+		$db = ($use_masterdb && !$this->is_masterdb) ? $this->getMasterDB() : $this;
+
 		$this->logger->debug("Executing SQL: $sql");
 		$start = microtime(TRUE);
-		$statement = $this->query($sql);
+		$statement = $db->query($sql);
 		$exec_time = microtime(TRUE) - $start;
 		Database::$db_time += $exec_time;
 		$this->logger->debug("SQL Time: $exec_time");
 		if (!$statement) {
-			$message = "SQL ERROR: {$this->errorCode()} ".join("\n", $this->errorInfo())."\nSQL: $sql";
+			$message = "SQL ERROR: {$db->errorCode()} ".join("\n", $db->errorInfo())."\nSQL: $sql";
 			$this->logger->error($message);
 			throw new DatabaseException($message);
 		}
@@ -423,13 +428,7 @@ class Database extends PDO {
 			return [];
 		}
 
-		$statement = NULL;
-		if ($use_masterdb) {
-			$statement = $this->masterdb->executeQuery($sql, $use_masterdb);
-		}
-		else {
-			$statement = $this->executeQuery($sql, $use_masterdb);
-		}
+		$statement = $this->executeQuery($sql, $use_masterdb);
 		$result = $statement->fetchAll(PDO::FETCH_NUM);
 		if (!$result) return [];
 

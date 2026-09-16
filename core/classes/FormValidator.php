@@ -492,7 +492,7 @@ class FormValidator {
 			foreach ($this->validators[$name] as $validator) {
 				switch($validator['type']) {
 					case 'params-equal':
-						if ($value != $this->request->requestParam($validator['param'])) {
+						if ($value !== $this->request->requestParam($validator['param'])) {
 							if ($index) {
 								$this->form_errors[$name.'['.$index.']'] = $validator['message'];
 							}

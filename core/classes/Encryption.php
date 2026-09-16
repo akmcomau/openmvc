@@ -6,26 +6,41 @@ namespace core\classes;
 
 class Encryption {
 	/**
-	 * Encrypt a string using MCRYPT_RIJNDAEL_128
+	 * The marker byte prefixed to ciphertext produced by encrypt() so decrypt()
+	 * can tell it apart from the legacy AES-128-ECB format below.
+	 */
+	const CIPHER_VERSION = "\x02";
+
+	/**
+	 * Encrypt a string using AES-256-CBC with a random IV and no padding oracle
+	 * (the previous implementation used AES-128-ECB with a fixed/null-padded key
+	 * and no IV, which leaks repeated-block structure and has no integrity check).
 	 * @param  $string  \b string  The string to encrypt
 	 * @param  $key     \b string  The encryption key
 	 */
 	public static function encrypt($string, $key) {
-		if (strlen($string) % 16) {
-			$string = str_pad($string, strlen($string) + 16 - strlen($string) % 16, "\0");
-		}
-		if (strlen($key) % 16) {
-			$key = str_pad($key, strlen($key) + 16 - strlen($key) % 16, "\0");
-		}
-		return openssl_encrypt($string, "aes-128-ecb", $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
+		$key = hash('sha256', $key, TRUE);
+		$iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+		$ciphertext = openssl_encrypt($string, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+		return self::CIPHER_VERSION.$iv.$ciphertext;
 	}
 
 	/**
-	 * Decrypt a string using MCRYPT_RIJNDAEL_128
+	 * Decrypt a string encrypted with encrypt(). Also accepts the legacy
+	 * AES-128-ECB format so previously-encrypted values already in storage
+	 * remain readable after the upgrade above.
 	 * @param $string  \b string  The string to decrypt
 	 * @param $key     \b string  The encryption key
 	 */
 	public static function decrypt($string, $key) {
+		if (isset($string[0]) && $string[0] === self::CIPHER_VERSION) {
+			$iv_length = openssl_cipher_iv_length('aes-256-cbc');
+			$iv = substr($string, 1, $iv_length);
+			$ciphertext = substr($string, 1 + $iv_length);
+			return openssl_decrypt($ciphertext, 'aes-256-cbc', hash('sha256', $key, TRUE), OPENSSL_RAW_DATA, $iv);
+		}
+
+		// Legacy format
 		if (strlen($string) % 16) {
 			$string = str_pad($string, strlen($string) + 16 - strlen($string) % 16, "\0");
 		}
@@ -115,13 +130,20 @@ class Encryption {
 	}
 
 	/**
-	 * Obfuscate an integer using MCRYPT_3DES
+	 * Obfuscate an integer using AES-128 (deterministic, single block).
+	 * Note: this is intentionally deterministic (same integer always yields the
+	 * same token) since it's used to produce a stable, reversible short code
+	 * rather than to hide repeated-block structure across multiple blocks -
+	 * the entire input is always exactly one 16-byte block, so CBC/ECB make no
+	 * difference here. Deprecated 3DES was replaced with AES-128 for its
+	 * larger, modern key schedule.
 	 * @param  $integer  \b int     The integer to obfuscate
 	 * @param  $key      \b string  The encryption key
 	 */
 	public static function obfuscate($integer, $key) {
-		$integer = pack('I', $integer);
-		$string = openssl_encrypt($integer, "des-ede3", $key, OPENSSL_RAW_DATA);
+		$key = str_pad(substr(hash('sha256', $key, TRUE), 0, 16), 16, "\0");
+		$integer = str_pad(pack('I', $integer), 16, "\0");
+		$string = openssl_encrypt($integer, "aes-128-ecb", $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
 		$string = self::str2Hex($string);
 		$string = self::str_baseconvert($string, 16, 36);
 		$string = chunk_split(strtoupper($string), 4, '-');
@@ -132,16 +154,17 @@ class Encryption {
 	}
 
 	/**
-	 * Defuscate a string using MCRYPT_3DES back to an integer
+	 * Defuscate a string produced by obfuscate() back to an integer
 	 * @param  $string  \b string  The string to defuscate
 	 * @param  $key     \b string  The encryption key
 	 */
 	public static function defuscate($string, $key) {
+		$key = str_pad(substr(hash('sha256', $key, TRUE), 0, 16), 16, "\0");
 		$string = str_replace('-', '', $string);
 		$string = self::str_baseconvert($string, 36, 16);
 		if (strlen($string) % 2) $string = '0'.$string;
 		$string = self::hex2Str($string);
-		$string = openssl_decrypt($string, "des-ede3", $key, OPENSSL_RAW_DATA);
+		$string = openssl_decrypt($string, "aes-128-ecb", $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
 		$string = unpack('I', $string);
 		return $string[1];
 	}

@@ -290,10 +290,6 @@ class Model {
 			$result .= "'";
 			return $result;
 		}
-		elseif ($this->database->getEngine() == 'pgsql' && preg_match('/^E\'\\\\/', $value ?? '')) {
-			// dont quote escaped values
-			return $value;
-		}
 		return $this->database->quote($value);
 	}
 
@@ -1126,6 +1122,9 @@ class Model {
 				continue;
 			}
 			elseif ($column == 'SQL') {
+				// Raw SQL escape hatch: $value is concatenated into the WHERE
+				// clause completely unescaped. Only ever pass a fixed, trusted
+				// SQL fragment here - never request/user-supplied data.
 				$where[] = $value;
 				continue;
 			}
@@ -1250,10 +1249,20 @@ class Model {
 	public function getOrderGroupSQL(?array $ordering = NULL, ?array $pagination = NULL, ?array $grouping = NULL) {
 		$sql = '';
 		if ($grouping) {
-			foreach ($grouping as &$column) {
-				$field = $this->getColumnName($column);
+			// getColumnName() only returns a value for columns that are
+			// explicitly whitelisted on this model (or a declared
+			// relationship); anything else is discarded rather than being
+			// concatenated into the SQL string unescaped.
+			$grouping_sql = [];
+			foreach ($grouping as $column) {
+				$column = $this->getColumnName($column);
+				if ($column) {
+					$grouping_sql[] = $column;
+				}
 			}
-			$sql .= " GROUP BY ".join(', ', $grouping);
+			if (count($grouping_sql)) {
+				$sql .= " GROUP BY ".join(', ', $grouping_sql);
+			}
 		}
 		if ($ordering && count($ordering)) {
 			$ordering_sql = [];

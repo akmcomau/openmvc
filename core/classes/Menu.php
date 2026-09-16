@@ -233,7 +233,7 @@ class Menu {
 
 			$class = $children ? 'dropdown' : '';
 			$class .= isset($item['class']) ? ' '.$item['class'] : '';
-			print '<li class="'.$class.'">';
+			print '<li class="'.htmlspecialchars($class).'">';
 
 			if ($children) {
 				$html = $template_dropdown;
@@ -248,7 +248,7 @@ class Menu {
 
 			$attr = $children ? ' class="dropdown-toggle" data-toggle="dropdown"' : '';
 			$a_class = (isset($item['a_class']) ? ' '.$item['a_class'] : '');
-			print '<a class="'.$a_class.'" href="'.$item['url'].'"'.$attr.'>'.$html.'</a>';
+			print '<a class="'.htmlspecialchars($a_class).'" href="'.htmlspecialchars($item['url']).'"'.$attr.'>'.$html.'</a>';
 
 			if ($children) {
 				$this->recursiveBootstrapMenu($children, 1);
@@ -274,8 +274,8 @@ class Menu {
 			}
 			$class = $children ? 'dropdown-submenu' : '';
 			$a_class = $this->a_class.(isset($item['class']) ? ' '.$item['class'] : '');
-			print '<li class="'.$class.'">';
-			print '<a href="'.$item['url'].'" class="'.$a_class.'">'.$item['text'].'</a>';
+			print '<li class="'.htmlspecialchars($class).'">';
+			print '<a href="'.htmlspecialchars($item['url']).'" class="'.htmlspecialchars($a_class).'">'.htmlspecialchars($item['text']).'</a>';
 
 			if ($children) {
 				$this->recursiveBootstrapMenu($children, $depth++);
@@ -303,8 +303,8 @@ class Menu {
 			$class = $children ? 'has-sub' : '';
 			$class = $item['active'] ? ' active' : '';
 			$class .= isset($item['class']) ? ' '.$item['class'] : '';
-			print '<div class="menu-item '.$class.'">';
-			print '<a href="'.$item['url'].'" class="menu-link">';
+			print '<div class="menu-item '.htmlspecialchars($class).'">';
+			print '<a href="'.htmlspecialchars($item['url']).'" class="menu-link">';
 
 			if ($children) {
 				$html = $template_dropdown;
@@ -342,7 +342,7 @@ class Menu {
 			$class = $children ? 'dropdown-submenu' : '';
 			$a_class = $this->a_class.(isset($item['class']) ? ' '.$item['class'] : '');
 			print '<div class="menu-item active">';
-			print '<a href="'.$item['url'].'" class="menu-link">'.$item['text'].'</a>';
+			print '<a href="'.htmlspecialchars($item['url']).'" class="menu-link">'.htmlspecialchars($item['text']).'</a>';
 			print '</div>';
 
 			if ($children) {

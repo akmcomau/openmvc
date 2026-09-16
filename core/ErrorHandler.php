@@ -54,7 +54,7 @@ function log_display_exception($display_error, $logger, $ex) {
 	header("HTTP/1.1 500 Internal Server Error");
 
 	$GLOBALS['script-error'] = TRUE;
-	$GLOABLS['script-exception'] = $ex;
+	$GLOBALS['script-exception'] = $ex;
 
 	if ($display_error && (php_sapi_name() === 'cli')) {
 		echo "\n".$ex."\n";

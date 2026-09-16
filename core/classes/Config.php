@@ -135,23 +135,54 @@ class Config {
 	}
 
 	/**
+	 * Atomically write the config array out to $filename (write to a temp
+	 * file then rename over it, so a reader never sees a partially-written
+	 * file).
+	 * @param $filename \b string The config file to write
+	 * @param $_CONFIG  \b array  The config data to write
+	 */
+	protected function atomicWriteConfig($filename, array $_CONFIG) {
+		$tmp_filename = $filename.'.tmp.'.getmypid();
+		file_put_contents($tmp_filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
+		rename($tmp_filename, $filename);
+		if (function_exists('opcache_invalidate')) {
+			opcache_invalidate($filename);
+		}
+	}
+
+	/**
+	 * Read-modify-write the config file under an exclusive lock, so
+	 * concurrent requests changing config/modules can't lose each other's
+	 * writes.
+	 * @param $modify \b callable Receives the current $_CONFIG array by reference
+	 */
+	protected function updateConfigFile(callable $modify) {
+		$filename = $this->getConfigFile();
+		$lock = fopen($filename, 'c+');
+		flock($lock, LOCK_EX);
+
+		require($filename);
+		if (!isset($_CONFIG)) $_CONFIG = [];
+		$modify($_CONFIG);
+
+		$this->atomicWriteConfig($filename, $_CONFIG);
+
+		flock($lock, LOCK_UN);
+		fclose($lock);
+	}
+
+	/**
 	 * Installs a new module
 	 * @param $module \b array The modules specification
 	 */
 	public function installModule(array $module) {
-		$filename = $this->getConfigFile();
-		require($filename);
+		$this->updateConfigFile(function (&$_CONFIG) use ($module) {
+			if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
 
-		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
-
-		if (!in_array($module['namespace'], $_CONFIG['modules'])) {
-			$_CONFIG['modules'][] = $module['namespace'];
-		}
-
-		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
-		if (function_exists('opcache_invalidate')) {
-			opcache_invalidate($filename);
-		}
+			if (!in_array($module['namespace'], $_CONFIG['modules'])) {
+				$_CONFIG['modules'][] = $module['namespace'];
+			}
+		});
 	}
 
 	/**
@@ -159,20 +190,14 @@ class Config {
 	 * @param $module \b array The modules specification
 	 */
 	public function uninstallModule($module) {
-		$filename = $this->getConfigFile();
-		require($filename);
+		$this->updateConfigFile(function (&$_CONFIG) use ($module) {
+			if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
 
-		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
-
-		if (in_array($module['namespace'], $_CONFIG['modules'])) {
-			$index = array_search($module['namespace'], $_CONFIG['modules']);
-			array_splice($_CONFIG['modules'], $index, 1);
-		}
-
-		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
-		if (function_exists('opcache_invalidate')) {
-			opcache_invalidate($filename);
-		}
+			if (in_array($module['namespace'], $_CONFIG['modules'])) {
+				$index = array_search($module['namespace'], $_CONFIG['modules']);
+				array_splice($_CONFIG['modules'], $index, 1);
+			}
+		});
 	}
 
 	/**
@@ -180,21 +205,16 @@ class Config {
 	 * @param $module \b array The modules specification
 	 */
 	public function enableModule($module) {
-		$filename = $this->getConfigFile();
-		require($filename);
+		$domain = $this->siteConfig()->domain;
+		$this->updateConfigFile(function (&$_CONFIG) use ($module, $domain) {
+			if (!isset($_CONFIG['sites'][$domain]['modules'])) {
+				$_CONFIG['sites'][$domain]['modules'] = [];
+			}
 
-		if (!isset($_CONFIG['sites'][$this->siteConfig()->domain]['modules'])) {
-			$_CONFIG['sites'][$this->siteConfig()->domain]['modules'] = [];
-		}
-
-		if (!in_array($module['namespace'], $_CONFIG['sites'][$this->siteConfig()->domain]['modules'])) {
-			$_CONFIG['sites'][$this->siteConfig()->domain]['modules'][$module['namespace']] = $module['default_config'];
-		}
-
-		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
-		if (function_exists('opcache_invalidate')) {
-			opcache_invalidate($filename);
-		}
+			if (!in_array($module['namespace'], $_CONFIG['sites'][$domain]['modules'])) {
+				$_CONFIG['sites'][$domain]['modules'][$module['namespace']] = $module['default_config'];
+			}
+		});
 	}
 
 	/**
@@ -202,21 +222,16 @@ class Config {
 	 * @param $module \b array The modules specification
 	 */
 	public function disableModule($module) {
-		$filename = $this->getConfigFile();
-		require($filename);
+		$domain = $this->siteConfig()->domain;
+		$this->updateConfigFile(function (&$_CONFIG) use ($module, $domain) {
+			if (!isset($_CONFIG['sites'][$domain]['modules'])) {
+				$_CONFIG['sites'][$domain]['modules'] = [];
+			}
 
-		if (!isset($_CONFIG['sites'][$this->siteConfig()->domain]['modules'])) {
-			$_CONFIG['sites'][$this->siteConfig()->domain]['modules'] = [];
-		}
-
-		if (isset($_CONFIG['sites'][$this->siteConfig()->domain]['modules'][$module['namespace']])) {
-			unset($_CONFIG['sites'][$this->siteConfig()->domain]['modules'][$module['namespace']]);
-		}
-
-		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
-		if (function_exists('opcache_invalidate')) {
-			opcache_invalidate($filename);
-		}
+			if (isset($_CONFIG['sites'][$domain]['modules'][$module['namespace']])) {
+				unset($_CONFIG['sites'][$domain]['modules'][$module['namespace']]);
+			}
+		});
 	}
 
 	/**
@@ -266,12 +281,7 @@ class Config {
 	 * @param $config \b array The sites configuration file as an array
 	 */
 	public function setSiteConfig($config) {
-		$filename = $this->getConfigFile();
-
-		file_put_contents($filename, '<?php $_CONFIG = '.var_export($config, TRUE).';');
-		if (function_exists('opcache_invalidate')) {
-			opcache_invalidate($filename);
-		}
+		$this->atomicWriteConfig($this->getConfigFile(), $config);
 	}
 
 	/**
@@ -392,25 +402,21 @@ class Config {
 	 * Update the modules in the config file
 	 */
 	public function updateConfig() {
-		$filename = $this->getConfigFile();
-		require($filename);
-		if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
+		$site_domain = $this->site_domain;
+		$this->updateConfigFile(function (&$_CONFIG) use ($site_domain) {
+			if (!isset($_CONFIG['modules'])) $_CONFIG['modules'] = [];
 
-		$module_class = new Module($this);
-		$modules = $module_class->getModules();
-		foreach ($modules as $namespace => $module) {
-			if ($module['enabled'] && isset($module['default_config'])) {
-				foreach ($module['default_config'] as $name => $value) {
-					if (!isset($_CONFIG['sites'][$this->site_domain]['modules'][$namespace][$name])) {
-						$_CONFIG['sites'][$this->site_domain]['modules'][$namespace][$name] = $value;
+			$module_class = new Module($this);
+			$modules = $module_class->getModules();
+			foreach ($modules as $namespace => $module) {
+				if ($module['enabled'] && isset($module['default_config'])) {
+					foreach ($module['default_config'] as $name => $value) {
+						if (!isset($_CONFIG['sites'][$site_domain]['modules'][$namespace][$name])) {
+							$_CONFIG['sites'][$site_domain]['modules'][$namespace][$name] = $value;
+						}
 					}
 				}
 			}
-		}
-
-		file_put_contents($filename, '<?php $_CONFIG = '.var_export($_CONFIG, TRUE).';');
-		if (function_exists('opcache_invalidate')) {
-			opcache_invalidate($filename);
-		}
+		});
 	}
 }

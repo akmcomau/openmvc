@@ -5,6 +5,10 @@ namespace core\classes\traits;
 
 trait Thumbnails {
 	protected function makeThumbnails($updir, $img) {
+		// $img may come from an uploaded filename; strip any path component
+		// so it can't be used to traverse outside $updir.
+		$img = basename($img);
+
 		$max_image_width  = 200;
 		$max_image_height = 150;
 		$thumb_beforeword = "tn-";

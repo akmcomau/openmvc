@@ -151,6 +151,9 @@ class Authentication {
 		if (!$customer->id) {
 			throw new AuthenticationException("Cannot login a customer with no customer_id");
 		}
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			session_regenerate_id(TRUE);
+		}
 		$this->logged_in = TRUE;
 		$this->request->session->set(['authentication', 'customer'], $customer->getRecord());
 		$this->customer_data = $customer->getRecord();
@@ -181,6 +184,9 @@ class Authentication {
 		}
 		if (!$admin->id) {
 			throw new AuthenticationException("Cannot login a administrator with no admin_id");
+		}
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			session_regenerate_id(TRUE);
 		}
 		$this->logged_in = TRUE;
 		$this->request->session->set(['authentication', 'administrator'], $admin->getRecord());

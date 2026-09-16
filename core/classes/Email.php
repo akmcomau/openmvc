@@ -86,6 +86,16 @@ class Email {
 	}
 
 	/**
+	 * Strip CR/LF from a value bound for an email header, to prevent header
+	 * injection (extra headers, e.g. additional Bcc:, smuggled in via a
+	 * newline in a user-supplied address/name/subject).
+	 * @param $value \b string The value to sanitize
+	 */
+	protected function stripHeaderInjection($value) {
+		return str_replace(["\r", "\n"], '', $value);
+	}
+
+	/**
 	 * Create an RFC2822 email address
 	 * @param $email \b string The receipient's email address
 	 * @param $name  \b string The receipient's name
@@ -101,10 +111,10 @@ class Email {
 	 */
 	public function setToEmail($to_email) {
 		if (is_array($to_email)) {
-			$this->to_email = join(',', $to_email);
+			$this->to_email = join(',', array_map([$this, 'stripHeaderInjection'], $to_email));
 		}
 		else {
-			$this->to_email = $to_email;
+			$this->to_email = $this->stripHeaderInjection($to_email);
 		}
 	}
 
@@ -114,7 +124,7 @@ class Email {
 	 */
 	public function addToEmail($to_email) {
 		if (strlen($this->to_email) > 0) $this->to_email .= ',';
-		$this->to_email .= $to_email;
+		$this->to_email .= $this->stripHeaderInjection($to_email);
 	}
 
 	/**
@@ -123,10 +133,10 @@ class Email {
 	 */
 	public function setCcEmail($cc_email) {
 		if (is_array($cc_email)) {
-			$this->cc_email = join(',', $cc_email);
+			$this->cc_email = join(',', array_map([$this, 'stripHeaderInjection'], $cc_email));
 		}
 		else {
-			$this->cc_email = $cc_email;
+			$this->cc_email = $this->stripHeaderInjection($cc_email);
 		}
 	}
 
@@ -136,7 +146,7 @@ class Email {
 	 */
 	public function addCcEmail($cc_email) {
 		if (strlen($this->cc_email) > 0) $this->cc_email .= ',';
-		$this->cc_email .= $cc_email;
+		$this->cc_email .= $this->stripHeaderInjection($cc_email);
 	}
 
 	/**
@@ -145,10 +155,10 @@ class Email {
 	 */
 	public function setBccEmail($bcc_email) {
 		if (is_array($bcc_email)) {
-			$this->bcc_email = join(',', $bcc_email);
+			$this->bcc_email = join(',', array_map([$this, 'stripHeaderInjection'], $bcc_email));
 		}
 		else {
-			$this->bcc_email = $bcc_email;
+			$this->bcc_email = $this->stripHeaderInjection($bcc_email);
 		}
 	}
 
@@ -158,7 +168,7 @@ class Email {
 	 */
 	public function addBccEmail($bcc_email) {
 		if (strlen($this->bcc_email) > 0) $this->bcc_email .= ',';
-		$this->bcc_email .= $bcc_email;
+		$this->bcc_email .= $this->stripHeaderInjection($bcc_email);
 	}
 
 	/**
@@ -166,7 +176,7 @@ class Email {
 	 * @param $from_email \b string The FROM email address
 	 */
 	public function setFromEmail($from_email) {
-		$this->from_email = $from_email;
+		$this->from_email = $this->stripHeaderInjection($from_email);
 	}
 
 	/**
@@ -174,7 +184,7 @@ class Email {
 	 * @param $subject \b string The email's subject
 	 */
 	public function setSubject($subject) {
-		$this->subject = $subject;
+		$this->subject = $this->stripHeaderInjection($subject);
 	}
 
 	/**

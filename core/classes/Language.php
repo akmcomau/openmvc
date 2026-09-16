@@ -101,8 +101,8 @@ class Language {
 			$theme_file = $root_path.$theme_path.$matches[2];
 		}
 
-		if (!is_dir($theme_path)) {
-			mkdir($theme_path, 0775, TRUE);
+		if (!is_dir(dirname($theme_file))) {
+			mkdir(dirname($theme_file), 0775, TRUE);
 		}
 
 		// Final belt-and-suspenders check: confirm the resolved write target

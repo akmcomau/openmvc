@@ -90,7 +90,7 @@ class Request {
 	}
 
 	public function getParam($name, $value = NULL) {
-		if ($value) {
+		if (!is_null($value)) {
 			$this->get_params[$name] = $value;
 		}
 
@@ -103,7 +103,7 @@ class Request {
 	}
 
 	public function postParam($name, $value = NULL) {
-		if ($value) {
+		if (!is_null($value)) {
 			$this->post_params[$name] = $value;
 		}
 
@@ -116,7 +116,7 @@ class Request {
 	}
 
 	public function requestParam($name, $value = NULL) {
-		if ($value) {
+		if (!is_null($value)) {
 			$this->request_params[$name] = $value;
 		}
 
@@ -129,7 +129,7 @@ class Request {
 	}
 
 	public function fileParam($name, $value = NULL) {
-		if ($value) {
+		if (!is_null($value)) {
 			$this->file_params[$name] = $value;
 		}
 
@@ -155,9 +155,7 @@ class Request {
 			$params = $this->method_params;
 		}
 		$controller_class = $this->url->getControllerClassName($this->controller_class);
-		$query_string = $this->serverParam('QUERYSTRING');
-		$query_string = $query_string ? '?'.$query_string : '';
-		return $this->url->getUrl($controller_class, $this->method_name, $params).$query_string;
+		return $this->url->getUrl($controller_class, $this->method_name, $params);
 	}
 
 	public function clearDispatcherParams() {

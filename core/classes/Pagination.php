@@ -62,11 +62,11 @@ class Pagination {
 	}
 
 	public function getFirstRecordNumber() {
-		return $this->current_page;
+		return ($this->current_page-1)*$this->records_per_page + 1;
 	}
 
 	public function getLastRecordNumber() {
-		return $this->getFirstRecordNumber() + count();
+		return min($this->current_page*$this->records_per_page, $this->record_count);
 	}
 
 	public function getCurrentPage() {
