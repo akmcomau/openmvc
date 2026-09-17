@@ -18,6 +18,7 @@ class Modules extends Controller {
 	protected $permissions = [
 		'index' => ['administrator'],
 		'install' => ['administrator'],
+		'uninstall' => ['administrator'],
 		'enable' => ['administrator'],
 		'disable' => ['administrator'],
 	];

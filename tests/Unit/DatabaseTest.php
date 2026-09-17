@@ -53,13 +53,6 @@ class DatabaseTest extends FrameworkTestCase {
 		return $database;
 	}
 
-	protected function setProtectedProperty(object $object, string $property, $value): void {
-		$reflection = new ReflectionClass($object);
-		$prop = $reflection->getProperty($property);
-		$prop->setAccessible(true);
-		$prop->setValue($object, $value);
-	}
-
 	public function testGetMasterDbReturnsSelfWhenAlreadyMaster(): void {
 		$database = $this->makeDatabaseDouble('pgsql', TRUE);
 		$this->assertSame($database, $database->getMasterDB());

@@ -35,7 +35,7 @@ abstract class FrameworkTestCase extends TestCase {
 		return $config;
 	}
 
-	protected function makeRequest(Config $config, array $get = [], array $post = [], array $server = []): Request {
+	protected function makeRequest(Config $config, array $get = [], array $post = [], array $server = [], ?Database $database = NULL): Request {
 		$_GET     = $get;
 		$_POST    = $post;
 		$_REQUEST = array_merge($get, $post);
@@ -43,7 +43,53 @@ abstract class FrameworkTestCase extends TestCase {
 			$_SERVER[$key] = $value;
 		}
 
-		return new Request($config);
+		$request = new Request($config);
+		// Mimic what the Dispatcher always does before a controller method
+		// runs in production - several classes (Pagination, URL) need a
+		// controller/method set to build URLs without warnings.
+		$request->setControllerClass('\core\controllers\Root');
+		$request->setMethodName('index');
+		$request->setMethodParams([]);
+
+		// Controller::__construct() passes $request->getAuthentication()
+		// into Layout's non-nullable Authentication parameter, so any test
+		// that constructs a real Controller needs this called first (even
+		// with nobody logged in) or it fatals with a TypeError.
+		if ($database) {
+			$request->setDatabase($database);
+		}
+
+		return $request;
+	}
+
+	/**
+	 * Build a controller with a Database double already wired into its
+	 * Request (see makeRequest()'s $database param), so the base
+	 * Controller constructor's Layout/Authentication setup doesn't fatal.
+	 */
+	protected function makeController(string $class, Config $config, Database $database, Request $request) {
+		return new $class($config, $database, $request, new \core\classes\Response());
+	}
+
+	protected function setProtectedProperty(object $object, string $property, $value): void {
+		$reflection = new \ReflectionClass($object);
+		$prop = $reflection->getProperty($property);
+		$prop->setAccessible(true);
+		$prop->setValue($object, $value);
+	}
+
+	protected function getProtectedProperty(object $object, string $property) {
+		$reflection = new \ReflectionClass($object);
+		$prop = $reflection->getProperty($property);
+		$prop->setAccessible(true);
+		return $prop->getValue($object);
+	}
+
+	protected function callProtectedMethod(object $object, string $method, array $args = []) {
+		$reflection = new \ReflectionClass($object);
+		$m = $reflection->getMethod($method);
+		$m->setAccessible(true);
+		return $m->invokeArgs($object, $args);
 	}
 
 	/**

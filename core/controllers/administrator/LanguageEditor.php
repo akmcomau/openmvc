@@ -17,6 +17,7 @@ class LanguageEditor extends Controller {
 
 	protected $permissions = [
 		'index' => ['administrator'],
+		'edit' => ['administrator'],
 	];
 
 	public function index() {

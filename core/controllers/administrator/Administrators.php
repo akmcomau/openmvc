@@ -20,6 +20,7 @@ class Administrators extends Controller {
 		'index' => ['administrator'],
 		'add' => ['administrator'],
 		'edit' => ['administrator'],
+		'delete' => ['administrator'],
 	];
 
 	public function index($message = NULL) {

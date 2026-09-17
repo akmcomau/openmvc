@@ -23,6 +23,8 @@ class Customers extends Controller {
 		'add' => ['administrator'],
 		'edit' => ['administrator'],
 		'delete' => ['administrator'],
+		'login' => ['administrator'],
+		'csv' => ['administrator'],
 	];
 
 	public function index($message = NULL) {
