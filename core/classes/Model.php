@@ -1118,7 +1118,7 @@ class Model {
 				continue;
 			}
 			elseif ($column == 'and') {
-				$where[] = '('.$this->generateWhereClause($value, FALSE).')';
+				$where[] = '('.$this->generateWhereClause($value, TRUE).')';
 				continue;
 			}
 			elseif ($column == 'SQL') {

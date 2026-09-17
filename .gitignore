@@ -12,6 +12,8 @@ composer/composer.lock
 composer/composer.phar
 composer/vendor/
 composer/components/
+/tests/vendor/
+/tests/.phpunit.cache/
 logs/*.log
 logs/*_log
 logs/*.log.*

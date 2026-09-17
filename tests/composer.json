@@ -1,0 +1,19 @@
+{
+	"name": "openmvc/openmvc",
+	"description": "Development/test tooling for the OpenMVC framework. Front-end asset dependencies are managed separately in composer/composer.json.",
+	"type": "project",
+	"require": {
+		"php": ">=8.1"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^11.0"
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"tests\\": ""
+		}
+	},
+	"config": {
+		"sort-packages": true
+	}
+}
