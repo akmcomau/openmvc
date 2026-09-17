@@ -27,6 +27,7 @@ abstract class FrameworkTestCase extends TestCase {
 		$_REQUEST = [];
 		$_FILES = [];
 		$_COOKIE = [];
+		$_SESSION = [];
 	}
 
 	protected function makeConfig(string $domain = self::TEST_DOMAIN): Config {
