@@ -501,10 +501,11 @@ class URL {
 		}
 
 		$controller = str_replace('/', '\\', $controller);
-		if (isset(self::$url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
-			if (count(self::$url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
-				return NULL;
-			}
+		// A method with an SEO alias is only reachable through that alias,
+		// not its canonical name. The alias is a string, so this must not
+		// count() it - under PHP 8 that's a TypeError, not 1.
+		if (!empty(self::$url_map['forward'][$controller]['methods'][$method]['aliases'][$this->config->siteConfig()->language])) {
+			return NULL;
 		}
 
 		return $method;

@@ -66,6 +66,25 @@ class UrlTest extends FrameworkTestCase {
 		$this->assertSame('NotAController', $url->getControllerClassName('NotAController'));
 	}
 
+	public function testGetMethodNameResolvesSeoAlias(): void {
+		// core/meta/Root.php aliases contactUs as 'contact-us'
+		$url = $this->makeUrl();
+		$this->assertSame('contactUs', $url->getMethodName('Root', 'contact-us'));
+	}
+
+	public function testGetMethodNameRejectsCanonicalNameOfAliasedMethod(): void {
+		// An aliased method is only reachable through its alias. The alias
+		// is a string, which this used to count() - a TypeError under PHP 8
+		// that turned /Root/contactUs into a 500 instead of a 404.
+		$url = $this->makeUrl();
+		$this->assertNull($url->getMethodName('Root', 'contactUs'));
+	}
+
+	public function testGetMethodNamePassesThroughUnaliasedMethod(): void {
+		$url = $this->makeUrl();
+		$this->assertSame('someMethod', $url->getMethodName('Root', 'someMethod'));
+	}
+
 	public function testListAllControllersIncludesCoreControllers(): void {
 		$url = $this->makeUrl();
 		$controllers = $url->listAllControllers();
