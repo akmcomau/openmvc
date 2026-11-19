@@ -213,7 +213,9 @@ class Language {
 				$file = str_replace(DS, '\\', $file);
 
 				$_LANGUAGE = [];
-				$filename = $this->getAbsoluteFilename($file, $path);
+				// the file was just found under the site or core language folder, so no
+				// extra search path is needed (and an absolute one is rejected)
+				$filename = $this->getAbsoluteFilename($file);
 				require($filename);
 
 				// check the params

@@ -38,7 +38,8 @@ class Administrators extends Controller {
 
 		$pagination = new Pagination($this->request, 'username');
 
-		$params = ['site_id' => ['type'=>'in', 'value'=>$this->allowedSiteIDs()]];
+		// administrators aren't per-site (the table has no site_id column)
+		$params = [];
 		if ($form_search->validate()) {
 			$values = $form_search->getSubmittedValues();
 			foreach ($values as $name => $value) {

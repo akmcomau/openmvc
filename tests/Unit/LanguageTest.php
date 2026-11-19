@@ -142,4 +142,11 @@ class LanguageTest extends FrameworkTestCase {
 		$this->expectException(\core\classes\exceptions\LanguageException::class);
 		$this->makeLanguage()->getAbsoluteFilename('x.php', '/etc');
 	}
+
+	public function testGetLanguageFilesListsFilesWithoutPathErrors(): void {
+		// lists the language editor's files; must not trip the path checks above
+		$files = $this->makeLanguage()->getLanguageFiles();
+		$this->assertIsArray($files);
+		$this->assertNotEmpty($files);
+	}
 }
