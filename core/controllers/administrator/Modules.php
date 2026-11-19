@@ -23,6 +23,9 @@ class Modules extends Controller {
 		'disable' => ['administrator'],
 	];
 
+	// Methods that change state on GET; only allowed from this site (see core\classes\Csrf)
+	protected $state_changing_methods = ['install', 'uninstall', 'enable', 'disable'];
+
 	public function index() {
 		$this->language->loadLanguageFile('administrator/modules.php');
 

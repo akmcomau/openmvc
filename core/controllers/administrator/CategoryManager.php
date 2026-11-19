@@ -23,9 +23,12 @@ class CategoryManager extends Controller {
 		$model = new Model($this->config, $this->database);
 		$page_category = $model->getModel($model_class);
 
-		$this->addEditCategory($page_category);
+		// only make changes from a POST, which the dispatcher has checked for a CSRF token
+		if (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) === 'POST') {
+			$this->addEditCategory($page_category);
 
-		$this->deleteCategories($page_category);
+			$this->deleteCategories($page_category);
+		}
 
 		// Limit to particular site
 		$site_id = $this->allowedSiteIDs();
@@ -131,7 +134,7 @@ class CategoryManager extends Controller {
 		}
 		elseif ((int)$this->request->requestParam('image_category')) {
 			if ($this->request->fileParam('image')['error'] == 0) {
-				$category = $model->getModel('\modules\products\classes\models\ProductCategory')->get(['id' => $this->request->requestParam('category')]);
+				$category = $model->getModel('\modules\products\classes\models\ProductCategory')->get(['id' => (int)$this->request->requestParam('category')]);
 				$category->uploadImage(
 					$this->request->fileParam('image')['tmp_name'],
 					$category->id.'-'.$this->request->fileParam('image')['name']

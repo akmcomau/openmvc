@@ -12,7 +12,10 @@ DirectoryIndex index.php
 	RewriteBase /
 
 	# give static content proper urls
+	# Never let these map onto a PHP file (e.g. a template), which would run it outside the framework
+	RewriteCond %{REQUEST_URI} !\.(php\d?|phtml|phar)$ [NC]
 	RewriteRule ^/?static-\d+/(.*)/themes/(.*)$ /$1/themes/$2 [PT,L]
+	RewriteCond %{REQUEST_URI} !\.(php\d?|phtml|phar)$ [NC]
 	RewriteRule ^/?static-\d+/(.*)/assets/(.*)$ /$1/assets/$2 [PT,L]
 
 	# For the file manager

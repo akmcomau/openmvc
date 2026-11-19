@@ -35,6 +35,34 @@ class FileManager extends Controller {
 	 * Reject a sub_path containing any '..' traversal segment.
 	 * @return string|NULL The sub_path if safe, NULL if traversal was detected.
 	 */
+	/**
+	 * File extensions the editor may create or modify.  Anything the web
+	 * server or PHP could execute (.php, .phtml, .phar, .htaccess, ...) is
+	 * excluded so the editor can't be used to plant code.
+	 */
+	protected $editable_extensions = ['css', 'js', 'txt', 'json', 'xml', 'md', 'csv'];
+
+	protected function isPost() {
+		return isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) === 'POST';
+	}
+
+	protected function isEditableFile($path) {
+		$ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+		return in_array($ext, $this->editable_extensions, TRUE);
+	}
+
+	/**
+	 * Get the requested index into the configured filemanager paths, defaulting
+	 * to the first one if it is missing or invalid
+	 */
+	protected function getPathId(array $paths) {
+		$path_id = $this->request->requestParam('path');
+		if (!is_scalar($path_id) || !ctype_digit((string)$path_id) || (int)$path_id >= count($paths)) {
+			return 0;
+		}
+		return (int)$path_id;
+	}
+
 	protected function sanitizeSubPath($sub_path) {
 		if (!strlen($sub_path ?? '')) return $sub_path;
 		$normalized = str_replace('\\', '/', $sub_path);
@@ -92,7 +120,7 @@ class FileManager extends Controller {
 		$this->language->loadLanguageFile('administrator/file_manager.php');
 		$paths = get_object_vars($this->config->siteConfig()->filemanager_paths);
 
-		$path_id = $this->request->requestParam('path') ? $this->request->requestParam('path') : 0;
+		$path_id = $this->getPathId($paths);
 		$sub_path = $this->sanitizeSubPath($this->request->requestParam('sub_path'));
 		if ($sub_path === NULL) {
 			throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
@@ -107,11 +135,15 @@ class FileManager extends Controller {
 		chdir($root_path);
 
 		$errors = "";
-		$this->upload($root_path, $glob_path, $path_id, $sub_path, $errors);
-		$this->delete($root_path, $glob_path, $path_id, $sub_path, $errors);
-		$this->rename($root_path, $glob_path, $path_id, $sub_path, $errors);
-		$this->move($root_path, $glob_path, $path_id, $sub_path, $errors);
-		$this->newFolder($root_path, $glob_path, $path_id, $sub_path, $errors);
+		// Changes are only made from a POST (which the dispatcher has checked
+		// for a valid CSRF token); a GET only lists the folder
+		if ($this->isPost()) {
+			$this->upload($root_path, $glob_path, $path_id, $sub_path, $errors);
+			$this->delete($root_path, $glob_path, $path_id, $sub_path, $errors);
+			$this->rename($root_path, $glob_path, $path_id, $sub_path, $errors);
+			$this->move($root_path, $glob_path, $path_id, $sub_path, $errors);
+			$this->newFolder($root_path, $glob_path, $path_id, $sub_path, $errors);
+		}
 
 		$message_js = "";
 		if ($errors) {
@@ -150,7 +182,7 @@ class FileManager extends Controller {
 		$this->language->loadLanguageFile('administrator/file_manager.php');
 		$paths = get_object_vars($this->config->siteConfig()->filemanager_paths);
 
-		$path_id = $this->request->requestParam('path') ? $this->request->requestParam('path') : 0;
+		$path_id = $this->getPathId($paths);
 		$sub_path = $this->sanitizeSubPath($this->request->requestParam('sub_path'));
 		if ($sub_path === NULL) {
 			throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
@@ -165,7 +197,7 @@ class FileManager extends Controller {
 		chdir($root_path);
 
 		$message_js = '';
-		if (isset($_REQUEST['file_content'])) {
+		if ($this->isPost() && isset($_POST['file_content']) && is_string($_POST['file_content'])) {
 			$base_dir = $root_path.'/sites/'.$namespace.array_keys($paths)[$path_id];
 			$target = $root_path.'/sites/'.$namespace.array_keys($paths)[$path_id].$sub_path;
 
@@ -177,7 +209,12 @@ class FileManager extends Controller {
 				throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
 			}
 
-			$content = str_replace("\r", "", $_REQUEST['file_content']);
+			// The editor must not be usable to create or rewrite server-side code
+			if (!$this->isEditableFile($safe_target)) {
+				throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
+			}
+
+			$content = str_replace("\r", "", $_POST['file_content']);
 			file_put_contents($safe_target, $content);
 			$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('notification_file_update_success')).'");';
 		}

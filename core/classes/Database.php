@@ -259,6 +259,13 @@ class Database extends PDO {
 	}
 
 	/**
+	 * Empty the per-request query cache
+	 */
+	public function clearCache() {
+		$this->cache = [];
+	}
+
+	/**
 	 * Get an element in the objects array
 	 * @param $key   \b string The key of the cached value
 	 * @return \b mixed The cached value or NULL of it is not in the cache store

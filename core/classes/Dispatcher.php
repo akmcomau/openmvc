@@ -222,6 +222,15 @@ class Dispatcher {
 			return $this->error404($request);
 		}
 
+		// Cross-site request forgery checks
+		if (!$this->checkCsrf($controller, $method_name)) {
+			$this->logger->info("CSRF check failed for $controller_class::$method_name");
+			http_response_code(403);
+			$controller->setLayout(NULL);
+			$response->setContent('The request could not be verified. Please go back, reload the page and try again.');
+			return $response;
+		}
+
 		// Dispatch the request and handle redirections
 		try {
 			$request->clearDispatcherParams();
@@ -237,6 +246,11 @@ class Dispatcher {
 		catch (RedirectException $ex) {
 			$this->logger->info($ex->getMessage());
 			header("Location: {$ex->getUrl()}");
+
+			// nothing else to send: rendering the page (and its layout, menus
+			// and the queries behind them) was wasted work on every redirect
+			$response->setContent('');
+			return $response;
 		}
 		$controller->render();
 
@@ -251,6 +265,34 @@ class Dispatcher {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Check a request is not a cross-site request forgery:
+	 *   - any non-GET request must carry the session's CSRF token
+	 *   - methods the controller lists as changing state on GET must also be
+	 *     same-origin (or carry the token)
+	 * Controllers that don't use the session for authentication (e.g. API key
+	 * or server-to-server endpoints) can opt out per method.
+	 * @param $controller  \b Controller The controller being dispatched to
+	 * @param $method_name \b string     The method being called
+	 * @return \b bool TRUE if the request may proceed
+	 */
+	protected function checkCsrf($controller, $method_name) {
+		// command line scripts dispatching internally have no browser to forge requests from
+		if (php_sapi_name() === 'cli' && !isset($_SERVER['REQUEST_METHOD'])) {
+			return TRUE;
+		}
+		if ($controller->isCsrfExempt($method_name)) {
+			return TRUE;
+		}
+		if (Csrf::isUnsafeMethod() && !Csrf::hasValidToken()) {
+			return FALSE;
+		}
+		if ($controller->isStateChangingMethod($method_name) && !Csrf::isSameOrigin() && !Csrf::hasValidToken()) {
+			return FALSE;
+		}
+		return TRUE;
 	}
 
 	/**

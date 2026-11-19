@@ -37,6 +37,22 @@ class Controller extends Renderable {
 
 	protected $permissions = [];
 
+	/**
+	 * Methods that change state even on a GET request (delete links, run
+	 * links, ...).  The dispatcher only allows these from pages on this site
+	 * (or with the CSRF token).
+	 * @var array $state_changing_methods
+	 */
+	protected $state_changing_methods = [];
+
+	/**
+	 * Methods that don't authenticate with the session (API keys,
+	 * server-to-server calls) and so are exempt from CSRF checks.
+	 * Use ['*'] to exempt every method.
+	 * @var array $csrf_exempt_methods
+	 */
+	protected $csrf_exempt_methods = [];
+
 	public function __construct(Config $config, ?Database $database = NULL, ?Request $request = NULL, ?Response $response = NULL) {
 
 		// Controller has been created for meta data, don't need much
@@ -115,6 +131,14 @@ class Controller extends Renderable {
 
 	public function getPermissions() {
 		return $this->permissions;
+	}
+
+	public function isStateChangingMethod($method_name) {
+		return in_array($method_name, $this->state_changing_methods, TRUE);
+	}
+
+	public function isCsrfExempt($method_name) {
+		return in_array('*', $this->csrf_exempt_methods, TRUE) || in_array($method_name, $this->csrf_exempt_methods, TRUE);
 	}
 
 	public function getLayout() {
@@ -288,6 +312,22 @@ class Controller extends Renderable {
 					throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
 				}
 			}
+		}
+	}
+
+	/**
+	 * Get a language string, falling back to $default when the loaded language
+	 * files don't define it (e.g. a site override written before it was added)
+	 * @param $tag     \b string The language tag
+	 * @param $default \b string The text to use if the tag is not defined
+	 * @return \b string The language string
+	 */
+	protected function languageString($tag, $default) {
+		try {
+			return $this->language->get($tag);
+		}
+		catch (\core\classes\exceptions\LanguageException $ex) {
+			return $default;
 		}
 	}
 

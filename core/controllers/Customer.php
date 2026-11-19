@@ -8,6 +8,7 @@ use core\classes\Email;
 use core\classes\Encryption;
 use core\classes\Template;
 use core\classes\FormValidator;
+use core\classes\LoginThrottle;
 use core\classes\renderable\Controller;
 use core\classes\Model;
 use core\classes\models\Customer as CustomerModel;
@@ -19,6 +20,9 @@ class Customer extends Controller {
 		'change_password' => ['customer'],
 		'contact_details' => ['customer'],
 	];
+
+	// Methods that change state on GET; only allowed from this site (see core\classes\Csrf)
+	protected $state_changing_methods = ['logout'];
 
 	protected $customer_class = 'core\classes\models\Customer';
 
@@ -96,14 +100,20 @@ class Customer extends Controller {
 		$form_login    = $this->getLoginForm();
 		$form_register = $this->getRegisterForm();
 
-		if ($form_login->validate()) {
+		$throttle = new LoginThrottle('customer', $this->request->serverParam('REMOTE_ADDR'));
+		if ($form_login->validate() && $throttle->isBlocked($form_login->getValue('username'))) {
+			$this->logger->info('Login throttled for Customer: '.$form_login->getValue('username'));
+			$form_login->addError('login-failed', $this->languageString('login_throttled', 'Too many failed login attempts. Please wait 15 minutes and try again.'));
+		}
+		elseif ($form_login->validate()) {
 			$customer = $model->getModel($this->customer_class);
 			$customer = $customer->get($this->getCustomerLookupForLogin($form_login));
 			if ($customer && (
-				Encryption::bcrypt_verify($form_login->getValue('password'), $customer->password) ||
+				Encryption::bcrypt_verify((string)$form_login->getValue('password'), (string)$customer->password) ||
 				$customer->remember_me == $form_login->getValue('password')
 			)) {
 				$this->logger->info('Login Customer: '.$customer->id);
+				$throttle->clear($form_login->getValue('username'));
 				$this->authentication->loginCustomer($customer);
 
 				// save the remember me cookie
@@ -132,6 +142,7 @@ class Customer extends Controller {
 			}
 			else {
 				$this->logger->info('Login Failed for Customer: '.($customer ? $customer->id : 'Invalid login'));
+				$throttle->recordFailure($form_login->getValue('username'));
 				$form_login->addError('login-failed', $this->language->get('login_failed'));
 			}
 		}
@@ -232,11 +243,17 @@ class Customer extends Controller {
 		$this->language->loadLanguageFile('customer.php');
 
 		$message_js = NULL;
-		if ($this->request->requestParam('email')) {
+		$email_param = Model::scalarParam($this->request->requestParam('email'));
+		if ($email_param) {
 			$model       = new Model($this->config, $this->database);
 			$customer    = $model->getModel($this->customer_class)->get([
-				'email' => ['type' => 'lower=', 'value' => $this->request->requestParam('email')],
+				'email' => ['type' => 'lower=', 'value' => (string)$email_param],
 			]);
+
+			// The same message is shown whether or not the address belongs to an
+			// account, so this page can't be used to discover registered emails
+			$generic_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->languageString('forgot_email_sent_generic', 'If that email address belongs to an account, an email has been sent to it.')).'");';
+			$message_js = $generic_js;
 
 			if ($customer) {
 				if ($this->request->requestParam('forgot-username')) {
@@ -256,10 +273,13 @@ class Customer extends Controller {
 
 					$this->logger->info('Forgot Username for Customer: '.$customer->id);
 
-					$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('forgot_username_email_sent')).'");';
+					$message_js = $generic_js;
 				}
 				elseif ($this->request->requestParam('forgot-password')) {
 					$token = $customer->generateToken();
+					if ($this->config->isDefaultSecret()) {
+						$this->logger->warn('This site is using the default secret from default_config.php; set a unique "secret" in the site config');
+					}
 					$enc_customer_id = Encryption::obfuscate($customer->id, $this->config->siteConfig()->secret);
 					$data = [
 						'url' => $this->url->getUrl('Customer', 'reset', [$enc_customer_id, $token]),
@@ -278,11 +298,12 @@ class Customer extends Controller {
 
 					$this->logger->info('Forgot Password for Customer: '.$customer->id);
 
-					$message_js = 'FormValidator.displayPageNotification("success", "'.htmlspecialchars($this->language->get('forgot_password_email_sent')).'");';
+					$message_js = $generic_js;
 				}
 			}
 			else {
-				$message_js = 'FormValidator.displayPageNotification("error", "'.htmlspecialchars($this->language->get('email_not_found')).'");';
+				$this->logger->info('Forgot username/password requested for unknown email');
+				$message_js = $generic_js;
 			}
 		}
 		$data = [

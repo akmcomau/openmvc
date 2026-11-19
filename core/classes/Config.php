@@ -13,6 +13,12 @@ use ErrorException;
 class Config {
 
 	/**
+	 * The placeholder secret from default_config.php
+	 * @var string $default_secret
+	 */
+	protected $default_secret = NULL;
+
+	/**
 	 * The site's domain name
 	 * @var string $site_domain
 	 */
@@ -39,6 +45,7 @@ class Config {
 		// Convert the config data to objects
 		$_CONFIG = json_decode(json_encode($_CONFIG), FALSE);
 		$_DEFAULT_CONFIG = json_decode(json_encode($_DEFAULT_CONFIG), FALSE);
+		$this->default_secret = isset($_DEFAULT_CONFIG->default_site->secret) ? $_DEFAULT_CONFIG->default_site->secret : NULL;
 
 		$this->configuration = [];
 
@@ -238,6 +245,14 @@ class Config {
 	 * Gets the current sites configuration
 	 * @return \b stdClass The sites configuration object
 	 */
+	/**
+	 * Is the current site still using the placeholder secret from default_config.php
+	 * @return \b bool TRUE if the site's secret is the framework default
+	 */
+	public function isDefaultSecret() {
+		return $this->siteConfig() && $this->siteConfig()->secret === $this->default_secret;
+	}
+
 	public function siteConfig() {
 		if (!$this->site_domain) return NULL;
 		return $this->sites->{$this->site_domain};

@@ -6,34 +6,56 @@ namespace core\classes;
 
 class Encryption {
 	/**
-	 * The marker byte prefixed to ciphertext produced by encrypt() so decrypt()
-	 * can tell it apart from the legacy AES-128-ECB format below.
+	 * Marker byte for ciphertext from the previous encrypt(): AES-256-CBC with a
+	 * random IV but no authentication. Still accepted by decrypt().
 	 */
-	const CIPHER_VERSION = "\x02";
+	const CIPHER_VERSION_CBC = "\x02";
 
 	/**
-	 * Encrypt a string using AES-256-CBC with a random IV and no padding oracle
-	 * (the previous implementation used AES-128-ECB with a fixed/null-padded key
-	 * and no IV, which leaks repeated-block structure and has no integrity check).
+	 * Marker byte prefixed to ciphertext produced by encrypt() (AES-256-GCM)
+	 */
+	const CIPHER_VERSION = "\x03";
+
+	const GCM_IV_LENGTH = 12;
+
+	const GCM_TAG_LENGTH = 16;
+
+	/**
+	 * Encrypt a string using AES-256-GCM, which is authenticated: any change to
+	 * the ciphertext makes decrypt() fail, rather than silently producing
+	 * attacker-influenced plaintext as unauthenticated CBC would.
+	 * Format: CIPHER_VERSION | 12 byte IV | 16 byte tag | ciphertext
 	 * @param  $string  \b string  The string to encrypt
 	 * @param  $key     \b string  The encryption key
 	 */
 	public static function encrypt($string, $key) {
 		$key = hash('sha256', $key, TRUE);
-		$iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
-		$ciphertext = openssl_encrypt($string, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
-		return self::CIPHER_VERSION.$iv.$ciphertext;
+		$iv = random_bytes(self::GCM_IV_LENGTH);
+		$tag = '';
+		$ciphertext = openssl_encrypt((string)$string, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag, self::CIPHER_VERSION, self::GCM_TAG_LENGTH);
+		return self::CIPHER_VERSION.$iv.$tag.$ciphertext;
 	}
 
 	/**
-	 * Decrypt a string encrypted with encrypt(). Also accepts the legacy
-	 * AES-128-ECB format so previously-encrypted values already in storage
-	 * remain readable after the upgrade above.
+	 * Decrypt a string encrypted with encrypt(). Also accepts the two older
+	 * formats (AES-256-CBC, and the original AES-128-ECB) so values already in
+	 * storage stay readable; re-encrypt them to upgrade.
 	 * @param $string  \b string  The string to decrypt
 	 * @param $key     \b string  The encryption key
+	 * @return \b string The plaintext, or FALSE if the ciphertext was tampered with or the key is wrong
 	 */
 	public static function decrypt($string, $key) {
 		if (isset($string[0]) && $string[0] === self::CIPHER_VERSION) {
+			$iv = substr($string, 1, self::GCM_IV_LENGTH);
+			$tag = substr($string, 1 + self::GCM_IV_LENGTH, self::GCM_TAG_LENGTH);
+			$ciphertext = substr($string, 1 + self::GCM_IV_LENGTH + self::GCM_TAG_LENGTH);
+			if (strlen($iv) != self::GCM_IV_LENGTH || strlen($tag) != self::GCM_TAG_LENGTH) {
+				return FALSE;
+			}
+			return openssl_decrypt($ciphertext, 'aes-256-gcm', hash('sha256', $key, TRUE), OPENSSL_RAW_DATA, $iv, $tag, self::CIPHER_VERSION);
+		}
+
+		if (isset($string[0]) && $string[0] === self::CIPHER_VERSION_CBC) {
 			$iv_length = openssl_cipher_iv_length('aes-256-cbc');
 			$iv = substr($string, 1, $iv_length);
 			$ciphertext = substr($string, 1 + $iv_length);
@@ -160,11 +182,18 @@ class Encryption {
 	 */
 	public static function defuscate($string, $key) {
 		$key = str_pad(substr(hash('sha256', $key, TRUE), 0, 16), 16, "\0");
-		$string = str_replace('-', '', $string);
-		$string = self::str_baseconvert($string, 36, 16);
-		if (strlen($string) % 2) $string = '0'.$string;
+		$string = str_replace('-', '', (string)$string);
+		if (!preg_match('/^[0-9A-Za-z]{1,32}$/', $string)) return NULL;
+		$string = self::str_baseconvert(strtolower($string), 36, 16);
+		// The base conversion drops leading zeros, so restore the full 16 byte
+		// (32 hex digit) block; padding only to an even length broke any token
+		// whose ciphertext started with a zero byte
+		if (strlen($string) > 32 || !ctype_xdigit($string)) return NULL;
+		$string = str_pad($string, 32, '0', STR_PAD_LEFT);
 		$string = self::hex2Str($string);
 		$string = openssl_decrypt($string, "aes-128-ecb", $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
+		// obfuscate() zero-pads the integer to a full block; anything else wasn't produced by it
+		if ($string === FALSE || strlen($string) != 16 || substr($string, 4) !== str_repeat("\0", 12)) return NULL;
 		$string = unpack('I', $string);
 		return $string[1];
 	}

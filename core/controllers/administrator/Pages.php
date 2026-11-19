@@ -23,6 +23,9 @@ class Pages extends Controller {
 		'delete' => ['administrator'],
 	];
 
+	// Methods that change state on GET; only allowed from this site (see core\classes\Csrf)
+	protected $state_changing_methods = ['delete'];
+
 	public function index($message = NULL) {
 		$this->language->loadLanguageFile('administrator/pages.php');
 		$form_search = $this->getPageSearchForm();

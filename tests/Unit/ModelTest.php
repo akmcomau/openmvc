@@ -69,12 +69,44 @@ class ModelTest extends FrameworkTestCase {
 		$this->assertSame("widget.widget_name='Foo' AND widget.widget_active=TRUE", $sql);
 	}
 
-	public function testGenerateWhereClauseSilentlyDropsUnknownColumns(): void {
+	public function testGenerateWhereClauseRejectsUnknownColumns(): void {
 		// Columns that resolve to neither a real column nor a relationship
-		// where_field are skipped rather than injected into the SQL string.
+		// where_field used to be dropped silently, which also dropped the
+		// filter (widening the query). They now fail closed.
 		$widget = $this->makeWidget();
-		$sql = $widget->generateWhereClause(['not_a_real_column' => 'x']);
-		$this->assertSame('', $sql);
+		$this->expectException(\core\classes\exceptions\ModelException::class);
+		$widget->generateWhereClause(['not_a_real_column' => 'x']);
+	}
+
+	public function testGenerateWhereClauseIgnoresGetRandomRecordFlag(): void {
+		$widget = $this->makeWidget();
+		$sql = $widget->generateWhereClause(['name' => 'Foo', 'get_random_record' => TRUE]);
+		$this->assertSame("widget.widget_name='Foo'", $sql);
+	}
+
+	public function testGenerateWhereClauseRejectsArrayWithoutOperator(): void {
+		// e.g. ?secret[]=x reaching get(['secret' => $request_value])
+		$widget = $this->makeWidget();
+		$this->expectException(\core\classes\exceptions\ModelException::class);
+		$widget->generateWhereClause(['name' => ['x']]);
+	}
+
+	public function testGenerateWhereClauseRejectsUnknownOperator(): void {
+		$widget = $this->makeWidget();
+		$this->expectException(\core\classes\exceptions\ModelException::class);
+		$widget->generateWhereClause(['name' => ['type' => 'bogus', 'value' => 'x']]);
+	}
+
+	public function testGenerateWhereClauseRejectsNonScalarOperatorValue(): void {
+		$widget = $this->makeWidget();
+		$this->expectException(\core\classes\exceptions\ModelException::class);
+		$widget->generateWhereClause(['name' => ['type' => 'like', 'value' => ['a', 'b']]]);
+	}
+
+	public function testScalarParamStripsArrays(): void {
+		$this->assertNull(\core\classes\Model::scalarParam(['type' => 'isnotnull']));
+		$this->assertSame('abc', \core\classes\Model::scalarParam('abc'));
+		$this->assertNull(\core\classes\Model::scalarParam(NULL));
 	}
 
 	public function testGenerateWhereClauseResolvesRelationshipColumn(): void {

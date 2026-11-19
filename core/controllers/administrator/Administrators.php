@@ -23,6 +23,9 @@ class Administrators extends Controller {
 		'delete' => ['administrator'],
 	];
 
+	// Methods that change state on GET; only allowed from this site (see core\classes\Csrf)
+	protected $state_changing_methods = ['delete'];
+
 	public function index($message = NULL) {
 		if ($this->config->database->engine == 'none') {
 			$template = $this->getTemplate('pages/administrator/database_required.php');

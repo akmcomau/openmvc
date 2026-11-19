@@ -5,6 +5,7 @@ $_LANGUAGE = [
 	'login_button' => 'Login',
 
 	'login_failed' => 'Login Failed',
+	'login_throttled' => 'Too many failed login attempts. Please wait 15 minutes and try again.',
 	'username' => 'Username',
 	'password' => 'Password',
 	'error_username' => 'Between 6-32 characters',

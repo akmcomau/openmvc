@@ -7,6 +7,7 @@ use core\classes\exceptions\SoftRedirectException;
 use core\classes\Encryption;
 use core\classes\Template;
 use core\classes\FormValidator;
+use core\classes\LoginThrottle;
 use core\classes\renderable\Controller;
 use core\classes\Model;
 
@@ -17,6 +18,9 @@ class Administrator extends Controller {
 	protected $permissions = [
 		'index' => ['administrator'],
 	];
+
+	// Methods that change state on GET; only allowed from this site (see core\classes\Csrf)
+	protected $state_changing_methods = ['logout'];
 
 	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
 		return [];
@@ -42,7 +46,12 @@ class Administrator extends Controller {
 		$model         = new Model($this->config, $this->database);
 		$form_login    = $this->getLoginForm();
 
-		if ($form_login->validate()) {
+		$throttle = new LoginThrottle('administrator', $this->request->serverParam('REMOTE_ADDR'));
+		if ($form_login->validate() && $throttle->isBlocked($form_login->getValue('username'))) {
+			$this->logger->info('Login throttled for Administrator: '.$form_login->getValue('username'));
+			$form_login->addError('login-failed', $this->languageString('login_throttled', 'Too many failed login attempts. Please wait 15 minutes and try again.'));
+		}
+		elseif ($form_login->validate()) {
 			// use the config file to look up the admin user
 			if ($this->config->database->engine == 'none') {
 				$site = $this->config->siteConfig();
@@ -62,7 +71,7 @@ class Administrator extends Controller {
 					elseif (file_exists($default_file)) {
 						require($default_file);
 					}
-					if (isset($_ADMIN_USERS[$form_login->getValue('username')])) {
+					if (is_string($form_login->getValue('username')) && isset($_ADMIN_USERS[$form_login->getValue('username')])) {
 						$record = $_ADMIN_USERS[$form_login->getValue('username')];
 						$admin = $model->getModel('core\classes\models\Administrator', $record);
 					}
@@ -76,13 +85,15 @@ class Administrator extends Controller {
 				]);
 			}
 
-			if ($admin && Encryption::bcrypt_verify($form_login->getValue('password'), $admin->password)) {
+			if ($admin && Encryption::bcrypt_verify((string)$form_login->getValue('password'), (string)$admin->password)) {
 				$this->logger->info('Login Administrator: '.$admin->id);
+				$throttle->clear($form_login->getValue('username'));
 				$this->authentication->loginAdministrator($admin);
 				throw new RedirectException($this->url->getUrl('Administrator'));
 			}
 			else {
 				$this->logger->info('Login Failed for Administrator: '.($admin ? $admin->id : 'Invalid login'));
+				$throttle->recordFailure($form_login->getValue('username'));
 				$form_login->addError('login-failed', $this->language->get('login_failed'));
 			}
 		}

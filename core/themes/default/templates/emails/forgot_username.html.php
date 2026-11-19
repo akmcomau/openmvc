@@ -1,9 +1,9 @@
 <p>
-Hi <?php echo $name; ?>,
+Hi <?php echo htmlspecialchars((string)$name); ?>,
 </p>
 
 <p>
-Your username for <?php echo $this->config->siteConfig()->name; ?> is "<?php echo $username; ?>".
+Your username for <?php echo $this->config->siteConfig()->name; ?> is "<?php echo htmlspecialchars((string)$username); ?>".
 </p>
 
 <p>

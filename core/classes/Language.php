@@ -138,6 +138,26 @@ class Language {
 	}
 
 	public function getAbsoluteFilename($filename, $path = NULL, $force_default = FALSE) {
+		// The result is passed to require(), and $filename/$path can come from
+		// the language editor's URL, so never let them leave the language folders
+		foreach ([$filename, $path] as $part) {
+			if (is_null($part)) continue;
+			if (!is_string($part) || strpos($part, "\0") !== FALSE) {
+				throw new LanguageException("Invalid language file path");
+			}
+			foreach (preg_split('|[/\\\\]|', $part) as $segment) {
+				if ($segment === '..') {
+					throw new LanguageException("Invalid language file path: $part");
+				}
+			}
+		}
+		if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) !== 'php') {
+			throw new LanguageException("Invalid language file: $filename");
+		}
+		if (!is_null($path) && strlen($path) && ($path[0] == '/' || $path[0] == '\\')) {
+			throw new LanguageException("Invalid language file path: $path");
+		}
+
 		$filename = str_replace('\\', DS, $filename);
 		$site = $this->config->siteConfig();
 		$theme = $site->theme;

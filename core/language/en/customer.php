@@ -40,6 +40,8 @@ $_LANGUAGE = [
 	'forgot_username_subject' => 'Your username',
 
 	'login_failed' => 'Login Failed',
+	'login_throttled' => 'Too many failed login attempts. Please wait 15 minutes and try again.',
+	'forgot_email_sent_generic' => 'If that email address belongs to an account, an email has been sent to it.',
 	'error_first_name' => 'Between 2-32 characters',
 	'error_last_name' => 'Between 2-32 characters',
 	'error_email' => 'Please enter a valid email address',

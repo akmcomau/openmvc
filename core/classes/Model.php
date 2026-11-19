@@ -829,6 +829,10 @@ class Model {
 
 		$sql = "INSERT INTO $table (".join(',', $columns).") VALUES (".join(',', $values).")";
 		$this->database->executeQuery($sql, TRUE);
+		if ($this->cacheable) {
+			// get() results for this request may now be stale
+			$this->database->clearCache();
+		}
 
 		if (!isset($this->record[$primary_key]) && !empty($primary_key)) {
 			if ($this->database->getEngine() == 'pgsql') {
@@ -873,6 +877,10 @@ class Model {
 
 		$sql = "UPDATE $table SET ".join(',', $values)." WHERE $primary_key = ".$this->quote($this->record[$primary_key]);
 		$this->database->executeQuery($sql, TRUE);
+		if ($this->cacheable) {
+			// get() results for this request may now be stale
+			$this->database->clearCache();
+		}
 
 		$this->callHook('update');
 	}
@@ -893,6 +901,10 @@ class Model {
 
 		$sql = "DELETE FROM $table WHERE $primary_key = ".$this->quote($this->record[$primary_key]);
 		$this->database->executeQuery($sql, TRUE);
+		if ($this->cacheable) {
+			// get() results for this request may now be stale
+			$this->database->clearCache();
+		}
 	}
 
 	/**
@@ -904,7 +916,7 @@ class Model {
 	public function get(?array $params, ?array $ordering = NULL) {
 		// check for a cached object
 		if ($this->cacheable) {
-			$cache_key = md5(get_class($this).print_r($params, TRUE));
+			$cache_key = md5(get_class($this).serialize($params).serialize($ordering));
 			if ($this->database->getCache($cache_key)) {
 				return $this->getModel(get_class($this), $this->database->getCache($cache_key));
 			}
@@ -1102,6 +1114,24 @@ class Model {
 	 *                    otherwise the clauses will be ORed together.
 	 * @return \b string A SQL fragment
 	 */
+	/**
+	 * The operators generateWhereClause() understands
+	 */
+	const WHERE_OPERATORS = ['like', 'likelower', 'ilike', 'in', 'notin', 'isnull', 'isnotnull', 'upper=', 'lower=', '>', '>=', '<', '<=', '!='];
+
+	/**
+	 * Return $value if it is a scalar (or NULL), otherwise NULL.  Use this on
+	 * any request-supplied value that is passed to get()/getMulti() as an
+	 * equality filter: generateWhereClause() treats an array value as an
+	 * operator (e.g. ['type' => 'isnotnull']), so a request param like
+	 * ?key[type]=isnotnull must never reach it as an array.
+	 * @param $value \b mixed The value to check
+	 * @return \b mixed The scalar value, or NULL
+	 */
+	public static function scalarParam($value) {
+		return (is_null($value) || is_scalar($value)) ? $value : NULL;
+	}
+
 	public function generateWhereClause(array $params, $and = TRUE) {
 		$where = [];
 		foreach ($params as $column => $value) {
@@ -1142,11 +1172,30 @@ class Model {
 					}
 				}
 
-				if (!$found) continue;
+				if (!$found) {
+					// Not a filter at all, but a flag read by get()
+					if ($column == 'get_random_record') continue;
+
+					// Silently dropping an unknown column would also drop the
+					// filter, widening the query (e.g. returning the first row
+					// of the table), so fail closed instead.
+					throw new ModelException("Unknown column in WHERE clause: $column on ".get_class($this));
+				}
 			}
 
 			// its not just an equal
 			if (is_array($value)) {
+				// An operator array must name a known operator. A missing or
+				// unknown type used to drop the condition entirely.
+				if (!isset($value['type']) || !is_string($value['type']) || !in_array($value['type'], self::WHERE_OPERATORS, TRUE)) {
+					throw new ModelException("Invalid WHERE operator for column: $column on ".get_class($this));
+				}
+				if (!in_array($value['type'], ['isnull', 'isnotnull'], TRUE) && !array_key_exists('value', $value)) {
+					throw new ModelException("Missing WHERE value for column: $column on ".get_class($this));
+				}
+				if (!in_array($value['type'], ['in', 'notin', 'isnull', 'isnotnull'], TRUE) && !is_null($value['value']) && !is_scalar($value['value'])) {
+					throw new ModelException("Non-scalar WHERE value for column: $column on ".get_class($this));
+				}
 				switch ($value['type']) {
 					case 'like':
 						$where[] = $column.' LIKE '.$this->quote($value['value']);

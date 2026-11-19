@@ -94,4 +94,37 @@ class EncryptionTest extends TestCase {
 
 		$this->assertSame($decimal, $back);
 	}
+
+
+	public function testEncryptUsesAuthenticatedFormatAndDetectsTampering(): void {
+		$ciphertext = Encryption::encrypt('secret value', 'key');
+		$this->assertSame(Encryption::CIPHER_VERSION, $ciphertext[0]);
+
+		$tampered = $ciphertext;
+		$tampered[strlen($tampered) - 1] = chr(ord($tampered[strlen($tampered) - 1]) ^ 1);
+		$this->assertFalse(Encryption::decrypt($tampered, 'key'));
+	}
+
+	public function testPreviousCbcFormatIsStillReadable(): void {
+		$key = hash('sha256', 'key', TRUE);
+		$iv = random_bytes(16);
+		$old = Encryption::CIPHER_VERSION_CBC.$iv.openssl_encrypt('old value', 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+		$this->assertSame('old value', Encryption::decrypt($old, 'key'));
+	}
+
+	public function testDefuscateRoundTripsIdsWhoseCiphertextStartsWithZero(): void {
+		// about 1 in 256 ids produced a token the old defuscate() couldn't decode
+		$checked = 0;
+		for ($id = 1; $id < 3000; $id++) {
+			$this->assertSame($id, Encryption::defuscate(Encryption::obfuscate($id, 'k'), 'k'), "id $id");
+			$checked++;
+		}
+		$this->assertSame(2999, $checked);
+	}
+
+	public function testDefuscateRejectsGarbage(): void {
+		$this->assertNull(Encryption::defuscate('!!!', 'k'));
+		$this->assertNull(Encryption::defuscate('ABCD-EFGH', 'k'));
+		$this->assertNull(Encryption::defuscate('', 'k'));
+	}
 }

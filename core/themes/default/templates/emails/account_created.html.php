@@ -1,4 +1,4 @@
-<p><?php echo $text_hi; ?> <?php echo $name; ?>,</p>
+<p><?php echo $text_hi; ?> <?php echo htmlspecialchars((string)$name); ?>,</p>
 
 <p><?php echo $text_your_account_created; ?></p>
 <p>

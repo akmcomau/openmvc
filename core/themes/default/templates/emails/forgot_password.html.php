@@ -1,10 +1,10 @@
 <p>
-Hi <?php echo $name; ?>,
+Hi <?php echo htmlspecialchars((string)$name); ?>,
 </p>
 
 <p>
 Please follow this link to reset your password: <br />
-<a href="<?php echo $url; ?>"><?php echo $url; ?></a>
+<a href="<?php echo htmlspecialchars((string)$url); ?>"><?php echo htmlspecialchars((string)$url); ?></a>
 </p>
 
 <p>

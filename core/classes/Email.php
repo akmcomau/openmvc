@@ -254,7 +254,10 @@ class Email {
 	 * @return \b boolean TRUE if the email was successfully sent or FALSE if an error occurred
 	 */
 	public function send() {
-		$random_hash = md5(date('r', time()));
+		// unpredictable, so message content can't contain (and so break out of) the boundary
+		$random_hash = bin2hex(random_bytes(16));
+		$mixed = 'PHP-mixed-'.$random_hash;
+		$alt = 'PHP-alt-'.$random_hash;
 
 		$headers = '';
 		if ($this->cc_email)  $headers .= 'CC: '.  $this->cc_email  . "\r\n";
@@ -262,63 +265,55 @@ class Email {
 
 		$headers .= "From: ".$this->from_email."\r\n";
 		$headers .= "Reply-To: ".$this->from_email."\r\n";
-		$headers .= "Content-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
+		$headers .= "MIME-Version: 1.0\r\n";
+		$headers .= "Content-Type: multipart/mixed; boundary=\"".$mixed."\"";
 
-		ob_start();
-?>
---PHP-mixed-<?php echo $random_hash; ?>
-
-<?php if ($this->body_template || $this->body_content) { ?>
-Content-Type: multipart/alternative; boundary="PHP-alt-<?php echo $random_hash; ?>"
-
---PHP-alt-<?php echo $random_hash; ?>
-
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-
-<?php if ($this->config->siteConfig()->force_email_rcpt) echo 'Email recipient overridden, original recipient: '.$this->to_email."\n\n"; ?>
-<?php
-if ($this->body_template) echo $this->body_template->render();
-elseif ($this->body_content) echo $this->body_content;
-?>
-
---PHP-alt-<?php echo $random_hash; ?>
-
-<?php } /* End If body content */ ?>
-<?php if ($this->html_template || $this->html_content) { ?>
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-
-<?php if ($this->config->siteConfig()->force_email_rcpt) echo '<strong>Email recipient overridden, original recipient: '.htmlspecialchars($this->to_email).'</strong><br /><br />'; ?>
-<?php
-if ($this->html_template) echo $this->html_template->render();
-elseif ($this->html_content) echo $this->html_content;
-?>
-
---PHP-alt-<?php echo $random_hash; ?>--
-<?php } /* End If HTML content */ ?>
-<?php
-
-		if (count($this->attachments)) {
-			foreach ($this->attachments as $attachment) {
-?>
-
---PHP-mixed-<?php echo $random_hash; ?>
-
-Content-Type: <?php echo $attachment['type']; ?>; name="<?php echo $attachment['name']; ?>"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment
-
-<?php echo $attachment['content']; ?>
-<?php
+		// the text and HTML alternatives
+		$alternatives = [];
+		if ($this->body_template || $this->body_content) {
+			$text = '';
+			if ($this->config->siteConfig()->force_email_rcpt) {
+				$text .= 'Email recipient overridden, original recipient: '.$this->to_email."\n\n";
 			}
+			$text .= $this->body_template ? $this->body_template->render() : $this->body_content;
+			$alternatives[] = ['text/plain', $text];
+		}
+		if ($this->html_template || $this->html_content) {
+			$html = '';
+			if ($this->config->siteConfig()->force_email_rcpt) {
+				$html .= '<strong>Email recipient overridden, original recipient: '.htmlspecialchars($this->to_email).'</strong><br /><br />';
+			}
+			$html .= $this->html_template ? $this->html_template->render() : $this->html_content;
+			$alternatives[] = ['text/html', $html];
 		}
 
-?>
---PHP-mixed-<?php echo $random_hash; ?>--
-<?php
+		$message = '';
+		if (count($alternatives)) {
+			$message .= "--$mixed\r\n";
+			$message .= "Content-Type: multipart/alternative; boundary=\"$alt\"\r\n\r\n";
+			foreach ($alternatives as list($type, $content)) {
+				// The content is UTF-8, which isn't valid as 7bit; quoted-printable
+				// keeps it intact and keeps line lengths within the SMTP limit
+				$message .= "--$alt\r\n";
+				$message .= "Content-Type: $type; charset=\"UTF-8\"\r\n";
+				$message .= "Content-Transfer-Encoding: quoted-printable\r\n\r\n";
+				$message .= quoted_printable_encode(str_replace(["\r\n", "\r"], "\n", (string)$content))."\r\n";
+			}
+			$message .= "--$alt--\r\n";
+		}
 
-		$message = ob_get_clean();
+		foreach ($this->attachments as $attachment) {
+			// these go inside header parameters, so no CR/LF, quotes or backslashes
+			$name = str_replace(["\r", "\n", '"', '\\'], '', (string)$attachment['name']);
+			$type = preg_replace('/[^A-Za-z0-9!#$&^_.+\/-]/', '', (string)$attachment['type']);
+			$message .= "--$mixed\r\n";
+			$message .= "Content-Type: $type; name=\"$name\"\r\n";
+			$message .= "Content-Transfer-Encoding: base64\r\n";
+			$message .= "Content-Disposition: attachment; filename=\"$name\"\r\n\r\n";
+			$message .= $attachment['content']."\r\n";
+		}
+
+		$message .= "--$mixed--\r\n";
 
 		if ($this->config->siteConfig()->force_email_rcpt) {
 			$this->to_email = $this->config->siteConfig()->force_email_rcpt;

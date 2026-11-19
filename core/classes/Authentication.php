@@ -70,9 +70,76 @@ class Authentication {
 			$this->logged_in = TRUE;
 			$this->customer_data = isset($auth['customer']) ? $auth['customer'] : NULL;
 			$this->administrator_data = isset($auth['administrator']) ? $auth['administrator'] : NULL;
+			$this->revalidateSession();
 		}
 
 		$this->callHook('init_authentication', [$this]);
+	}
+
+	/**
+	 * How often (seconds) a logged in session is re-checked against the
+	 * database, so disabling or deleting an account ends its sessions
+	 */
+	const REVALIDATE_INTERVAL = 60;
+
+	/**
+	 * Columns never copied into the session
+	 */
+	const SENSITIVE_COLUMNS = ['password', 'remember_me', 'token', 'token_created'];
+
+	/**
+	 * Strip secrets (password hash, remember-me and reset tokens) from a record
+	 * before it is stored in the session
+	 * @param $record \b array  The model's record
+	 * @param $table  \b string The table name, used as the column prefix
+	 * @return \b array The record without the sensitive columns
+	 */
+	protected function sessionRecord(array $record, $table) {
+		foreach (self::SENSITIVE_COLUMNS as $column) {
+			unset($record[$table.'_'.$column]);
+			unset($record[$column]);
+		}
+		return $record;
+	}
+
+	/**
+	 * Re-check, at most every REVALIDATE_INTERVAL seconds, that the logged in
+	 * customer/administrator still exists and is active; log them out if not
+	 */
+	protected function revalidateSession() {
+		if ($this->database->getEngine() == 'none') {
+			return;
+		}
+
+		$checked = $this->request->session->get(['authentication', 'verified_at']);
+		if ($checked && $checked > time() - self::REVALIDATE_INTERVAL) {
+			return;
+		}
+
+		if ($this->getCustomerID()) {
+			$active = $this->database->queryValue('SELECT customer_active FROM customer WHERE customer_id = '.(int)$this->getCustomerID());
+			if (!$active) {
+				$this->logger->info('Session ended for missing/inactive customer: '.$this->getCustomerID());
+				$this->request->session->delete(['authentication', 'customer']);
+				$this->customer_data = NULL;
+			}
+		}
+		if ($this->getAdministratorID()) {
+			$active = $this->database->queryValue('SELECT administrator_active FROM administrator WHERE administrator_id = '.(int)$this->getAdministratorID());
+			if (!$active) {
+				$this->logger->info('Session ended for missing/inactive administrator: '.$this->getAdministratorID());
+				$this->request->session->delete(['authentication', 'administrator']);
+				$this->administrator_data = NULL;
+			}
+		}
+
+		$this->logged_in = ($this->customer_data || $this->administrator_data) ? TRUE : FALSE;
+		if ($this->logged_in) {
+			$this->request->session->set(['authentication', 'verified_at'], time());
+		}
+		else {
+			$this->request->session->delete('authentication');
+		}
 	}
 
 	public function getDatabase() {
@@ -155,8 +222,9 @@ class Authentication {
 			session_regenerate_id(TRUE);
 		}
 		$this->logged_in = TRUE;
-		$this->request->session->set(['authentication', 'customer'], $customer->getRecord());
-		$this->customer_data = $customer->getRecord();
+		$this->request->session->set(['authentication', 'customer'], $this->sessionRecord($customer->getRecord(), 'customer'));
+		$this->request->session->set(['authentication', 'verified_at'], time());
+		$this->customer_data = $this->sessionRecord($customer->getRecord(), 'customer');
 		$this->logger->info("Customer logged in: ".$this->getCustomerID());
 
 		// clear the token on successful login
@@ -189,8 +257,9 @@ class Authentication {
 			session_regenerate_id(TRUE);
 		}
 		$this->logged_in = TRUE;
-		$this->request->session->set(['authentication', 'administrator'], $admin->getRecord());
-		$this->administrator_data = $admin->getRecord();
+		$this->request->session->set(['authentication', 'administrator'], $this->sessionRecord($admin->getRecord(), 'administrator'));
+		$this->request->session->set(['authentication', 'verified_at'], time());
+		$this->administrator_data = $this->sessionRecord($admin->getRecord(), 'administrator');
 		$this->logger->info("Administrator logged in: ".$this->getAdministratorID());
 
 		$this->callHook('after_loginAdministrator', [$admin]);

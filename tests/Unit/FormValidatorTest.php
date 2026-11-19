@@ -188,4 +188,48 @@ class FormValidatorTest extends FrameworkTestCase {
 		$this->assertFalse((bool)$validator->validate());
 		$this->assertSame(['name' => 'too short'], $validator->getErrors());
 	}
+
+
+	// -- array values for single-value inputs --
+
+	public function testGetValueDropsArrayForScalarInput(): void {
+		// e.g. ?username[type]=isnotnull must not reach Model::get() as an operator
+		$request = $this->makeRequest($this->makeConfig(), [], [
+			'my-form-submit' => 'submit',
+			'name' => ['type' => 'isnotnull'],
+		]);
+		$validator = new FormValidator($request, 'my-form', ['name' => ['type' => 'string', 'message' => 'error']]);
+		$this->assertNull($validator->getValue('name'));
+		$this->assertFalse((bool)$validator->validate());
+	}
+
+	public function testGetValueKeepsArrayForArrayInput(): void {
+		$request = $this->makeRequest($this->makeConfig(), [], [
+			'my-form-submit' => 'submit',
+			'name' => ['a', 'b'],
+		]);
+		$validator = new FormValidator($request, 'my-form', ['name' => ['type' => 'string', 'is_array' => TRUE, 'message' => 'error']]);
+		$this->assertSame(['a', 'b'], $validator->getValue('name'));
+	}
+
+	// -- submission method --
+
+	public function testValidateIgnoresGetSubmissionOfNormalForm(): void {
+		$request = $this->makeRequest($this->makeConfig(), ['my-form-submit' => 'submit', 'name' => 'A valid name']);
+		$validator = new FormValidator($request, 'my-form', ['name' => ['type' => 'string', 'message' => 'error']]);
+		$this->assertFalse((bool)$validator->validate());
+	}
+
+	public function testValidateAcceptsGetSubmissionOfSearchForm(): void {
+		$request = $this->makeRequest($this->makeConfig(), ['my-form-search-submit' => 'submit', 'name' => 'A valid name']);
+		$validator = new FormValidator($request, 'my-form-search', ['name' => ['type' => 'string', 'message' => 'error']]);
+		$this->assertTrue((bool)$validator->validate());
+	}
+
+	public function testAllowGetSubmissionOptIn(): void {
+		$request = $this->makeRequest($this->makeConfig(), ['my-form-submit' => 'submit', 'name' => 'A valid name']);
+		$validator = new FormValidator($request, 'my-form', ['name' => ['type' => 'string', 'message' => 'error']]);
+		$validator->allowGetSubmission(TRUE);
+		$this->assertTrue((bool)$validator->validate());
+	}
 }

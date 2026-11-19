@@ -1,13 +1,35 @@
 <?php
 
 if (!(isset($_SERVER['no_session']) && $_SERVER['no_session'])) {
+	// Harden the session cookie: not readable from JavaScript, only sent over
+	// HTTPS when the site is served over HTTPS, and not sent on cross-site
+	// sub-requests (a second layer of CSRF protection on top of core\classes\Csrf)
+	session_set_cookie_params([
+		'lifetime' => 0,
+		'path'     => '/',
+		'secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off',
+		'httponly' => TRUE,
+		'samesite' => 'Lax',
+	]);
+	ini_set('session.use_strict_mode', '1');
 	session_start();
+}
+
+// Basic security headers.  A full script-src Content-Security-Policy isn't
+// possible yet because the templates rely heavily on inline scripts, but
+// framing, plugins and <base> hijacking can be locked down now.
+if (php_sapi_name() !== 'cli') {
+	header('X-Frame-Options: SAMEORIGIN');
+	header('X-Content-Type-Options: nosniff');
+	header('Referrer-Policy: strict-origin-when-cross-origin');
+	header("Content-Security-Policy: frame-ancestors 'self'; object-src 'none'; base-uri 'self'");
 }
 
 use core\classes\exceptions\DomainRedirectException;
 use core\classes\exceptions\RedirectException;
 use core\classes\AutoLoader;
 use core\classes\Config;
+use core\classes\Csrf;
 use core\classes\Database;
 use core\classes\Dispatcher;
 use core\classes\Logger;
@@ -96,6 +118,7 @@ try {
 	$response = $dispatcher->dispatchRequest($request);
 
 	$response->sendHeaders();
+	$response->setContent(Csrf::injectIntoHtml($response->getContent()));
 	$response->sendContent();
 }
 catch (DomainRedirectException $ex) {

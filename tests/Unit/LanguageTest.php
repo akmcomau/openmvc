@@ -119,4 +119,27 @@ class LanguageTest extends FrameworkTestCase {
 		$this->assertStringContainsString('core'.DIRECTORY_SEPARATOR.'language', $filename);
 		$this->assertFileExists($filename);
 	}
+
+
+	// -- getAbsoluteFilename() is passed to require() --
+
+	public function testGetFileRejectsTraversalInFilename(): void {
+		$this->expectException(\core\classes\exceptions\LanguageException::class);
+		$this->makeLanguage()->getFile('../../../config/config.php', '-');
+	}
+
+	public function testGetFileRejectsTraversalInPath(): void {
+		$this->expectException(\core\classes\exceptions\LanguageException::class);
+		$this->makeLanguage()->getFile('x.php', '../../../tmp');
+	}
+
+	public function testGetFileRejectsNonPhpFile(): void {
+		$this->expectException(\core\classes\exceptions\LanguageException::class);
+		$this->makeLanguage()->getAbsoluteFilename('uploads/evil.txt');
+	}
+
+	public function testGetFileRejectsAbsolutePath(): void {
+		$this->expectException(\core\classes\exceptions\LanguageException::class);
+		$this->makeLanguage()->getAbsoluteFilename('x.php', '/etc');
+	}
 }

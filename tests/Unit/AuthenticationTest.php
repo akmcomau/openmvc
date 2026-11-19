@@ -228,4 +228,49 @@ class AuthenticationTest extends FrameworkTestCase {
 		$auth->forcePasswordChange(FALSE);
 		$this->assertFalse($auth->forcePasswordChangeEnabled());
 	}
+
+
+	// -- session contents and revalidation --
+
+	public function testSessionDoesNotStorePasswordOrTokens(): void {
+		$auth = $this->makeAuthentication();
+		$customer = $this->makeCustomer(7);
+		$customer->password = 'bcrypt-hash';
+		$customer->token = 'reset-token';
+		$auth->loginCustomer($customer);
+
+		$stored = $_SESSION['authentication']['customer'];
+		$this->assertSame(7, $stored['customer_id']);
+		$this->assertArrayNotHasKey('customer_password', $stored);
+		$this->assertArrayNotHasKey('customer_remember_me', $stored);
+		$this->assertArrayNotHasKey('customer_token', $stored);
+	}
+
+	protected function makeAuthenticationWithActive($active): Authentication {
+		$config = $this->makeConfig();
+		$database = $this->makeMockDatabase();
+		$database->method('queryValue')->willReturn($active);
+		$request = $this->makeRequest($config, [], [], [], $database);
+		return new Authentication($config, $database, $request);
+	}
+
+	public function testInactiveCustomerIsLoggedOutOnRevalidation(): void {
+		$_SESSION['authentication'] = ['customer' => ['customer_id' => 7], 'verified_at' => time() - 3600];
+		$auth = $this->makeAuthenticationWithActive(FALSE);
+		$this->assertFalse($auth->customerLoggedIn());
+		$this->assertArrayNotHasKey('authentication', $_SESSION);
+	}
+
+	public function testActiveCustomerStaysLoggedIn(): void {
+		$_SESSION['authentication'] = ['customer' => ['customer_id' => 7], 'verified_at' => time() - 3600];
+		$auth = $this->makeAuthenticationWithActive(TRUE);
+		$this->assertNotFalse($auth->customerLoggedIn());
+		$this->assertGreaterThan(time() - 5, $_SESSION['authentication']['verified_at']);
+	}
+
+	public function testRecentlyVerifiedSessionIsNotRequeried(): void {
+		$_SESSION['authentication'] = ['customer' => ['customer_id' => 7], 'verified_at' => time()];
+		$auth = $this->makeAuthenticationWithActive(FALSE);
+		$this->assertNotFalse($auth->customerLoggedIn());
+	}
 }

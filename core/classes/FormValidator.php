@@ -170,6 +170,13 @@ class FormValidator {
 	protected $suppress_submit_check = FALSE;
 
 	/**
+	 * Accept GET submissions of this form. NULL means the default: only for
+	 * forms whose name ends in '-search'.
+	 * @var bool|null $allow_get
+	 */
+	protected $allow_get = NULL;
+
+	/**
 	 * Constructor
 	 * @param $request     \b Request The request object
 	 * @param $name        \b string  The name of the form
@@ -197,6 +204,33 @@ class FormValidator {
 	 */
 	public function suppressSubmitCheck($value) {
 		$this->suppress_submit_check = $value ? TRUE : FALSE;
+	}
+
+	/**
+	 * Allow (or disallow) this form to be submitted with a GET request.  Forms
+	 * must be POSTed by default, so their submission is covered by the CSRF
+	 * token check; search/filter forms (names ending in '-search') are allowed
+	 * as GET by default since they don't change anything.
+	 * @param $value \b bool TRUE to accept GET submissions
+	 */
+	public function allowGetSubmission($value) {
+		$this->allow_get = $value ? TRUE : FALSE;
+	}
+
+	/**
+	 * Was the submit marker for this form POSTed, or is this form allowed to be
+	 * submitted with GET
+	 * @return \b bool TRUE if the submission method is acceptable
+	 */
+	protected function isAcceptableSubmissionMethod() {
+		if ($this->suppress_submit_check) {
+			return TRUE;
+		}
+		$allow_get = is_null($this->allow_get) ? (substr($this->name, -7) === '-search') : $this->allow_get;
+		if ($allow_get) {
+			return TRUE;
+		}
+		return isset($_POST[$this->name.'-submit']) || isset($this->request->post_params[$this->name.'-submit']);
 	}
 
 	/**
@@ -328,7 +362,34 @@ class FormValidator {
 		if (!$this->suppress_submit_check && is_null($this->request->requestParam($this->name.'-submit'))) {
 			return NULL;
 		}
-		return $this->request->requestParam($name);
+		return $this->filterValue($name, $this->request->requestParam($name));
+	}
+
+	/**
+	 * Is this input declared as taking an array of values
+	 * @param $name \b string The name of the input
+	 * @return \b bool TRUE if the input accepts an array
+	 */
+	protected function isArrayInput($name) {
+		if (!isset($this->inputs[$name])) return FALSE;
+		$data = $this->inputs[$name];
+		return (isset($data['is_array']) && $data['is_array']) || (isset($data['array_value']) && $data['array_value']);
+	}
+
+	/**
+	 * Drop array values submitted for an input that is declared as a single
+	 * value. Values from getValue() are routinely passed straight into
+	 * Model::get(), which treats an array as a query operator, so e.g.
+	 * ?username[type]=isnotnull must not come back as an array.
+	 * @param $name  \b string The name of the input
+	 * @param $value \b mixed  The submitted value
+	 * @return \b mixed The value, or NULL if it was an unexpected array
+	 */
+	protected function filterValue($name, $value) {
+		if (is_array($value) && isset($this->inputs[$name]) && !$this->isArrayInput($name)) {
+			return NULL;
+		}
+		return $value;
 	}
 
 	public function setValue($name, $value) {
@@ -353,7 +414,8 @@ class FormValidator {
 		if (!$this->suppress_submit_check && is_null($this->request->requestParam($this->name.'-submit'))) {
 			return '';
 		}
-		return htmlspecialchars($this->request->requestParam($name));
+		$value = $this->filterValue($name, $this->request->requestParam($name));
+		return is_array($value) ? '' : htmlspecialchars($value ?? '');
 	}
 
 	public function isSubmitted() {
@@ -365,6 +427,13 @@ class FormValidator {
 
 	public function checkFormValue($name, $data, $value) {
 		$is_this_valid = TRUE;
+
+		// every type except 'file' takes a single scalar value (array inputs
+		// are validated element by element by validate())
+		if ($data['type'] != 'file' && !is_scalar($value)) {
+			return FALSE;
+		}
+
 		switch ($data['type']) {
 			case 'integer':
 				if (!$this->isInteger($value)) {
@@ -567,6 +636,12 @@ class FormValidator {
 		$form_valid = TRUE;
 
 		if (!$this->suppress_submit_check && !isset($_REQUEST[$this->name.'-submit'])) {
+			return FALSE;
+		}
+
+		// State-changing forms must be POSTed (and so carry the CSRF token)
+		if (!$this->isAcceptableSubmissionMethod()) {
+			$this->logger->info('Form submitted with GET, ignoring: '.$this->name);
 			return FALSE;
 		}
 
