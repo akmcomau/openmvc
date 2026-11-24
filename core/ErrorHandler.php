@@ -86,6 +86,11 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 	if (strpos($errstr, 'iconv(): Detected an illegal character in input string') === 0) {
 		return;
 	}
+	// honour @-suppressed deprecations (e.g. generated protobuf classes call
+	// @trigger_error(..., E_USER_DEPRECATED) on deprecated fields while decoding)
+	if (($errno & (E_DEPRECATED | E_USER_DEPRECATED)) && !(error_reporting() & $errno)) {
+		return true;
+	}
 	if (!$suppress_exceptions || !preg_match($suppress_exceptions, $errstr)) {
 		throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
 	}

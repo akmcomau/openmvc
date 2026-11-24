@@ -86,6 +86,9 @@ $_DEFAULT_CONFIG = (object)[
 		'contact_enable_recaptcha' => false,
 		'contact_recaptcha_secret' => '',
 		'contact_recaptcha_site_key' => '',
+		// reCAPTCHA Enterprise: key ID and Google Cloud project ID
+		'contact_recaptcha_key' => '',
+		'contact_recaptcha_site' => '',
 		'contact_fields' => [
 			'name' => ['type'=>'string', 'message_text_tag' => 'error_name'],
 			'email' => ['type'=>'email', 'message_text_tag' => 'error_email'],

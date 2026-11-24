@@ -131,6 +131,7 @@
 		}
 	],
 	"require": {
+		"google/cloud-recaptcha-enterprise": "^2.3",
 		"apache/log4php": "2.3.0.3",
 		"twbs/bootstrap": "v3.4.1",
 		"components/font-awesome": "4.7.0",

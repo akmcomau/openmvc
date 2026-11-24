@@ -10,6 +10,14 @@ use core\classes\Email;
 use core\classes\URL;
 use core\classes\FormValidator;
 
+use Google\Cloud\RecaptchaEnterprise\V1\Client\RecaptchaEnterpriseServiceClient;
+use Google\Cloud\RecaptchaEnterprise\V1\Event;
+use Google\Cloud\RecaptchaEnterprise\V1\Assessment;
+use Google\Cloud\RecaptchaEnterprise\V1\CreateAssessmentRequest;
+use Google\Cloud\RecaptchaEnterprise\V1\TokenProperties\InvalidReason;
+
+putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/akm.com.au/.config/gcloud/application_default_credentials.json');
+
 class Root extends Controller {
 
 	public function getAllUrls($include_filter = NULL, $exclude_filter = NULL) {
@@ -94,33 +102,10 @@ class Root extends Controller {
 			// check the recaptcha
 			$recaptcha_success = TRUE;
 			if ($this->config->siteConfig()->contact_enable_recaptcha) {
-				$recaptcha_success = FALSE;
-				if (isset($_REQUEST['g-recaptcha-response']) && !empty($_REQUEST['g-recaptcha-response'])) {
-					$url = 'https://www.google.com/recaptcha/api/siteverify';
-
-					$post_data = [
-						'secret'   => $this->config->siteConfig()->contact_recaptcha_secret,
-						'response' => $_REQUEST['g-recaptcha-response'],
-						'remoteip' => $_SERVER['REMOTE_ADDR'],
-					];
-
-					$options = array(
-						'http' => array(
-							'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-							'method'  => 'POST',
-							'content' => http_build_query($post_data)
-						)
-					);
-
-					$context  = stream_context_create($options);
-					$result = file_get_contents($url, false, $context);
-					if ($result !== FALSE) {
-						$result = json_decode($result);
-						if ($result && is_object($result) && property_exists($result, 'success') && $result->success) {
-							$recaptcha_success = TRUE;
-						}
-					}
-				}
+				$recaptcha_success = $this->verifyRecaptcha(
+					(string)$this->request->postParam('g-recaptcha-response'),
+					'CONTACT'
+				);
 			}
 
 			if (!$recaptcha_success) {
@@ -163,6 +148,60 @@ class Root extends Controller {
 		}
 
 		throw new SoftRedirectException(__CLASS__, 'contactUs', [json_encode($form->getErrors())]);
+	}
+
+	/**
+	 * Verify a reCAPTCHA Enterprise token by creating an assessment.
+	 * Any failure (missing/invalid token, wrong action, low score, or an
+	 * API/credentials error) is logged and treated as a failed verification.
+	 */
+	protected function verifyRecaptcha(string $token, string $action): bool {
+		if ($token === '') {
+			$this->logger->info('reCAPTCHA: no token submitted');
+			return FALSE;
+		}
+
+		$site = $this->config->siteConfig();
+		$client = NULL;
+		try {
+			$client = new RecaptchaEnterpriseServiceClient();
+			$event = (new Event())
+				->setSiteKey($site->contact_recaptcha_key)
+				->setToken($token)
+				->setExpectedAction($action);
+			$request = (new CreateAssessmentRequest())
+				->setParent($client->projectName($site->contact_recaptcha_site))
+				->setAssessment((new Assessment())->setEvent($event));
+
+			$response = $client->createAssessment($request);
+			$props = $response->getTokenProperties();
+
+			if (!$props->getValid()) {
+				$this->logger->info('reCAPTCHA: invalid token: '.InvalidReason::name($props->getInvalidReason()));
+				return FALSE;
+			}
+			if ($props->getAction() !== $action) {
+				$this->logger->info('reCAPTCHA: action mismatch: '.$props->getAction());
+				return FALSE;
+			}
+
+			$score = $response->getRiskAnalysis()->getScore();
+			if ($score < 0.5) {
+				$this->logger->info('reCAPTCHA: low score: '.$score);
+				return FALSE;
+			}
+			return TRUE;
+		}
+		catch (\Throwable $e) {
+			// must be \Throwable: a bare "exception" here resolves to core\controllers\exception and catches nothing
+			$this->logger->error('reCAPTCHA assessment failed: '.get_class($e).': '.$e->getMessage());
+			return FALSE;
+		}
+		finally {
+			if ($client) {
+				$client->close();
+			}
+		}
 	}
 
 	protected function contactUsForm() {
