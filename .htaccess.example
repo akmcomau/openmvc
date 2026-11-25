@@ -11,6 +11,9 @@ DirectoryIndex index.php
 	RewriteEngine on
 	RewriteBase /
 
+	# Managed asset directories serve static content only.
+	RewriteRule ^(?:static-[0-9]+/)?sites/[^/]+/themes/[^/]+/(?:css|js|images)/.*\.(?:php[0-9]*|phtml|phar|cgi|fcgi|pl|py|rb|sh|shtml)(?:[./]|$) - [F,L,NC]
+
 	# give static content proper urls
 	# Never let these map onto a PHP file (e.g. a template), which would run it outside the framework
 	RewriteCond %{REQUEST_URI} !\.(php\d?|phtml|phar)$ [NC]

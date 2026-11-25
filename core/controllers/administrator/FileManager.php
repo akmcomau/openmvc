@@ -48,7 +48,7 @@ class FileManager extends Controller {
 
 	protected function isEditableFile($path) {
 		$ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-		return in_array($ext, $this->editable_extensions, TRUE);
+		return in_array($ext, $this->editable_extensions, TRUE) && $this->isSafeManagedFilename(basename($path));
 	}
 
 	/**
@@ -110,10 +110,19 @@ class FileManager extends Controller {
 	protected function sanitizeUploadFilename($filename) {
 		$filename = basename($filename);
 		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-		if (!in_array($ext, $this->allowed_upload_extensions, TRUE)) {
+		if (!in_array($ext, $this->allowed_upload_extensions, TRUE) || !$this->isSafeManagedFilename($filename)) {
 			return NULL;
 		}
 		return $filename;
+	}
+
+	protected function isSafeManagedFilename($name) {
+		// Some web servers use intermediate extensions to select a handler.
+		$parts = explode('.', strtolower($name));
+		$stem = array_shift($parts);
+		$allowed = array_merge($this->allowed_upload_extensions, $this->editable_extensions);
+		return $stem !== '' && $parts && in_array(end($parts), $allowed, TRUE)
+			&& !preg_match('/\.(?:php[0-9]*|phtml|phar|cgi|fcgi|pl|py|rb|sh|shtml)(?:\.|$)/i', $name);
 	}
 
 	public function index($message = NULL) {
@@ -372,11 +381,14 @@ class FileManager extends Controller {
 					try {
 						$safe_source = $this->containedRealPath($base_dir, $root_path.'/'.$file);
 						$safe_dest   = $this->containedRealPath($base_dir, $root_path.'/'.$glob_path.$new_name);
-						if ($safe_source !== NULL && $safe_dest !== NULL) {
-							rename($safe_source, $safe_dest);
+						if ($safe_source === NULL || $safe_dest === NULL || is_link($root_path.'/'.$glob_path.$new_name)) {
+							$errors .= "Invalid rename path\n";
+						}
+						elseif (is_file($safe_source) && !$this->isSafeManagedFilename($new_name)) {
+							$errors .= "File type not allowed\n";
 						}
 						else {
-							$errors .= "Invalid rename path\n";
+							rename($safe_source, $safe_dest);
 						}
 					}
 					catch (\ErrorException $ex) {
