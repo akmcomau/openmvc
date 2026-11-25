@@ -107,7 +107,9 @@ class Customer extends Controller {
 		}
 		elseif ($form_login->validate()) {
 			$customer = $model->getModel($this->customer_class);
-			$customer = $customer->get($this->getCustomerLookupForLogin($form_login));
+			$lookup = $this->getCustomerLookupForLogin($form_login);
+			$lookup['site_id'] = $this->config->siteConfig()->site_id;
+			$customer = $customer->get($lookup);
 			if ($customer && (
 				Encryption::bcrypt_verify((string)$form_login->getValue('password'), (string)$customer->password) ||
 				$customer->remember_me == $form_login->getValue('password')
@@ -248,6 +250,8 @@ class Customer extends Controller {
 			$model       = new Model($this->config, $this->database);
 			$customer    = $model->getModel($this->customer_class)->get([
 				'email' => ['type' => 'lower=', 'value' => (string)$email_param],
+				'site_id' => $this->config->siteConfig()->site_id,
+				'active' => TRUE,
 			]);
 
 			// The same message is shown whether or not the address belongs to an
@@ -323,6 +327,8 @@ class Customer extends Controller {
 		$model = new Model($this->config, $this->database);
 		$customer = $model->getModel($this->customer_class)->get([
 			'id' => $customer_id,
+			'site_id' => $this->config->siteConfig()->site_id,
+			'active' => TRUE,
 		]);
 
 		// Timing-safe token comparison, and reject if the token is missing/expired.
@@ -451,7 +457,7 @@ class Customer extends Controller {
 					'type'     => 'function',
 					'message'  => $this->language->get('error_email_taken'),
 					'function' => function($value) use ($customer) {
-						$check = $customer->get(['email' => $value, 'active' => TRUE]);
+						$check = $customer->get(['site_id' => $this->config->siteConfig()->site_id, 'email' => $value, 'active' => TRUE]);
 						if (!$check || ($check && $check->id == $customer->id)) {
 							return TRUE;
 						}
@@ -587,7 +593,7 @@ class Customer extends Controller {
 					'message'  => $this->language->get('error_email_taken'),
 					'function' => function($value) use ($model, $customer_class) {
 						$customer = $model->getModel($customer_class);
-						$customer = $customer->get(['email' => $value, 'active' => TRUE]);
+						$customer = $customer->get(['site_id' => $this->config->siteConfig()->site_id, 'email' => $value, 'active' => TRUE]);
 						if ($customer) {
 							return FALSE;
 						}
@@ -603,7 +609,7 @@ class Customer extends Controller {
 					'message'  => $this->language->get('error_username_taken'),
 					'function' => function($value) use ($model, $customer_class) {
 						$customer = $model->getModel($customer_class);
-						$customer = $customer->get(['login' => $value]);
+						$customer = $customer->get(['site_id' => $this->config->siteConfig()->site_id, 'login' => $value, 'active' => TRUE]);
 						if ($customer) {
 							return FALSE;
 						}
