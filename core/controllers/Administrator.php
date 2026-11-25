@@ -82,6 +82,7 @@ class Administrator extends Controller {
 				$admin = $model->getModel('core\classes\models\Administrator');
 				$admin = $admin->get([
 					'login' => $form_login->getValue('username'),
+					'active' => TRUE,
 				]);
 			}
 
