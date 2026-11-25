@@ -99,6 +99,10 @@ Site Setup
     @endcode
 
   - Create Database
+    To seed the initial administrator, supply OPENMVC_INITIAL_ADMIN_PASSWORD
+    through the installer environment. Omitting it skips that account.
+    On existing installations, rotate the original administrator password
+    through the administrator editor.
     Once your _config.php_ and _log4php.php_ files have been created, you can just use
     _make_ to create your database.
     @code
