@@ -1,7 +1,13 @@
+<?php $site = $this->config->siteConfig(); ?>
 <div class="<?php echo $page_class; ?>">
 	<div class="row">
 		<div class="col-md-12">
 			<form id="form-contact-us" action="<?php echo $this->url->getUrl('Root', 'contactUsSend'); ?>" method="post">
+				<?php if ($site->contact_enable_recaptcha) { ?>
+					<input type="hidden" name="g-recaptcha-response" />
+					<input type="hidden" name="form-contact-us-submit" value="1" />
+					<div role="alert" id="contact-recaptcha-error"><?php if (isset($form->getErrors()['recaptcha'])) echo htmlspecialchars($text_error_recaptcha); ?></div>
+				<?php } ?>
 				<input type="hidden" name="send_message" value="1" />
 				<div class="widget">
 					<div class="widget-header">
@@ -48,3 +54,26 @@
 <script type="text/javascript">
 	<?php echo $form->getJavascriptValidation(); ?>
 </script>
+<?php if ($site->contact_enable_recaptcha) { ?>
+<script src="https://www.google.com/recaptcha/enterprise.js?render=<?php echo rawurlencode($site->contact_recaptcha_key); ?>"></script>
+<script>
+document.getElementById('form-contact-us').addEventListener('submit', function (event) {
+	event.preventDefault();
+	const form = this;
+	if (form.dataset.pending) return;
+	form.dataset.pending = '1';
+	function failed() {
+		delete form.dataset.pending;
+		document.getElementById('contact-recaptcha-error').textContent = <?php echo json_encode($text_error_recaptcha, JSON_HEX_TAG); ?>;
+	}
+	if (!window.grecaptcha || !grecaptcha.enterprise) return failed();
+	grecaptcha.enterprise.ready(function () {
+		grecaptcha.enterprise.execute(<?php echo json_encode($site->contact_recaptcha_key, JSON_HEX_TAG); ?>, {action: 'CONTACT'}).then(function (token) {
+			if (!token) return failed();
+			form.elements['g-recaptcha-response'].value = token;
+			HTMLFormElement.prototype.submit.call(form);
+		}, failed);
+	});
+});
+</script>
+<?php } ?>
