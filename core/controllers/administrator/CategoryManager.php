@@ -110,7 +110,7 @@ class CategoryManager extends Controller {
 	}
 
 	protected function addEditCategory(Model $model) {
-		$model->site_id = $this->config->siteConfig()->site_id;
+		$model->site_id = $this->allowedSiteIDs()[0] ?? $this->config->siteConfig()->site_id;
 
 		if ((int)$this->request->requestParam('add_category')) {
 			$model->name = $this->request->requestParam('name');
@@ -120,6 +120,7 @@ class CategoryManager extends Controller {
 		}
 		elseif ((int)$this->request->requestParam('edit_category')) {
 			$model = $model->get(['id' => (int)$this->request->requestParam('category')]);
+			$this->siteProtection($model);
 			$model->name = $this->request->requestParam('name');
 			$model->update();
 
@@ -127,7 +128,10 @@ class CategoryManager extends Controller {
 		}
 		elseif ((int)$this->request->requestParam('add_subcategory')) {
 			$model->name = $this->request->requestParam('name');
-			$model->parent_id = (int)$this->request->requestParam('category');
+			$parent = $model->get(['id' => (int)$this->request->requestParam('category')]);
+			$this->siteProtection($parent);
+			$model->site_id = $parent->site_id;
+			$model->parent_id = $parent->id;
 			$model->insert();
 
 			throw new RedirectException($this->url->getUrl($this->controller_class, $this->request->getMethodName(), ['add-success']));
@@ -135,6 +139,7 @@ class CategoryManager extends Controller {
 		elseif ((int)$this->request->requestParam('image_category')) {
 			if ($this->request->fileParam('image')['error'] == 0) {
 				$category = $model->getModel('\modules\products\classes\models\ProductCategory')->get(['id' => (int)$this->request->requestParam('category')]);
+				$this->siteProtection($category);
 				$category->uploadImage(
 					$this->request->fileParam('image')['tmp_name'],
 					$category->id.'-'.$this->request->fileParam('image')['name']
@@ -149,16 +154,12 @@ class CategoryManager extends Controller {
 
 	protected function deleteCategories(Model $model) {
 		if ($this->request->requestParam('selected')) {
-			$by_parent = $model->getAllByParent();
-
+			$by_parent = $model->getAllByParent($this->allowedSiteIDs());
+			$pending = [];
 			foreach ($this->request->requestParam('selected') as $id) {
-				if (isset($by_parent[$id])) {
-					foreach ($by_parent[$id] as $sub_category) {
-						$this->deleteSubcategories($model, $sub_category, $by_parent);
-					}
-				}
-
-				$category = $model->get(['id' => (int)$id]);
+				$this->collectForDeletion($model, (int)$id, $by_parent, $pending);
+			}
+			foreach ($pending as $category) {
 				$category->delete();
 			}
 
@@ -166,14 +167,13 @@ class CategoryManager extends Controller {
 		}
 	}
 
-	protected function deleteSubcategories(Model $model, $category, array $by_parent) {
-		if (isset($by_parent[$category['id']])) {
-			foreach ($by_parent[$category['id']] as $sub_category) {
-				$this->deleteSubcategories($model, $sub_category, $by_parent);
-			}
+	protected function collectForDeletion(Model $model, $id, array &$by_parent, array &$pending) {
+		if (isset($pending[$id])) return;
+		$category = $model->get(['id' => $id]);
+		$this->siteProtection($category);
+		foreach ($by_parent[$id] ?? [] as $child) {
+			$this->collectForDeletion($model, $child['id'], $by_parent, $pending);
 		}
-
-		$category = $model->get(['id' => (int)$category['id']]);
-		$category->delete();
+		$pending[$id] = $category;
 	}
 }
