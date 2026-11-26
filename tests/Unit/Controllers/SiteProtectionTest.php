@@ -140,6 +140,23 @@ class SiteProtectionTest extends FrameworkTestCase {
 		}
 	}
 
+	// -- siteProtection(): models that aren't site-scoped --
+
+	public function testSiteProtectionAllowsAModelWithNoSiteColumn(): void {
+		// Administrators are global - the table has no site_id - so editing
+		// one must not blow up reading a column that doesn't exist, whether
+		// the install is single-site or the admin is scoped to a site.
+		$administrator = new \core\classes\models\Administrator($this->makeConfig(), $this->makeMockDatabase());
+		$controller = $this->makeTestController();
+
+		unset($_SESSION['admin_site_id']);
+		$this->callProtectedMethod($controller, 'siteProtection', [$administrator]);
+
+		$_SESSION['admin_site_id'] = 42;
+		$this->callProtectedMethod($controller, 'siteProtection', [$administrator]);
+		$this->addToAssertionCount(1);
+	}
+
 	// -- siteProtection($model, $method): resolves the target via a method
 	// call first (e.g. siteProtection($customer, 'getDevice')) --
 

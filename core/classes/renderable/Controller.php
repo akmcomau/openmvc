@@ -293,6 +293,11 @@ class Controller extends Renderable {
 				throw new SoftRedirectException($this->url->getControllerClass('Root'), 'error401');
 			}
 		}
+		elseif (is_null($model->getColumnName('site_id'))) {
+			// Not a site-scoped record (e.g. administrators are global), so
+			// there is no site to protect
+			return;
+		}
 		elseif ($this->request->session->get('admin_site_id')) {
 			if ($this->request->session->get('admin_site_id') != $model->site_id) {
 				if ($this->show_admin_layout) {

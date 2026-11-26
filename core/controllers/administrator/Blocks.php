@@ -49,7 +49,7 @@ class Blocks extends Controller {
 			foreach ($values as $name => $value) {
 				if (preg_match('/^search_(title|tag)$/', $name, $matches) && $value != '') {
 					$value = strtolower($value);
-					$params[$matches[1]] = ['type'=>'like', 'value'=>'%'.$value.'%'];
+					$params[$matches[1]] = ['type'=>'likelower', 'value'=>'%'.$value.'%'];
 				}
 				elseif ($name == 'search_category' && (int)$value != 0) {
 					$params['block_category_id'] = (int)$value;

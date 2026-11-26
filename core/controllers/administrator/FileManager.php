@@ -64,7 +64,8 @@ class FileManager extends Controller {
 	}
 
 	protected function sanitizeSubPath($sub_path) {
-		if (!strlen($sub_path ?? '')) return $sub_path;
+		// No sub path means the root of the folder, which is fine
+		if (!strlen($sub_path ?? '')) return '';
 		$normalized = str_replace('\\', '/', $sub_path);
 		foreach (explode('/', $normalized) as $part) {
 			if ($part === '..') {

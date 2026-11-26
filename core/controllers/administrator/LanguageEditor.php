@@ -50,8 +50,17 @@ class LanguageEditor extends Controller {
 		$language_files = [];
 		$files = '/'.join('/', func_get_args());
 		if (preg_match_all('|/file/(.*?)/path/(.*?)/end|', $files, $matches)) {
+			// The file/path form, used to reach a file in a module
 			for ($i=0; $i<count($matches[0]); $i++) {
 				$language_files[$matches[2][$i].'/'.$matches[1][$i]] = $this->language->getFile($matches[1][$i], $matches[2][$i]);
+			}
+		}
+		else {
+			// The language file list links to each file by its (url encoded)
+			// name alone, e.g. edit/contact_us.php
+			foreach (func_get_args() as $file) {
+				$file = urldecode($file);
+				$language_files[$file] = $this->language->getFile($file);
 			}
 		}
 
